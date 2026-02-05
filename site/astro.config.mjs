@@ -42,6 +42,7 @@ export default defineConfig({
 				},
 				{
 					label: 'Guides',
+					badge: 'Nouveau',
 					items: [
 						{ label: 'Modélisation de problèmes', slug: 'guides/modelisation-excel' },
 					],

@@ -34,7 +34,7 @@ Ils sont utilisés dans la fonction `SI` pour exprimer le `test_logique` sous fo
 
 La fonction SI a la syntaxe suivante :
 
-```excel
+```text
 =SI(test_logique; valeur_si_vrai; valeur_si_faux)
 ```
 Elle nécessite trois arguments :
@@ -55,14 +55,14 @@ Il est visible dans la barre de formule lorsque vous tappez la formule.
 
 ### Exemple 1 : Vérifier l'âge
 
-```excel
+```text
 =SI(A1>=18;"Majeur";"Mineur")
 ```
 Si la valeur dans A1 est 20, le résultat sera "Majeur". Si A1 est 16, le résultat sera "Mineur".
 
 ### Exemple 2 : Appliquer une remise
 
-```excel
+```text
 =SI(A1>100;A1*0,9;A1)
 ```
 Si le montant dans A1 est 150, le résultat sera 135 (10% de remise). Si A1 est 80, le résultat sera 80 (pas de remise).
@@ -95,31 +95,31 @@ Si on suppose que la formule est dans la cellule `B1` et que `A1` contient la no
 
 
 export const quizData1 = [
-//   {
-//     id: 'q1',
-//     question: 'Quelle formule affiche "Passé" si la note est ≥ 50, sinon "Échoué" ?',
-//     options: [`=SI(A1>=50;"Échoué";"Passé")`, `=SI(A1>=50;"Passé";"Échoué")`, `=SI(A1>50;"Passé";"Échoué")`, `=SI(A1=50;"Passé";"Échoué")`],
-//     correct: `=SI(A1>=50;"Passé";"Échoué")`,
-//     explanation: `- Le test doit être >=50 (supérieur ou égal). 
-// - Le premier argument après le test est la valeur si VRAI. 
-// - Le deuxième argument est la valeur si FAUX.`
-//   },
-//   {
-//     id: 'q2',
-//     question: 'Quelle formule classe les notes : "A" pour ≥85, "B" pour ≥70, sinon "C" ?',
-//     options: [`=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`, `=SI(A1>=70;"B";SI(A1>=85;"A";"C"))`, `=SI(A1>=85;"A";"B";A1>=70;"C")`, `=SI(ET(A1>=85);"A";SI(A1>=70;"B";"C"))`],
-//     correct: `=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`,
-//     explanation: `- Il faut tester d'abord la condition la plus restrictive (≥85). 
-// - Puis imbriquer un second SI pour la condition suivante (≥70). 
-// - L'option B teste les conditions dans le mauvais ordre.`
-//   },
-//   {
-//     id: 'q3',
-//     question: 'Combien de SI imbriqués sont nécessaires pour 4 catégories distinctes ?',
-//     options: ['2 SI imbriqués', '3 SI imbriqués', '4 SI imbriqués', '5 SI imbriqués'],
-//     correct: '3 SI imbriqués',
-//     explanation: "**3 SI imbriqués** sont nécessaires pour 4 catégories.\n\n **Exemple:**\n\nPour distinguer les appréciations de note en A, B, C, D : \n\n`=SI(note >= 90; \"A\"; SI(note >= 80; \"B\"; SI(note >= 70; \"C\"; \"D\")))`\n\n**Règle générale :** pour N catégories, il faut N-1 SI imbriqués."
-//   },
+  {
+    id: 'q1',
+    question: 'Quelle formule affiche "Passé" si la note est ≥ 50, sinon "Échoué" ?',
+    options: [`=SI(A1>=50;"Échoué";"Passé")`, `=SI(A1>=50;"Passé";"Échoué")`, `=SI(A1>50;"Passé";"Échoué")`, `=SI(A1=50;"Passé";"Échoué")`],
+    correct: `=SI(A1>=50;"Passé";"Échoué")`,
+    explanation: `- Le test doit être >=50 (supérieur ou égal). 
+- Le premier argument après le test est la valeur si VRAI. 
+- Le deuxième argument est la valeur si FAUX.`
+  },
+  {
+    id: 'q2',
+    question: 'Quelle formule classe les notes : "A" pour ≥85, "B" pour ≥70, sinon "C" ?',
+    options: [`=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`, `=SI(A1>=70;"B";SI(A1>=85;"A";"C"))`, `=SI(A1>=85;"A";"B";A1>=70;"C")`, `=SI(ET(A1>=85);"A";SI(A1>=70;"B";"C"))`],
+    correct: `=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`,
+    explanation: `- Il faut tester d'abord la condition la plus restrictive (≥85). 
+- Puis imbriquer un second SI pour la condition suivante (≥70). 
+- L'option B teste les conditions dans le mauvais ordre.`
+  },
+  {
+    id: 'q3',
+    question: 'Combien de SI imbriqués sont nécessaires pour 4 catégories distinctes ?',
+    options: ['2 SI imbriqués', '3 SI imbriqués', '4 SI imbriqués', '5 SI imbriqués'],
+    correct: '3 SI imbriqués',
+    explanation: "**3 SI imbriqués** sont nécessaires pour 4 catégories.\n\n **Exemple:**\n\nPour distinguer les appréciations de note en A, B, C, D : \n\n`=SI(note >= 90; \"A\"; SI(note >= 80; \"B\"; SI(note >= 70; \"C\"; \"D\")))`\n\n**Règle générale :** pour N catégories, il faut N-1 SI imbriqués."
+  },
   {
     id: 'q4',
     question: 'Que retourne cette formule si A1=75 ? `=SI(A1>=60;SI(A1>=80;"Excellent";"Bon");"Échec")`',

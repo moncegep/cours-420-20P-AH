@@ -752,7 +752,7 @@ Prenez le temps de faire chaque étape sur papier AVANT de passer à la suivante
     ### Dans la feuille "Transactions"
     
     **Colonne H - Alerte grosse dépense (Règle #5):**
-    ```excel
+    ```text
     =SI(C2>Paramètres!$B$10; "GROSSE DÉPENSE"; "")
     ```
     
@@ -761,40 +761,40 @@ Prenez le temps de faire chaque étape sur papier AVANT de passer à la suivante
     ### Dans la feuille "Tableau de bord"
     
     **Total dépensé (Règle #1):**
-    ```excel
+    ```text
     =SOMME(Transactions!C:C)
     ```
     
     **Budget restant:**
-    ```excel
+    ```text
     =Paramètres!$B$3 - B5
     ``` 
     (où B5 contient le total dépensé)
     
     **Pourcentage utilisé (Règle #2):**
-    ```excel
+    ```text
     =B5/Paramètres!$B$3*100
     ```
     
     **Total par catégorie (Règle #4) - ex: Alimentation:**
-    ```excel
+    ```text
     =SOMME.SI(Transactions!$B:$B; "Alimentation"; Transactions!$C:$C)
     ```
     
     **Statut par catégorie (Règle #3):**
-    ```excel
+    ```text
     =SI(E2>100%; "DÉPASSEMENT"; 
         SI(E2>80%; "ATTENTION"; "OK"))
     ```
     (où E2 contient le % utilisé pour cette catégorie)
     
     **Jours restants dans le mois:**
-    ```excel
+    ```text
     =FIN.MOIS(Paramètres!$B$2; 0) - AUJOURDHUI()
     ```
     
     **Budget quotidien suggéré (Règle #6):**
-    ```excel
+    ```text
     =B6/B12
     ```
     (où B6 = budget restant, B12 = jours restants)
@@ -852,7 +852,7 @@ Si vous trouvez une erreur avec 20 transactions, vous ne saurez pas laquelle cau
     **Symptôme:** Mettre les valeurs fixes directement dans les formules.
     
     **Exemple problématique:**
-    ```excel
+    ```text
     =C2 * 0.05      // Taux de TPS caché!
     =D2 * 1.09975   // Taux de TVQ caché!
     ```
@@ -860,7 +860,7 @@ Si vous trouvez une erreur avec 20 transactions, vous ne saurez pas laquelle cau
     **Problème:** Si le taux change, vous devez modifier TOUTES les formules.
     
     **Solution:** Cellules nommées et feuille Paramètres
-    ```excel
+    ```text
     =C2 * TauxTPS
     =D2 * (1 + TauxTVQ)
     ```
@@ -873,7 +873,7 @@ Si vous trouvez une erreur avec 20 transactions, vous ne saurez pas laquelle cau
     **Symptôme:** Une formule de 3+ lignes avec multiples SI imbriqués.
     
     **Exemple:**
-    ```excel
+    ```text
     =SI(ET(A2>1000;B2="Québec";C2<30);A2*0.15;
     SI(A2>500;SI(B2="Québec";A2*0.10;A2*0.08);
     SI(A2>100;A2*0.05;0)))
@@ -885,7 +885,7 @@ Si vous trouvez une erreur avec 20 transactions, vous ne saurez pas laquelle cau
     - Impossible à maintenir
     
     **Solution:** Décomposer en colonnes auxiliaires
-    ```excel
+    ```text
     Col D: =A2>1000           // Vente importante?
     Col E: =B2="Québec"       // Client QC?
     Col F: =C2<30             // Jeune entreprise?

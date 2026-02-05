@@ -133,7 +133,7 @@ La feuille "Resultat de ma classe" centralise toutes les informations.
 #### Explication des formules
 
 **Références entre feuilles** (colonnes C à F) :
-```excel
+```text
 ='Labo 1'!E2    ← Note du Labo 1 pour l'étudiant ligne 2
 ='Labo 2'!G2    ← Note du Labo 2 pour l'étudiant ligne 2
 =Intra!L2       ← Note de l'Intra pour l'étudiant ligne 2
@@ -141,7 +141,7 @@ La feuille "Resultat de ma classe" centralise toutes les informations.
 ```
 
 **Calcul du score pondéré** (colonne G) :
-```excel
+```text
 =C2*P_LABO1 + D2*P_LABO2 + E2*P_INTRA + F2*P_FINAL
 ```
 
@@ -152,7 +152,7 @@ Cette formule multiplie chaque note par son poids et additionne le tout :
 - Final (F2) × 30% (P_FINAL)
 
 **Appréciation conditionnelle** (colonne H) :
-```excel
+```text
 =SI(G2>=60;SI(G2>=80;"Excellent!";"Reussi");"Échec")
 ```
 

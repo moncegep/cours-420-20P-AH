@@ -13,7 +13,7 @@ description: Quiz pour tester vos connaissances sur les fonctions SI et le réf�
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =SI(A1>=18;"Majeur";"Mineur")
 ```
 
@@ -30,13 +30,13 @@ description: Quiz pour tester vos connaissances sur les fonctions SI et le réf�
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =SI(A1>100;A1*0,9;A1)
 ```
 
 ou pour afficher le montant remisé :
 
-```excel
+```text
 =SI(A1>100;A1*0,1;0)
 ```
 
@@ -55,7 +55,7 @@ ou pour afficher le montant remisé :
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =SI(A1>=80;"Fort";SI(A1>=60;"Moyen";"Faible"))
 ```
 
@@ -74,7 +74,7 @@ ou pour afficher le montant remisé :
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =SI(A1="Montréal";"Local";"International")
 ```
 
@@ -92,7 +92,7 @@ Créez un système de notation :
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =SI(A1>=85;"A";SI(A1>=75;"B";SI(A1>=65;"C";"D")))
 ```
 
@@ -118,14 +118,14 @@ Vous avez une feuille "Produits" avec un prix en cellule B5. Écrivez la formule
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =Produits!B5
 ```
 
 **Format général** : `=NomFeuille!Cellule`
 
 Si le nom de la feuille contient des espaces, utiliser des apostrophes :
-```excel
+```text
 ='Liste Produits'!B5
 ```
 </details>
@@ -137,13 +137,13 @@ Feuille "Ventes" cellule C3 contient 150. Feuille "Taxes" cellule A1 contient 0,
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =Ventes!C3 * (1 + Taxes!A1)
 ```
 
 ou
 
-```excel
+```text
 =Ventes!C3 + (Ventes!C3 * Taxes!A1)
 ```
 
@@ -163,13 +163,13 @@ Créez une formule qui calcule la moyenne de trois valeurs situées dans trois f
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =MOYENNE(Janvier!D2;Février!D2;Mars!D2)
 ```
 
 ou
 
-```excel
+```text
 =(Janvier!D2 + Février!D2 + Mars!D2)/3
 ```
 
@@ -183,7 +183,7 @@ Vous avez défini le nom "TauxTVQ" pour la cellule Taxes!A1. Utilisez ce nom pou
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =B5 * TauxTVQ
 ```
 
@@ -200,18 +200,18 @@ Créez une formule pour un tableau récapitulatif qui consolide des données de 
 <details>
 <summary>Voir la solution</summary>
 
-```excel
+```text
 =Q1!F10 + Q2!F10 + Q3!F10 + Q4!F10
 ```
 
 ou
 
-```excel
+```text
 =SOMME(Q1!F10;Q2!F10;Q3!F10;Q4!F10)
 ```
 
 **Pour aller plus loin**, si les feuilles sont consécutives :
-```excel
+```text
 =SOMME(Q1:Q4!F10)
 ```
 

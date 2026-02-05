@@ -10,7 +10,7 @@ description: Les erreurs courantes rencontrées lors de la création de formules
 **Cause** : Référence à une cellule ou feuille qui n'existe pas/plus
 
 **Exemples** :
-```excel
+```text
 ='Labo 1'!E2    ❌ Si la feuille s'appelle "Lab 1" au lieu de "Labo 1"
 ='Labbo 1'!E2   ❌ Faute de frappe dans le nom de la feuille
 ```
@@ -24,7 +24,7 @@ description: Les erreurs courantes rencontrées lors de la création de formules
 **Cause** : Nom de fonction incorrect ou nom de cellule non défini
 
 **Exemples** :
-```excel
+```text
 =AVERAGE(B2:D2)   ❌ En français, c'est MOYENNE
 =C2*LABO1         ❌ Le nom P_LABO1 n'a pas été défini
 ```
@@ -40,7 +40,7 @@ description: Les erreurs courantes rencontrées lors de la création de formules
 **Exemples fréquents** :
 
 **1. Point au lieu de virgule pour les décimales**
-```excel
+```text
 =C2*0.2     ❌ Point décimal (notation anglaise)
 =C2*0,2     ✅ Virgule décimale (notation française)
 ```
@@ -48,7 +48,7 @@ description: Les erreurs courantes rencontrées lors de la création de formules
 En Excel français, les décimales utilisent la **virgule** et non le point. Si vous tapez `0.2`, Excel peut l'interpréter comme du texte ou une date, causant l'erreur #VALEUR!
 
 **2. Virgule au lieu de point-virgule dans les fonctions**
-```excel
+```text
 =MOYENNE(B2,D2)                  ❌ Virgule comme séparateur
 =MOYENNE(B2:D2)                  ✅ Deux-points pour une plage
 =MOYENNE(B2;C2;D2)               ✅ Point-virgule pour plusieurs cellules
@@ -62,7 +62,7 @@ Dans Excel français :
 - **Point-virgule (;)** = séparateur d'arguments dans les fonctions
 
 **3. Manque de guillemets pour le texte**
-```excel
+```text
 =SI(G2>=60;Reussi;Échec)        ❌ Texte sans guillemets
 =SI(G2>=60;"Reussi";"Échec")    ✅ Texte entre guillemets
 ```
@@ -81,7 +81,7 @@ Récapitulatif des règles en Excel français :
 | Séparateur d'arguments | Point-virgule (;) | `=SI(A1>0;"Positif";"Négatif")` |
 | Plage de cellules | Deux-points (:) | `=SOMME(A1:A10)` |
 
-```excel
+```text
 =SI(G2>=60;"Reussi";"Échec")    ✅ Correct en français
 =SI(G2>=60,"Reussi","Échec")    ❌ Erreur #VALEUR! en français
 ```
@@ -89,7 +89,7 @@ Récapitulatif des règles en Excel français :
 ### Erreur dans la logique du SI
 
 **Exemple incorrect** :
-```excel
+```text
 =SI(G2>60;SI(G2>80;"Excellent!";"Reussi");"Échec")
 ```
 
@@ -104,12 +104,12 @@ Récapitulatif des règles en Excel français :
 **Cause** : Utilisation de références absolues ($) par erreur
 
 **Exemple incorrect** :
-```excel
+```text
 ='Labo 1'!$E$2   ← Le $ fixe la référence, elle ne changera pas à la copie
 ```
 
 **Solution** : Utiliser des références relatives
-```excel
+```text
 ='Labo 1'!E2     ← Deviendra E3, E4, etc. à la copie
 ```
 
@@ -120,7 +120,7 @@ Récapitulatif des règles en Excel français :
 **Cause** : Les pondérations ne totalisent pas 1,0 (100%)
 
 **Vérification** :
-```excel
+```text
 =SOMME(Ponderation!B1:B4)   ← Doit égaler exactement 1
 ```
 
@@ -128,7 +128,7 @@ Récapitulatif des règles en Excel français :
 
 Dans Excel français, le séparateur d'arguments est le **point-virgule (;)** :
 
-```excel
+```text
 =SI(G2>=60;"Reussi";"Échec")    ✅ Correct en français
 =SI(G2>=60,"Reussi","Échec")    ❌ Erreur en français (fonctionne en anglais)
 ```
@@ -141,7 +141,7 @@ Dans Excel français, le séparateur d'arguments est le **point-virgule (;)** :
 
 **Erreur la plus fréquente chez les débutants !**
 
-```excel
+```text
 MOYENNE(B2:D2)      ❌ Excel affiche le texte tel quel
 =MOYENNE(B2:D2)     ✅ Excel calcule la formule
 ```
@@ -154,7 +154,7 @@ MOYENNE(B2:D2)      ❌ Excel affiche le texte tel quel
 
 **Problème** : Les espaces nécessitent des apostrophes
 
-```excel
+```text
 =Labo 1!E2          ❌ Excel ne comprend pas
 ='Labo 1'!E2        ✅ Apostrophes obligatoires
 
@@ -201,12 +201,12 @@ Copier G2 → Coller (Ctrl+V)           ✅ Colle la formule
 **Problème** : Une formule qui se référence elle-même, directement ou indirectement
 
 **Exemple direct** :
-```excel
+```text
 En G2: =G2 + 10     ❌ Erreur circulaire!
 ```
 
 **Exemple indirect** :
-```excel
+```text
 En A1: =B1
 En B1: =C1
 En C1: =A1          ❌ Boucle A1→B1→C1→A1
@@ -237,7 +237,7 @@ En C1: =A1          ❌ Boucle A1→B1→C1→A1
 
 **Caractères interdits** : `: / \ ? * [ ]`
 
-```excel
+```text
 Intra/Final         ❌ Le / est interdit
 Intra-Final         ✅ Le tiret est permis
 [Intra]             ❌ Les crochets sont interdits
@@ -250,7 +250,7 @@ Intra-Final         ✅ Le tiret est permis
 
 **Problème** : Formules qui pointent vers des cellules vides
 
-```excel
+```text
 Si D2 est vide:
 =MOYENNE(B2:D2)     → Ignore D2 (moyenne de B2 et C2 seulement)
 =B2+C2+D2           → Traite D2 comme 0
@@ -259,7 +259,7 @@ Si D2 est vide:
 **Attention spéciale** : Les cellules vides ne sont pas toujours égales à 0 dans les calculs!
 
 **Impact sur notre exercice** :
-```excel
+```text
 ='Labo 1'!E2    → Si E2 est vide, affiche 0 dans le tableau de bord
 ```
 
@@ -319,7 +319,7 @@ Fichier.csv     ❌ Perd : formules (valeurs seulement), feuilles multiples (1 s
 | Mixte ligne | `A$1` | Colonne change, ligne fixe |
 
 **Dans notre exercice** :
-```excel
+```text
 =C2*P_LABO1         ✅ C2 est relatif (devient C3, C4...)
                        P_LABO1 est un nom (toujours la même cellule)
 
@@ -331,7 +331,7 @@ Fichier.csv     ❌ Perd : formules (valeurs seulement), feuilles multiples (1 s
 **Erreurs fréquentes avec les noms** :
 
 **1. Créer le nom après avoir écrit les formules**
-```excel
+```text
 =C2*Ponderation!B1     ← Formule écrite en premier
 Puis création du nom P_LABO1
                        ❌ La formule ne se met PAS à jour automatiquement!
@@ -340,13 +340,13 @@ Puis création du nom P_LABO1
 **Solution** : Créer les noms AVANT d'écrire les formules qui les utilisent.
 
 **2. Fautes de frappe dans les noms**
-```excel
+```text
 =C2*P_LABO_1           ❌ Trait de soulignement en trop
 =C2*P_LABO1            ✅ Nom correct
 ```
 
 **3. Espaces dans les noms**
-```excel
+```text
 P_LABO 1               ❌ Espace interdit dans un nom
 P_LABO1                ✅ Utiliser _ ou enlever l'espace
 PLABO1                 ✅ Alternative sans séparateur
@@ -358,7 +358,7 @@ PLABO1                 ✅ Alternative sans séparateur
 
 Ajouter en bas du tableau de bord :
 
-```excel
+```text
 Moyenne de classe:  =MOYENNE(G2:G11)
 Note minimale:      =MIN(G2:G11)
 Note maximale:      =MAX(G2:G11)
