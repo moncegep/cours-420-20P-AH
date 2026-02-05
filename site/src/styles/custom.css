@@ -1,0 +1,7 @@
+.markdown-wrapper p {
+    display: inline;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    margin: 0;
+}

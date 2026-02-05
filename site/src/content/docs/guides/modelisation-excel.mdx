@@ -1,0 +1,1037 @@
+---
+title: Modélisation de problèmes avec Excel
+description: Penser avant calculer - Une démarche structurée pour concevoir des chiffriers efficaces
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import QuizClassification from './../../../components/QuizClassification';
+import ConceptCards from './../../../components/ConceptCards';
+
+## Le défi de la modélisation
+
+> **Un bon chiffrier est d'abord un bon modèle du problème.**
+> 
+> Excel n'est qu'un outil qui **exécute** ce que vous avez déjà **pensé**.
+
+<CardGrid>
+  <Card title="Approche réflexe" icon="warning">
+    1. Ouvrir Excel immédiatement
+    2. Créer des colonnes au hasard
+    3. Essayer des formules jusqu'à ce que "ça marche"
+    4. Oublier comment ça fonctionne 2 semaines plus tard
+    5. Recommencer à zéro la prochaine fois...
+  </Card>
+  
+  <Card title="Approche réfléchie" icon="approve-check">
+    1. **Comprendre** le problème (papier/crayon)
+    2. **Identifier** les éléments et règles (schéma)
+    3. **Concevoir** le modèle (structure)
+    4. **Implémenter** dans Excel (outils)
+    5. **Réutiliser** et adapter facilement
+  </Card>
+</CardGrid>
+
+<Aside type="caution" title="Piège #1: L'illusion de la formule magique">
+**Symptôme:** Chercher sur Google ou ChatGPT "formule Excel pour calculer X" et copier-coller sans comprendre.
+
+**Problème:** Vous ne comprenez pas la logique, donc vous ne pouvez pas l'adapter ou détecter les erreurs.
+
+**Solution:** Formuler la règle en français d'abord. La formule n'est que la traduction technique.
+</Aside>
+
+---
+
+## Les trois types de données à reconnaître
+
+export const dataTypesConcepts = [
+  {
+    id: 'saisies',
+    // icon: '📝',
+    title: 'Données saisies',
+    description: 'Informations qui changent à chaque utilisation',
+    details: 'Ce sont les entrées manuelles qui proviennent de la réalité et varient fréquemment. Elles constituent la matière première de votre chiffrier.',
+    examples: [
+      'Montant d\'une facture reçue',
+      'Date d\'une transaction bancaire',
+      'Quantité de produits vendus',
+      'Heures travaillées dans la semaine',
+      'Note obtenue à un examen'
+    ],
+    relatedTo: ['Règles de validation', 'Formats de cellules']
+  },
+  {
+    id: 'fixes',
+    // icon: '📋',
+    title: 'Données fixes',
+    description: 'Règles, paramètres et constantes du système',
+    details: 'Les valeurs qui représentent les règles de gestion, les seuils, les taux légaux, les objectifs. Elles changent rarement et doivent être VISIBLES dans le chiffrier.',
+    examples: [
+      'Taux de TPS: 5%',
+      'Taux de TVQ: 9.975%',
+      'Salaire horaire: 17.50$',
+      'Objectif de vente mensuel: 25 000$',
+      'Taux d\'amortissement: 20%'
+    ],
+    relatedTo: ['Cellules nommées', 'Feuille Paramètres']
+  },
+  {
+    id: 'calculees',
+    // icon: '🔄',
+    title: 'Données calculées',
+    description: 'Résultats obtenus automatiquement par formules',
+    details: 'Les valeurs qui découlent des données saisies et des règles fixes. Elles se mettent à jour automatiquement quand les données source changent.',
+    examples: [
+      'Montant total TPS + TVQ',
+      'Salaire brut de la semaine',
+      'Écart entre budget et réel',
+      'Valeur comptable nette après amortissement',
+      'Statut: Réussi/Échoué'
+    ],
+    relatedTo: ['Formules', 'Références absolues/relatives']
+  }
+];
+
+<ConceptCards client:visible concepts={dataTypesConcepts} />
+
+<Aside type="tip" title="Bonne pratique #1: Séparer visuellement les types">
+**Recommandation:** Utilisez des couleurs de fond pour distinguer les types de données:
+- **Jaune pâle** pour les données à saisir (attire l'attention)
+- **Bleu pâle** pour les paramètres fixes (identifie les règles)
+- **Blanc** pour les données calculées (résultats)
+
+Cette pratique aide énormément quand vous (ou quelqu'un d'autre) ouvrez le chiffrier 3 mois plus tard!
+</Aside>
+
+---
+
+## Quiz: Reconnaître les types de données
+
+export const quizData1 = [
+  {
+    id: 'q1',
+    question: 'Dans un système de facturation, le "Prix unitaire" d\'un article au catalogue est:',
+    options: ['Donnée saisie', 'Donnée fixe', 'Donnée calculée'],
+    correct: 'Donnée fixe',
+    explanation: 'Le prix unitaire fait partie du catalogue de produits. C\'est une donnée fixe qui change rarement et s\'applique à toutes les factures. Par contre, la quantité commandée serait une donnée saisie, et le sous-total (prix × quantité) serait calculé.'
+  },
+  {
+    id: 'q2',
+    question: 'Pour un suivi de budget étudiant, la "Date de la dépense" est:',
+    options: ['Donnée saisie', 'Donnée fixe', 'Donnée calculée'],
+    correct: 'Donnée saisie',
+    explanation: 'Chaque dépense a une date différente qui doit être entrée manuellement (ou importée). C\'est donc une donnée saisie qui varie à chaque transaction.'
+  },
+  {
+    id: 'q3',
+    question: 'Dans un calcul de paie, le "Taux de cotisation RRQ" (6.15% en 2024) est:',
+    options: ['Donnée saisie', 'Donnée fixe', 'Donnée calculée'],
+    correct: 'Donnée fixe',
+    explanation: 'Le taux RRQ est fixé par la loi et s\'applique uniformément. C\'est un paramètre fixe du système. Astuce: mettez-le dans une cellule visible et nommée plutôt que caché dans une formule!'
+  },
+  {
+    id: 'q4',
+    question: 'Le "Pourcentage du budget utilisé" (dépenses ÷ budget × 100) est:',
+    options: ['Donnée saisie', 'Donnée fixe', 'Donnée calculée'],
+    correct: 'Donnée calculée',
+    explanation: 'Ce pourcentage se calcule automatiquement à partir des dépenses réelles et du budget alloué. C\'est une donnée calculée qui se met à jour dynamiquement.'
+  },
+  {
+    id: 'q5',
+    question: 'Dans un registre de ventes, le "Nom du client" est:',
+    options: ['Donnée saisie', 'Donnée fixe', 'Donnée calculée'],
+    correct: 'Donnée saisie',
+    explanation: 'Le nom du client change à chaque vente et doit être saisi manuellement. C\'est clairement une donnée saisie, même si elle pourrait provenir d\'une liste déroulante.'
+  }
+];
+
+<QuizClassification client:visible questions={quizData1} title="Quiz #1: Classification des données" />
+
+<Aside type="note" title="Pourquoi cette distinction est-elle importante?">
+Comprendre le type de données vous aide à:
+1. **Organiser** votre chiffrier logiquement
+2. **Protéger** les cellules appropriées (verrouiller les formules, laisser les saisies ouvertes)
+3. **Documenter** votre modèle pour les autres (et pour vous-même dans 6 mois)
+4. **Déboguer** plus facilement (chercher l'erreur au bon endroit)
+</Aside>
+
+---
+
+## Démarche de modélisation en 3 phases
+
+### Phase 1: Penser le problème (HORS Excel!)
+
+<Aside type="caution" title="Piège #2: Commencer par Excel">
+**Symptôme:** Ouvrir Excel dès qu'on a un problème à résoudre.
+
+**Problème:** On se concentre sur les outils (formules, fonctions) avant de comprendre le problème.
+
+**Solution:** Gardez Excel fermé pendant au moins 15 minutes. Utilisez du papier, un tableau blanc, ou un document texte pour réfléchir d'abord.
+</Aside>
+
+<Steps>
+1. Définir l'objectif
+    
+    **Questions directrices:**
+    - À quoi servira ce chiffrier concrètement?
+    - Quelle décision m'aidera-t-il à prendre?
+    - Qui l'utilisera? (moi seul? mon équipe? un client?)
+    - À quelle fréquence? (quotidien? mensuel? annuel?)
+    
+    **Exercice:** Complétez cette phrase pour VOTRE problème:
+    
+    > "Ce chiffrier sert à **[action]** afin de **[résultat souhaité]**."
+    
+    **Exemples GCF:**
+    
+    | Contexte | Objectif bien formulé |
+    |----------|----------------------|
+    | Budget personnel | "Ce chiffrier sert à **suivre mes dépenses mensuelles par catégorie** afin de **respecter mon budget et épargner 300$/mois**." |
+    | Petite entreprise | "Ce chiffrier sert à **calculer automatiquement les factures clients avec TPS/TVQ** afin de **réduire les erreurs et gagner du temps**." |
+    | Projet de groupe | "Ce chiffrier sert à **répartir équitablement les dépenses communes** afin de **savoir qui doit combien à qui**." |
+    
+  
+  
+2. Cartographier les éléments
+    
+    **Activité de réflexion (10 min, sur papier):**
+    
+    Prenez votre problème et listez **tous les éléments réels** qui doivent être représentés.
+    
+    **Méthode recommandée:**
+    1. Posez-vous: "De quoi parle ce problème?" (objets, personnes, actions)
+    2. Pour chaque élément, listez ses **attributs** (caractéristiques)
+    3. Identifiez les **relations** entre éléments
+    
+    <Aside type="note">
+    Ne pensez pas encore en "colonnes Excel" - pensez en termes de la **réalité du problème**.
+    </Aside>
+    
+    **Exemple: Suivi budgétaire étudiant**
+    
+    ```
+    ÉLÉMENTS PRINCIPAUX:
+    
+    1. Transaction de dépense
+       Attributs:
+       - Date (quand?)
+       - Montant (combien?)
+       - Catégorie (quel type: alimentation, transport, etc.)
+       - Mode de paiement (comptant, débit, crédit?)
+       - Description (quoi précisément?)
+       - Essentielle ou non? (nécessité)
+       - Reçu disponible? (justificatif)
+    
+    2. Budget mensuel
+       Attributs:
+       - Revenus prévus (total)
+       - Limites par catégorie
+       - Mois concerné
+       - Notes/objectifs
+    
+    3. Catégorie de dépense
+       Attributs:
+       - Nom
+       - Limite budgétaire
+       - Priorité (essentielle/variable)
+       - Couleur pour graphiques
+    
+    RELATIONS:
+    - Chaque transaction appartient à UNE catégorie
+    - Chaque catégorie a PLUSIEURS transactions
+    - Un budget s'applique à UN mois
+    ```
+    
+  
+  
+3. Formuler les règles
+    
+    **Principe clé:** Avant toute formule Excel, écrivez les règles en **français simple**.
+    
+    **Format recommandé:** "Si [condition], alors [action], sinon [action alternative]"
+    
+    **Exemples pour le budget étudiant:**
+    
+    1. **Règle d'alerte:**  
+       "Si une dépense individuelle dépasse 10% du budget mensuel total, afficher une alerte 'GROSSE DÉPENSE'"
+    
+    2. **Règle de statut:**  
+       "Si le total dépensé dans une catégorie dépasse sa limite, statut = 'DÉPASSEMENT', sinon si > 80% de la limite, statut = 'ATTENTION', sinon statut = 'OK'"
+    
+    3. **Règle de calcul:**  
+       "Budget restant = Revenus mensuels - Total de toutes les dépenses du mois"
+    
+    4. **Règle de projection:**  
+       "Budget quotidien suggéré = Budget restant ÷ Nombre de jours restants dans le mois"
+    
+    5. **Règle de validation:**  
+       "Une transaction ne peut pas avoir un montant négatif ou nul"
+    
+    <Aside type="tip" title="Bonne pratique #2: Numéroter vos règles">
+    Donnez un numéro à chaque règle métier. Quand vous créerez vos formules Excel, vous pourrez ajouter des commentaires comme "Règle #3" pour tracer la logique. Précieux pour la maintenance!
+    </Aside>
+    
+</Steps>
+
+<Aside type="caution" title="Piège #3: Règles implicites">
+**Symptôme:** Dire "c'est évident" ou "tout le monde sait ça" à propos d'une règle.
+
+**Problème:** Ce qui est évident pour vous maintenant ne le sera pas dans 6 mois, ni pour quelqu'un d'autre.
+
+**Solution:** Explicitez TOUTES les règles, même celles qui semblent triviales. Excel n'assume rien - vous ne devriez pas non plus.
+</Aside>
+
+---
+
+### Phase 2: Concevoir le modèle
+
+#### Organisation en feuilles: le principe "Une feuille = Un rôle"
+
+export const sheetConcepts = [
+  {
+    id: 'operations',
+    icon: '📊',
+    title: 'Feuille Opérationnelle',
+    description: 'Données détaillées, une ligne par élément',
+    details: 'C\'est là que se passe l\'action quotidienne. Chaque ligne représente un élément concret de la réalité.',
+    examples: [
+      'Registre des transactions (une ligne = une dépense)',
+      'Liste des factures (une ligne = une facture)',
+      'Journal des ventes (une ligne = une vente)',
+      'Suivi des heures (une ligne = une journée de travail)'
+    ],
+    relatedTo: ['Saisie de données', 'Filtres et tris']
+  },
+  {
+    id: 'parametres',
+    icon: '⚙️',
+    title: 'Feuille Paramètres',
+    description: 'Règles, seuils, constantes du système',
+    details: 'Centralisez toutes les valeurs fixes ici. Quand une règle change (nouveau taux de taxe, nouvel objectif), vous modifiez UN seul endroit.',
+    examples: [
+      'Taux de taxes (TPS, TVQ, etc.)',
+      'Limites budgétaires par catégorie',
+      'Barèmes et grilles (salaires, commissions)',
+      'Objectifs et cibles',
+      'Taux d\'intérêt et d\'amortissement'
+    ],
+    relatedTo: ['Cellules nommées', 'Références absolues']
+  },
+  {
+    id: 'tableau-bord',
+    icon: '📈',
+    title: 'Feuille Tableau de Bord',
+    description: 'Résumés, indicateurs, visualisations',
+    details: 'Vue synthétique pour la prise de décision. Aucune saisie manuelle ici, tout est calculé à partir des autres feuilles.',
+    examples: [
+      'Totaux et moyennes par catégorie',
+      'Graphiques d\'évolution',
+      'Indicateurs clés (KPI)',
+      'Messages d\'alerte automatiques',
+      'Comparaisons budget vs réel'
+    ],
+    relatedTo: ['Tableaux croisés dynamiques', 'Graphiques', 'Mise en forme conditionnelle']
+  }
+];
+
+<ConceptCards client:visible concepts={sheetConcepts} />
+
+<Aside type="tip" title="Bonne pratique #3: Ordre logique des feuilles">
+**Recommandation:** Organisez vos onglets dans cet ordre (de gauche à droite):
+1. **Tableau de bord** (c'est ce qu'on veut voir en premier)
+2. **Données opérationnelles** (saisie quotidienne)
+3. **Paramètres** (consultation/modification occasionnelle)
+4. **Documentation** (instructions, glossaire - optionnel mais utile!)
+
+Pourquoi? L'utilisateur voit d'abord les résultats, puis peut creuser dans les détails au besoin.
+</Aside>
+
+---
+
+#### Quiz: Où placer cette information?
+
+export const quizData2 = [
+  {
+    id: 'q6',
+    question: 'Vous créez un chiffrier de facturation. Où placeriez-vous "la liste complète de toutes les factures émises cette année"?',
+    options: [
+      'Feuille Opérationnelle',
+      'Feuille Paramètres',
+      'Feuille Tableau de bord'
+    ],
+    correct: 'Feuille Opérationnelle',
+    explanation: 'C\'est la donnée détaillée, répétitive (une ligne par facture). Elle va dans la feuille opérationnelle où chaque ligne représente une facture concrète.'
+  },
+  {
+    id: 'q7',
+    question: 'Pour le même chiffrier, où placeriez-vous "le taux de TPS actuel (5%)"?',
+    options: [
+      'Feuille Opérationnelle',
+      'Feuille Paramètres',
+      'Feuille Tableau de bord'
+    ],
+    correct: 'Feuille Paramètres',
+    explanation: 'C\'est une donnée fixe, un paramètre du système qui s\'applique à toutes les factures. En le centralisant dans Paramètres, vous pourrez facilement le mettre à jour si le taux change.'
+  },
+  {
+    id: 'q8',
+    question: 'Toujours pour la facturation, où placeriez-vous "le total des ventes du trimestre avec un graphique d\'évolution mensuelle"?',
+    options: [
+      'Feuille Opérationnelle',
+      'Feuille Paramètres',
+      'Feuille Tableau de bord'
+    ],
+    correct: 'Feuille Tableau de bord',
+    explanation: 'C\'est une synthèse calculée à partir des données opérationnelles. Le tableau de bord présente cette vue d\'ensemble avec visualisations pour faciliter l\'analyse et la décision.'
+  },
+  {
+    id: 'q9',
+    question: 'Pour un suivi de stock, où placeriez-vous "le seuil minimum avant réapprovisionnement" (ex: 10 unités)?',
+    options: [
+      'Feuille Opérationnelle',
+      'Feuille Paramètres',
+      'Feuille Tableau de bord'
+    ],
+    correct: 'Feuille Paramètres',
+    explanation: 'C\'est une règle de gestion, un paramètre qui détermine quand commander. Même si ce seuil peut varier par produit, il reste un paramètre configurable plutôt qu\'une donnée opérationnelle.'
+  }
+];
+
+<QuizClassification client:visible questions={quizData2} title="Quiz #2: Organisation des feuilles" />
+
+---
+
+### Phase 3: De la règle à la formule
+
+<Aside type="tip" title="Bonne pratique #4: Le test de traduction">
+**Avant d'écrire une formule Excel**, posez-vous:
+1. Puis-je expliquer cette règle en une phrase à quelqu'un qui ne connaît pas Excel?
+2. Cette phrase utilise-t-elle des mots comme "si", "alors", "sinon", "total de", "compter"?
+3. Ces mots correspondent à des fonctions Excel spécifiques?
+
+Si vous pouvez faire ça, la formule sera simple à écrire. Si vous ne pouvez pas, la règle n'est pas encore assez claire.
+</Aside>
+
+#### Correspondance règles métier ↔ fonctions Excel
+
+<Tabs>
+  <TabItem label="Décisions (SI)">
+    
+    **Règle métier:**  
+    "Si [condition], alors [valeur A], sinon [valeur B]"
+    
+    **Formule Excel:**  
+    `=SI(condition; valeurA; valeurB)`
+    
+    **Exemples GCF:**
+    
+    | Règle en français | Formule Excel |
+    |-------------------|---------------|
+    | "Si le solde est négatif, afficher 'DÉFICIT', sinon 'OK'" | `=SI(C2<0; "DÉFICIT"; "OK")` |
+    | "Si la note ≥ 60, afficher 'Réussi', sinon 'Échoué'" | `=SI(D2>=60; "Réussi"; "Échoué")` |
+    | "Si dépensé > budget, taxe de pénalité de 50$, sinon 0$" | `=SI(E2>F2; 50; 0)` |
+    
+  </TabItem>
+  
+  <TabItem label="Compter (NB.SI)">
+    
+    **Règle métier:**  
+    "Compter combien d'éléments remplissent [condition]"
+    
+    **Formule Excel:**  
+    `=NB.SI(plage; critère)`
+    
+    **Exemples GCF:**
+    
+    | Règle en français | Formule Excel |
+    |-------------------|---------------|
+    | "Compter combien de factures sont 'Payées'" | `=NB.SI(E:E; "Payée")` |
+    | "Compter combien de ventes ont dépassé 1000$" | `=NB.SI(C:C; ">1000")` |
+    | "Nombre de dépenses dans la catégorie 'Transport'" | `=NB.SI(D:D; "Transport")` |
+    
+  </TabItem>
+  
+  <TabItem label="Additionner (SOMME.SI)">
+    
+    **Règle métier:**  
+    "Additionner les montants qui remplissent [condition]"
+    
+    **Formule Excel:**  
+    `=SOMME.SI(plage_critère; critère; plage_somme)`
+    
+    **Exemples GCF:**
+    
+    | Règle en français | Formule Excel |
+    |-------------------|---------------|
+    | "Total des ventes du vendeur 'Marie'" | `=SOMME.SI(A:A; "Marie"; C:C)` |
+    | "Total dépensé en 'Alimentation'" | `=SOMME.SI(D:D; "Alimentation"; C:C)` |
+    | "Somme des factures impayées" | `=SOMME.SI(E:E; "Impayée"; B:B)` |
+    
+  </TabItem>
+  
+  {/* <TabItem label="Recherche (RECHERCHEV)">
+    
+    **Règle métier:**  
+    "Trouver l'information correspondante dans un tableau de référence"
+    
+    **Formule Excel:**  
+    `=RECHERCHEV(valeur; tableau; colonne; FAUX)`
+    
+    **Exemples GCF:**
+    
+    | Règle en français | Formule Excel |
+    |-------------------|---------------|
+    | "Trouver le prix du produit dans le catalogue" | `=RECHERCHEV(A2; Catalogue!A:B; 2; FAUX)` |
+    | "Récupérer le taux de taxe selon la province" | `=RECHERCHEV(B2; Taux!A:C; 3; FAUX)` |
+    | "Obtenir le salaire horaire de l'employé" | `=RECHERCHEV(C2; Salaires!A:D; 4; FAUX)` |
+    
+  </TabItem> */}
+</Tabs>
+
+<Aside type="caution" title="Piège #4: Formules trop complexes">
+**Symptôme:** Une formule qui fait 3 lignes et contient 5 SI imbriqués.
+
+**Problème:** Impossible à comprendre, impossible à maintenir, source d'erreurs.
+
+**Solution:** Décomposez en étapes intermédiaires:
+- Créez des colonnes auxiliaires pour les calculs intermédiaires
+- Chaque cellule = une règle simple
+- La complexité vient de l'enchaînement, pas d'une formule monstre
+
+**Exemple:**  
+Au lieu de: `=SI(ET(A2>1000; B2="Québec"; C2<30); A2*0.15; SI(A2>500; A2*0.10; 0))`  
+Préférez:
+- Colonne D: `=A2>1000` (Vente importante?)
+- Colonne E: `=B2="Québec"` (Client QC?)
+- Colonne F: `=ET(D2; E2; C2<30)` (Éligible promotion?)
+- Colonne G: `=SI(F2; A2*0.15; SI(A2>500; A2*0.10; 0))` (Commission)
+</Aside>
+
+---
+
+## Exercice guidé: Budget mensuel étudiant
+
+<Aside type="note" title="Activité complète (30-45 minutes)">
+Cet exercice vous guide à travers **toute la démarche** de modélisation.  
+Prenez le temps de faire chaque étape sur papier AVANT de passer à la suivante.
+
+**Objectif pédagogique:** Intégrer la démarche complète dans un contexte familier.
+</Aside>
+
+### Mise en situation
+
+**Profil:** Léa, étudiante en Gestion, 20 ans  
+**Revenus mensuels:** 1500$ (prêts/bourses + emploi à temps partiel)  
+**Problème:** Dépense souvent plus que prévu et finit le mois "à sec"  
+
+**Besoin:** Un chiffrier pour:
+- Suivre ses dépenses quotidiennes
+- S'assurer de ne pas dépasser son budget global
+- Identifier les catégories où elle dépense trop
+- Savoir combien il lui reste pour la fin du mois
+
+---
+
+<Aside type="tip" icon='seti:info' title="Fonctions utiles pour les dates">
+- `FIN.MOIS(date_début; mois)` : Obtenir la date de fin du mois
+- `AUJOURDHUI()` : Obtenir la date du jour
+- Nombre de jours restants dans le mois = *Date de fin de mois* - *Date du jour*
+</Aside>
+
+<Steps>
+1. Objectif
+    
+    **Votre tâche:** Formuler l'objectif en une phrase claire.
+    
+    **Format:** "Ce chiffrier sert à [action] afin de [résultat]."
+    
+    <details>
+    <summary>💡 Cliquez pour voir la solution</summary>
+    
+    **Objectif formulé:**
+    > "Ce chiffrier sert à **suivre en temps réel le budget mensuel de Léa** afin de **prévenir les dépassements et ajuster ses habitudes de dépenses avant la fin du mois**."
+    
+    **Détails complémentaires:**
+    - **Utilisateur:** Léa elle-même
+    - **Fréquence d'utilisation:** Mise à jour après chaque dépense (ou au moins 2-3x par semaine)
+    - **Décision supportée:** "Puis-je me permettre cette dépense maintenant?"
+    - **Succès mesurable:** Finir le mois avec au moins 50$ restants
+    
+    </details>
+    
+  
+2. Cartographie
+    
+    **Votre tâche:** Sur papier, listez tous les éléments à modéliser avec leurs attributs.
+    
+    **Indices:**
+    - Pensez aux différentes dépenses de Léa
+    - Pensez à son budget global
+    - Pensez aux catégories de dépenses
+    
+    <details>
+    <summary>💡 Cliquez pour voir la solution</summary>
+    
+    **Éléments identifiés:**
+    
+    ```
+    1. DÉPENSE (élément répétitif)
+       - Date de la dépense (ex: 2024-10-15)
+       - Montant (ex: 42.50$)
+       - Catégorie (ex: Alimentation, Transport, Loisirs...)
+       - Description (ex: Épicerie IGA)
+       - Essentielle? (Oui/Non - pour analyse)
+    
+    2. BUDGET MENSUEL (configuration)
+       - Mois concerné (ex: Octobre 2024)
+       - Revenu total (1500$)
+       - Date de réception du revenu (ex: 1er du mois)
+    
+    3. CATÉGORIE DE DÉPENSE (paramètre)
+       - Nom de la catégorie
+       - Budget alloué pour cette catégorie
+       - Priorité (Essentielle/Variable)
+    
+    RELATIONS:
+    - Chaque dépense appartient à UNE catégorie
+    - Le total des budgets alloués par catégorie = revenu mensuel
+    - Plusieurs dépenses par catégorie
+    ```
+    
+    </details>
+    
+
+  
+3. Classification
+    
+    **Votre tâche:** Pour chaque attribut identifié, déterminez s'il est Saisie, Fixe, ou Calculé.
+    
+    <details>
+    <summary>💡 Cliquez pour voir la solution</summary>
+    
+    **Classification des données:**
+    
+    **DONNÉES SAISIES** (changent à chaque dépense):
+    - Date de la dépense
+    - Montant dépensé
+    - Catégorie sélectionnée
+    - Description
+    - Essentielle (Oui/Non)
+    
+    **DONNÉES FIXES** (paramètres du modèle):
+    - Revenu mensuel: 1500$
+    - Budgets par catégorie:
+      * Logement: 800$
+      * Alimentation: 300$
+      * Transport: 150$
+      * Loisirs: 100$
+      * Autres: 150$
+    - Date de début du mois
+    
+    **DONNÉES CALCULÉES** (formules):
+    - Total dépensé (global)
+    - Total dépensé par catégorie
+    - Budget restant (global)
+    - Budget restant par catégorie
+    - Pourcentage utilisé (global et par catégorie)
+    - Statut (OK / Attention / Dépassement)
+    - Nombre de jours écoulés dans le mois
+    - Nombre de jours restants
+    - Dépense moyenne quotidienne (actuelle)
+    - Budget quotidien recommandé pour finir le mois
+    
+    </details>
+    
+  
+4. Règles métier
+    
+    **Votre tâche:** Formulez au moins 5 règles métier en français simple.
+    
+    **Format suggéré:** "Si [condition], alors [action]"
+    
+    <details>
+    <summary>💡 Cliquez pour voir la solution</summary>
+    
+    **Règles métier formulées:**
+    
+    **Règle #1 - Budget restant global:**  
+    "Le budget restant = Revenu mensuel − Total de toutes les dépenses du mois"
+    
+    **Règle #2 - Pourcentage utilisé:**  
+    "Le pourcentage utilisé = (Total dépensé ÷ Budget alloué) × 100"
+    
+    **Règle #3 - Statut par catégorie:**  
+    "Si pourcentage > 100%, statut = 'DÉPASSEMENT' (rouge)  
+    Sinon si pourcentage > 80%, statut = 'ATTENTION' (orange)  
+    Sinon, statut = 'OK' (vert)"
+    
+    **Règle #4 - Total par catégorie:**  
+    "Total dépensé dans une catégorie = Somme de toutes les dépenses ayant cette catégorie"
+    
+    **Règle #5 - Alerte grosse dépense:**  
+    "Si une dépense individuelle > 10% du revenu mensuel (150$), afficher 'GROSSE DÉPENSE'"
+    
+    </details>
+    
+  
+5. Structure
+    
+    **Votre tâche:** Concevez l'organisation en feuilles et esquissez la structure de chacune.
+    
+    <details>
+    <summary>💡 Cliquez pour voir la solution</summary>
+    
+    **Organisation en 3 feuilles:**
+    
+    #### Feuille "Tableau de bord"
+    
+    **Rôle:** Vue synthétique, aucune saisie  
+    **Contenu:**
+    
+    ##### BUDGET MENSUEL - OCTOBRE 2024
+    ---------------
+    
+    Revenu:        1 500,00 $  
+    Dépensé:       1 247,85 $  
+    Restant:         252,15 $  
+    % utilisé:         83,2%  
+  
+    
+    **DÉTAIL PAR CATÉGORIE:**
+    
+    | Catégorie    | Budget | Dépensé | Restant | %    | Statut     |
+    |--------------|--------|---------|---------|------|------------|
+    | Logement     | 800    | 800     |    0    | 100% | OK         |
+    | Alimentation | 300    | 287,35  |   12,65 |  96% | ATTENTION  |
+    | Transport    | 150    | 85,50   |   64,50 |  57% | OK         |
+    | Loisirs      | 100    | 75,00   |   25,00 |  75% | OK         |
+    | Autres       | 150    |   0     |  150,00 |   0% | OK         |
+    
+    ---
+    
+    #### Feuille "Transactions"
+    
+    **Rôle:** Saisie détaillée  
+    **Contenu:**
+    
+    | Date       | Catégorie    | Montant | Description      | Alerte |
+    |------------|--------------|---------|------------------|--------|
+    | 2024-10-01 | Logement     | 800,00  | Loyer octobre    | Oui    |
+    | 2024-10-03 | Alimentation |  87,35  | Épicerie IGA     | Oui    |
+    | 2024-10-05 | Transport    |  55,50  | Passe mensuelle  | Oui    |
+    | 2024-10-08 | Loisirs      |  45,00  | Cinéma + restau  | Non    |
+    | 2024-10-12 | Alimentation | 125,00  | Épicerie Costco  | Oui    |
+    | ...        | ...          | ...     | ...              | ...    |
+    
+    ---
+    
+    #### Feuille "Paramètres"
+    
+    **Rôle:** Configuration du système  
+    **Contenu:**
+    
+
+    Revenu mensuel:     1 500,00 $  
+    Seuil "grosse dépense": 150 $ (10% du revenu)  
+    Objectif épargne:        50 $ minimum  
+    
+    </details>
+    
+  
+6. Formules clés
+    
+    **Maintenant seulement**, vous pouvez penser aux formules Excel.
+    
+    <details>
+    <summary>💡 Cliquez pour voir les formules principales</summary>
+    
+    **Formules à implémenter:**
+    
+    ### Dans la feuille "Transactions"
+    
+    **Colonne H - Alerte grosse dépense (Règle #5):**
+    ```excel
+    =SI(C2>Paramètres!$B$10; "GROSSE DÉPENSE"; "")
+    ```
+    
+    ---
+    
+    ### Dans la feuille "Tableau de bord"
+    
+    **Total dépensé (Règle #1):**
+    ```excel
+    =SOMME(Transactions!C:C)
+    ```
+    
+    **Budget restant:**
+    ```excel
+    =Paramètres!$B$3 - B5
+    ``` 
+    (où B5 contient le total dépensé)
+    
+    **Pourcentage utilisé (Règle #2):**
+    ```excel
+    =B5/Paramètres!$B$3*100
+    ```
+    
+    **Total par catégorie (Règle #4) - ex: Alimentation:**
+    ```excel
+    =SOMME.SI(Transactions!$B:$B; "Alimentation"; Transactions!$C:$C)
+    ```
+    
+    **Statut par catégorie (Règle #3):**
+    ```excel
+    =SI(E2>100%; "DÉPASSEMENT"; 
+        SI(E2>80%; "ATTENTION"; "OK"))
+    ```
+    (où E2 contient le % utilisé pour cette catégorie)
+    
+    **Jours restants dans le mois:**
+    ```excel
+    =FIN.MOIS(Paramètres!$B$2; 0) - AUJOURDHUI()
+    ```
+    
+    **Budget quotidien suggéré (Règle #6):**
+    ```excel
+    =B6/B12
+    ```
+    (où B6 = budget restant, B12 = jours restants)
+    
+    </details>
+    
+</Steps>
+
+<Aside type="tip" title="Bonne pratique #5: Tester avec des cas simples">
+**Ne testez pas votre chiffrier avec des données complexes au début!**
+
+Commencez par:
+1. **Une seule transaction** de 100$ en Alimentation
+2. Vérifiez que le total est correct (100$)
+3. Vérifiez que le budget restant est correct (1500 - 100 = 1400)
+4. Vérifiez que le % est correct (100/300 = 33,33%)
+
+Puis ajoutez progressivement:
+- Une deuxième transaction dans la même catégorie
+- Une transaction dans une autre catégorie
+- Une transaction qui dépasse la limite
+- etc.
+
+Si vous trouvez une erreur avec 20 transactions, vous ne saurez pas laquelle cause le problème!
+</Aside>
+
+---
+
+## Les 5 pièges les plus fréquents
+
+<Tabs>
+  <TabItem label="Piège #1: Excel trop tôt">
+    
+    **Symptôme:** Ouvrir Excel avant de comprendre le problème.
+    
+    **Conséquences:**
+    - Structure confuse
+    - Formules incompréhensibles
+    - Difficulté à modifier ou étendre
+    - Temps perdu en essais/erreurs
+    
+    **Solution:**
+    Garder Excel fermé pendant au moins 15 minutes. Utiliser papier/crayon pour:
+    1. Définir l'objectif
+    2. Cartographier les éléments
+    3. Classifier les données
+    4. Formuler les règles
+    
+    **Signe que vous êtes prêt:** Vous pouvez expliquer votre modèle à quelqu'un sans ordinateur.
+    
+  </TabItem>
+  
+  <TabItem label="Piège #2: Valeurs cachées">
+    
+    **Symptôme:** Mettre les valeurs fixes directement dans les formules.
+    
+    **Exemple problématique:**
+    ```excel
+    =C2 * 0.05      // Taux de TPS caché!
+    =D2 * 1.09975   // Taux de TVQ caché!
+    ```
+    
+    **Problème:** Si le taux change, vous devez modifier TOUTES les formules.
+    
+    **Solution:** Cellules nommées et feuille Paramètres
+    ```excel
+    =C2 * TauxTPS
+    =D2 * (1 + TauxTVQ)
+    ```
+    Où TauxTPS et TauxTVQ sont définis visiblement dans la feuille Paramètres.
+    
+  </TabItem>
+  
+  <TabItem label="Piège #3: Formule monstre">
+    
+    **Symptôme:** Une formule de 3+ lignes avec multiples SI imbriqués.
+    
+    **Exemple:**
+    ```excel
+    =SI(ET(A2>1000;B2="Québec";C2<30);A2*0.15;
+    SI(A2>500;SI(B2="Québec";A2*0.10;A2*0.08);
+    SI(A2>100;A2*0.05;0)))
+    ```
+    
+    **Problèmes:**
+    - Impossible à lire
+    - Impossible à déboguer
+    - Impossible à maintenir
+    
+    **Solution:** Décomposer en colonnes auxiliaires
+    ```excel
+    Col D: =A2>1000           // Vente importante?
+    Col E: =B2="Québec"       // Client QC?
+    Col F: =C2<30             // Jeune entreprise?
+    Col G: =ET(D2;E2;F2)      // Cas spécial?
+    Col H: [formule simple basée sur les résultats ci-dessus]
+    ```
+    
+  </TabItem>
+  
+  <TabItem label="Piège #4: Mélange des rôles">
+    
+    **Symptôme:** Tout sur une seule feuille: données, paramètres, résumés, calculs...
+    
+    **Problème:** Impossible de s'y retrouver après quelques semaines.
+    
+    **Solution:** Une feuille = un rôle
+    - **Opérationnelle:** Saisie détaillée
+    - **Paramètres:** Configuration
+    - **Tableau de bord:** Synthèse
+    
+    Utilisez des couleurs d'onglets pour distinguer visuellement!
+    
+  </TabItem>
+  
+  <TabItem label="Piège #5: Pas de validation">
+    
+    **Symptôme:** Accepter n'importe quelle valeur dans les cellules de saisie.
+    
+    **Problème:** 
+    - Montant négatif entré par erreur
+    - Date future impossible
+    - Catégorie mal orthographiée
+    
+    **Solution:** Utiliser la validation de données Excel
+    - Listes déroulantes pour les catégories
+    - Contraintes numériques (> 0)
+    - Contraintes de dates (≤ aujourd'hui)
+    - Messages d'erreur personnalisés
+    
+  </TabItem>
+</Tabs>
+
+---
+
+## Quiz final: Audit d'un chiffrier
+
+export const quizData3 = [
+  {
+    id: 'q10',
+    question: 'Vous recevez un chiffrier d\'un collègue. La formule =C2*0.14975 apparaît dans 200 cellules. Quel est le problème principal?',
+    options: [
+      'La formule est trop simple',
+      'Le coefficient 0.14975 devrait être dans une cellule nommée',
+      'Il y a trop de décimales'
+    ],
+    correct: 'Le coefficient 0.14975 devrait être dans une cellule nommée',
+    explanation: 'C\'est le piège #2: valeur cachée. Ce 0.14975 (probablement TPS+TVQ = 5% + 9.975%) devrait être dans une cellule de Paramètres. Si le taux change, il faudra modifier 200 formules au lieu d\'une seule cellule!'
+  },
+  {
+    id: 'q11',
+    question: 'Un étudiant vous montre sa formule: =SI(A2>100;SI(B2="Oui";SI(C2<50;"Type1";SI(C2<100;"Type2";"Type3"));"Invalide");"Trop petit"). Que lui conseillez-vous?',
+    options: [
+      'C\'est parfait, ça fonctionne',
+      'Décomposer en plusieurs colonnes intermédiaires',
+      'Utiliser plus de parenthèses'
+    ],
+    correct: 'Décomposer en plusieurs colonnes intermédiaires',
+    explanation: 'C\'est le piège #3: formule monstre. Même si techniquement elle fonctionne, personne (incluant l\'étudiant dans 2 semaines) ne pourra la comprendre ou la modifier. Il faut décomposer la logique en étapes claires.'
+  },
+  {
+    id: 'q12',
+    question: 'Votre chiffrier de budget personnel a une seule feuille qui contient: vos transactions, vos objectifs budgétaires, des totaux et des graphiques, tout mélangé. Quelle est la meilleure amélioration?',
+    options: [
+      'Ajouter plus de couleurs pour différencier',
+      'Séparer en 3 feuilles: Transactions, Paramètres, Tableau de bord',
+      'Trier par date'
+    ],
+    correct: 'Séparer en 3 feuilles: Transactions, Paramètres, Tableau de bord',
+    explanation: 'C\'est le piège #4: mélange des rôles. Chaque feuille devrait avoir une responsabilité claire. Cette séparation rendra le chiffrier beaucoup plus facile à utiliser et à maintenir.'
+  },
+  {
+    id: 'q13',
+    question: 'Vous créez un chiffrier de facturation. Comment devriez-vous gérer la liste des clients?',
+    options: [
+      'Permettre de taper n\'importe quel texte',
+      'Créer une liste déroulante avec validation de données',
+      'Utiliser des codes numériques'
+    ],
+    correct: 'Créer une liste déroulante avec validation de données',
+    explanation: 'C\'est la solution au piège #5. La validation de données prévient les erreurs de frappe (ex: "Entreprise ABC inc." vs "Entreprise ABC Inc." vs "ABC inc" qui seraient comptés comme 3 clients différents) et accélère la saisie.'
+  }
+];
+
+<QuizClassification client:visible questions={quizData3} title="Quiz #3: Reconnaître et corriger les erreurs" />
+
+---
+
+## Synthèse: La démarche complète
+
+<CardGrid>
+  <Card title="Phase 1: Penser (hors Excel)" icon="seti:notebook">
+    1. Définir l'objectif en une phrase
+    2. Cartographier tous les éléments
+    3. Classifier: Saisie / Fixe / Calculé
+    4. Formuler les règles en français
+  </Card>
+  
+  <Card title="Phase 2: Concevoir" icon="seti:plan">
+    5. Organiser en feuilles logiques
+    6. Esquisser la structure de chaque feuille
+    7. Identifier les relations entre données
+    8. Prévoir la validation des saisies
+  </Card>
+  
+  <Card title="Phase 3: Implémenter" icon="approve-check">
+    9. Créer la structure dans Excel
+    10. Traduire les règles en formules
+    11. Tester méthodiquement
+    12. Documenter pour le futur
+  </Card>
+</CardGrid>
+
+<Aside type="tip" title="Le test ultime de votre modèle">
+**Pouvez-vous l'expliquer à quelqu'un qui ne connaît pas Excel?**
+
+Si oui, votre modèle est clair et bien pensé. La partie Excel n'est qu'une traduction mécanique.
+
+Si non, retournez à la phase 1. Le problème n'est pas Excel, c'est la compréhension du problème.
+</Aside>
+
+---
+
+## Message final: Au-delà d'Excel
+
+<Aside type="note" title="La vraie compétence transférable">
+**Ce que vous avez appris dépasse largement Excel.**
+
+Cette démarche de modélisation s'applique à:
+- Bases de données (tables, relations, requêtes)
+- Programmation (structures de données, algorithmes)
+- Power BI et autres outils BI
+- Systèmes comptables (Acomba, Sage, QuickBooks...)
+- Automatisation et scripts
+- Analyse de tout problème d'affaires
+
+**La compétence clé:** Décomposer un problème réel en éléments logiques, identifier les règles, et choisir les bons outils pour l'implémenter.
+
+Cette façon de penser vous servira **toute votre carrière**, peu importe les technologies.
+</Aside>

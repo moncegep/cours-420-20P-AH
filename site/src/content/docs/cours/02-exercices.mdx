@@ -1,0 +1,219 @@
+---
+title: Exercices - Fonction SI et Référencement
+description: Quiz pour tester vos connaissances sur les fonctions SI et le référencement entre feuilles dans Excel.
+---
+
+
+## Exercices rapides : Fonction SI
+
+### Exercice 1 : SI simple
+
+Écrivez une formule qui affiche "Majeur" si l'âge (cellule A1) est ≥ 18, sinon "Mineur".
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=SI(A1>=18;"Majeur";"Mineur")
+```
+
+**Explication** :
+- Test : `A1>=18`
+- Si VRAI : "Majeur"
+- Si FAUX : "Mineur"
+</details>
+
+### Exercice 2 : SI avec calcul
+
+Écrivez une formule qui applique une remise de 10% si le montant (A1) dépasse 100$, sinon pas de remise.
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=SI(A1>100;A1*0,9;A1)
+```
+
+ou pour afficher le montant remisé :
+
+```excel
+=SI(A1>100;A1*0,1;0)
+```
+
+**Explication** :
+- Si A1 > 100 : on multiplie par 0,9 (=90%) pour appliquer 10% de rabais
+- Sinon : on garde le montant original
+</details>
+
+### Exercice 3 : SI imbriqué à 2 niveaux
+
+Écrivez une formule qui affiche :
+- "Fort" si la note ≥ 80
+- "Moyen" si la note ≥ 60
+- "Faible" sinon
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=SI(A1>=80;"Fort";SI(A1>=60;"Moyen";"Faible"))
+```
+
+**Explication** :
+1. Premier test : A1 ≥ 80 ? Si oui → "Fort"
+2. Sinon, deuxième test : A1 ≥ 60 ? Si oui → "Moyen"
+3. Sinon → "Faible"
+
+**Important** : l'ordre des tests est crucial. On commence toujours par la condition la plus restrictive.
+</details>
+
+### Exercice 4 : SI avec texte
+
+Écrivez une formule qui vérifie si la cellule A1 contient "Montréal" et affiche "Local", sinon "International".
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=SI(A1="Montréal";"Local";"International")
+```
+
+**Note** : Excel n'est pas sensible à la casse pour les comparaisons de texte. "montréal", "MONTRÉAL" et "Montréal" seront tous égaux.
+</details>
+
+### Exercice 5 : SI imbriqué à 3 niveaux
+
+Créez un système de notation :
+- "A" si ≥ 85
+- "B" si ≥ 75
+- "C" si ≥ 65
+- "D" sinon
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=SI(A1>=85;"A";SI(A1>=75;"B";SI(A1>=65;"C";"D")))
+```
+
+**Structure visuelle** :
+```
+SI(≥85)
+  OUI → "A"
+  NON → SI(≥75)
+          OUI → "B"
+          NON → SI(≥65)
+                  OUI → "C"
+                  NON → "D"
+```
+</details>
+
+
+## Exercices : Référencement entre feuilles
+
+### Exercice 6 : Référence simple
+
+Vous avez une feuille "Produits" avec un prix en cellule B5. Écrivez la formule pour afficher ce prix dans une autre feuille.
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=Produits!B5
+```
+
+**Format général** : `=NomFeuille!Cellule`
+
+Si le nom de la feuille contient des espaces, utiliser des apostrophes :
+```excel
+='Liste Produits'!B5
+```
+</details>
+
+### Exercice 7 : Référence avec calcul
+
+Feuille "Ventes" cellule C3 contient 150. Feuille "Taxes" cellule A1 contient 0,15 (15%). Calculez le montant avec taxes dans une troisième feuille.
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=Ventes!C3 * (1 + Taxes!A1)
+```
+
+ou
+
+```excel
+=Ventes!C3 + (Ventes!C3 * Taxes!A1)
+```
+
+**Exemple de calcul** :
+- Prix : 150$
+- Taxe : 15% (0,15)
+- Total : 150 × 1,15 = 172,50$
+</details>
+
+### Exercice 8 : Références multiples
+
+Créez une formule qui calcule la moyenne de trois valeurs situées dans trois feuilles différentes :
+- Feuille "Janvier" cellule D2
+- Feuille "Février" cellule D2
+- Feuille "Mars" cellule D2
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=MOYENNE(Janvier!D2;Février!D2;Mars!D2)
+```
+
+ou
+
+```excel
+=(Janvier!D2 + Février!D2 + Mars!D2)/3
+```
+
+**Note** : la première solution est préférable car elle est plus lisible et utilise la fonction appropriée.
+</details>
+
+### Exercice 9 : Référence avec nom défini
+
+Vous avez défini le nom "TauxTVQ" pour la cellule Taxes!A1. Utilisez ce nom pour calculer le montant TVQ sur un prix en B5.
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=B5 * TauxTVQ
+```
+
+**Avantages des noms définis** :
+- Plus lisible : `Prix * TauxTVQ` vs `B5 * Taxes!$A$1`
+- Plus facile à maintenir : un seul endroit à modifier
+- Moins d'erreurs : pas de risque de taper la mauvaise cellule
+</details>
+
+### Exercice 10 : Tableau récapitulatif
+
+Créez une formule pour un tableau récapitulatif qui consolide des données de 4 feuilles (Q1, Q2, Q3, Q4). Chaque feuille a un total en cellule F10. Calculez le total annuel.
+
+<details>
+<summary>Voir la solution</summary>
+
+```excel
+=Q1!F10 + Q2!F10 + Q3!F10 + Q4!F10
+```
+
+ou
+
+```excel
+=SOMME(Q1!F10;Q2!F10;Q3!F10;Q4!F10)
+```
+
+**Pour aller plus loin**, si les feuilles sont consécutives :
+```excel
+=SOMME(Q1:Q4!F10)
+```
+
+Cette dernière syntaxe additionne la cellule F10 de toutes les feuilles entre Q1 et Q4 inclusivement.
+</details>

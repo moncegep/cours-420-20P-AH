@@ -1,0 +1,384 @@
+---
+title: Semaine 2 - Erreurs fréquentes en Excel
+description: Les erreurs courantes rencontrées lors de la création de formules Excel pour le suivi des performances étudiantes.
+---
+
+## Erreurs fréquentes
+
+### Erreur #REF!
+
+**Cause** : Référence à une cellule ou feuille qui n'existe pas/plus
+
+**Exemples** :
+```excel
+='Labo 1'!E2    ❌ Si la feuille s'appelle "Lab 1" au lieu de "Labo 1"
+='Labbo 1'!E2   ❌ Faute de frappe dans le nom de la feuille
+```
+
+**Solution** :
+- Vérifier l'orthographe exacte des noms de feuilles
+- Utiliser le clic de souris pour créer la référence (Excel l'écrira correctement)
+
+### Erreur #NOM?
+
+**Cause** : Nom de fonction incorrect ou nom de cellule non défini
+
+**Exemples** :
+```excel
+=AVERAGE(B2:D2)   ❌ En français, c'est MOYENNE
+=C2*LABO1         ❌ Le nom P_LABO1 n'a pas été défini
+```
+
+**Solution** :
+- Utiliser les noms de fonctions en français : MOYENNE, SI, SOMME, etc.
+- Vérifier que tous les noms sont définis (Formules → Gestionnaire de noms)
+
+### Erreur #VALEUR!
+
+**Cause** : Type de données incompatible ou format incorrect
+
+**Exemples fréquents** :
+
+**1. Point au lieu de virgule pour les décimales**
+```excel
+=C2*0.2     ❌ Point décimal (notation anglaise)
+=C2*0,2     ✅ Virgule décimale (notation française)
+```
+
+En Excel français, les décimales utilisent la **virgule** et non le point. Si vous tapez `0.2`, Excel peut l'interpréter comme du texte ou une date, causant l'erreur #VALEUR!
+
+**2. Virgule au lieu de point-virgule dans les fonctions**
+```excel
+=MOYENNE(B2,D2)                  ❌ Virgule comme séparateur
+=MOYENNE(B2:D2)                  ✅ Deux-points pour une plage
+=MOYENNE(B2;C2;D2)               ✅ Point-virgule pour plusieurs cellules
+
+=SI(G2>=60,"Reussi","Échec")    ❌ Virgules comme séparateurs
+=SI(G2>=60;"Reussi";"Échec")    ✅ Point-virgules en français
+```
+
+Dans Excel français :
+- **Virgule (,)** = séparateur décimal (3,14)
+- **Point-virgule (;)** = séparateur d'arguments dans les fonctions
+
+**3. Manque de guillemets pour le texte**
+```excel
+=SI(G2>=60;Reussi;Échec)        ❌ Texte sans guillemets
+=SI(G2>=60;"Reussi";"Échec")    ✅ Texte entre guillemets
+```
+
+Tout texte dans une formule **doit être entre guillemets doubles (")**. Sans guillemets, Excel cherche un nom de cellule ou de plage appelé "Reussi", ce qui génère #NOM? ou #VALEUR!
+
+
+
+### Points-virgules vs virgules
+
+Récapitulatif des règles en Excel français :
+
+| Contexte | Symbole | Exemple |
+|----------|---------|---------|
+| Séparateur décimal | Virgule (,) | `0,2` ou `3,14159` |
+| Séparateur d'arguments | Point-virgule (;) | `=SI(A1>0;"Positif";"Négatif")` |
+| Plage de cellules | Deux-points (:) | `=SOMME(A1:A10)` |
+
+```excel
+=SI(G2>=60;"Reussi";"Échec")    ✅ Correct en français
+=SI(G2>=60,"Reussi","Échec")    ❌ Erreur #VALEUR! en français
+```
+
+### Erreur dans la logique du SI
+
+**Exemple incorrect** :
+```excel
+=SI(G2>60;SI(G2>80;"Excellent!";"Reussi");"Échec")
+```
+
+**Problème** : Un score de 60 pile donnera "Échec" au lieu de "Reussi"
+
+**Solution** : Utiliser `>=` au lieu de `>` pour les seuils
+
+### Virgule au lieu du point-virgule dans les fonctions
+
+**Problème** : Après avoir copié la formule, toutes les lignes pointent vers la ligne 2
+
+**Cause** : Utilisation de références absolues ($) par erreur
+
+**Exemple incorrect** :
+```excel
+='Labo 1'!$E$2   ← Le $ fixe la référence, elle ne changera pas à la copie
+```
+
+**Solution** : Utiliser des références relatives
+```excel
+='Labo 1'!E2     ← Deviendra E3, E4, etc. à la copie
+```
+
+### Score > 100
+
+**Problème** : Le score calculé dépasse 100%
+
+**Cause** : Les pondérations ne totalisent pas 1,0 (100%)
+
+**Vérification** :
+```excel
+=SOMME(Ponderation!B1:B4)   ← Doit égaler exactement 1
+```
+
+### Points-virgules vs virgules
+
+Dans Excel français, le séparateur d'arguments est le **point-virgule (;)** :
+
+```excel
+=SI(G2>=60;"Reussi";"Échec")    ✅ Correct en français
+=SI(G2>=60,"Reussi","Échec")    ❌ Erreur en français (fonctionne en anglais)
+```
+
+
+
+## Autres erreurs de débutants
+
+### Oublier le signe égal (=)
+
+**Erreur la plus fréquente chez les débutants !**
+
+```excel
+MOYENNE(B2:D2)      ❌ Excel affiche le texte tel quel
+=MOYENNE(B2:D2)     ✅ Excel calcule la formule
+```
+
+**Symptôme** : La formule s'affiche en texte dans la cellule au lieu de calculer le résultat.
+
+**Solution** : Toute formule doit commencer par `=`
+
+### Espaces dans les noms de feuilles
+
+**Problème** : Les espaces nécessitent des apostrophes
+
+```excel
+=Labo 1!E2          ❌ Excel ne comprend pas
+='Labo 1'!E2        ✅ Apostrophes obligatoires
+
+=ResultatClasse!A1  ✅ Pas d'espace, pas d'apostrophes nécessaires
+```
+
+**Règle** : Si le nom de la feuille contient un espace, il **doit** être entouré d'apostrophes simples.
+
+**Astuce** : Pour éviter les erreurs, cliquez sur la feuille lors de la création de la formule. Excel ajoutera automatiquement les apostrophes si nécessaire.
+
+### Écraser les formules par accident
+
+**Problème** : Taper directement dans une cellule avec formule
+
+**Scénario typique** :
+1. Cellule G2 contient `=C2*P_LABO1 + D2*P_LABO2 + E2*P_INTRA + F2*P_FINAL`
+2. Vous tapez `78` pour "corriger" le résultat
+3. **La formule est perdue !** Remplacée par la valeur 78
+
+**Prévention** :
+- Toujours vérifier qu'une cellule contient une formule avant de la modifier
+- Regarder la barre de formule en haut
+- Si correction nécessaire, modifier la formule, pas le résultat
+
+**Récupération** :
+- Ctrl+Z (Annuler) immédiatement si vous venez de faire l'erreur
+- Si trop tard : recréer la formule manuellement
+
+### Copier-coller qui ne conserve pas les formules
+
+**Problème** : Utiliser "Coller les valeurs" par erreur
+
+```
+Copier G2 → Coller spécial → Valeurs  ❌ Colle seulement 78,62
+Copier G2 → Coller (Ctrl+V)           ✅ Colle la formule
+```
+
+**À retenir** :
+- **Ctrl+C puis Ctrl+V** : copie la formule
+- **Copier → Coller spécial → Valeurs** : copie seulement le résultat (utile parfois, mais pas ici)
+
+### Références circulaires
+
+**Problème** : Une formule qui se référence elle-même, directement ou indirectement
+
+**Exemple direct** :
+```excel
+En G2: =G2 + 10     ❌ Erreur circulaire!
+```
+
+**Exemple indirect** :
+```excel
+En A1: =B1
+En B1: =C1
+En C1: =A1          ❌ Boucle A1→B1→C1→A1
+```
+
+**Symptôme** : Excel affiche un avertissement "Référence circulaire" et la formule retourne souvent 0.
+
+**Solution** : Revoir la logique de calcul pour éliminer la boucle.
+
+### Format de cellule incorrect
+
+**Problème** : Cellule formatée en texte au lieu de nombre
+
+**Symptômes** :
+- Les nombres sont alignés à gauche au lieu de droite
+- Petit triangle vert dans le coin de la cellule
+- Les formules ne calculent pas correctement
+- `=MOYENNE(B2:D2)` retourne #VALEUR!
+
+**Solution** :
+1. Sélectionner les cellules
+2. Cliquer sur le triangle vert → "Convertir en nombre"
+3. Ou : Accueil → Format de nombre → "Nombre" ou "Standard"
+
+**Prévention** : Ne jamais ajouter d'apostrophe devant un nombre (`'85` devient du texte)
+
+### Caractères interdits dans les noms de feuilles
+
+**Caractères interdits** : `: / \ ? * [ ]`
+
+```excel
+Intra/Final         ❌ Le / est interdit
+Intra-Final         ✅ Le tiret est permis
+[Intra]             ❌ Les crochets sont interdits
+(Intra)             ✅ Les parenthèses sont permises
+```
+
+**Longueur maximale** : 31 caractères pour le nom d'une feuille
+
+### Cellules vides dans les calculs
+
+**Problème** : Formules qui pointent vers des cellules vides
+
+```excel
+Si D2 est vide:
+=MOYENNE(B2:D2)     → Ignore D2 (moyenne de B2 et C2 seulement)
+=B2+C2+D2           → Traite D2 comme 0
+```
+
+**Attention spéciale** : Les cellules vides ne sont pas toujours égales à 0 dans les calculs!
+
+**Impact sur notre exercice** :
+```excel
+='Labo 1'!E2    → Si E2 est vide, affiche 0 dans le tableau de bord
+```
+
+Cela peut fausser le calcul du score final si un étudiant n'a pas encore fait l'évaluation.
+
+### Trier les données sans précaution
+
+**Danger majeur** : Trier une colonne sans trier les autres
+
+**Scénario catastrophe** :
+1. Vous triez la colonne "Nom" par ordre alphabétique
+2. Les noms bougent, mais pas les matricules ni les notes
+3. **Résultat** : Chaque nom est maintenant associé au mauvais matricule et aux mauvaises notes!
+
+**Solution correcte** :
+1. Sélectionner **toutes les colonnes** avec données (A à H)
+2. Données → Trier
+3. Choisir la colonne de tri
+
+**Important** : Ne JAMAIS trier une seule colonne dans un tableau avec des données liées.
+
+### Supprimer des lignes ou colonnes référencées
+
+**Problème** : Supprimer une colonne utilisée dans une formule
+
+**Exemple** :
+1. Dans "Labo 1", vous supprimez la colonne D (Q3)
+2. Dans "Resultat de ma classe", la formule `='Labo 1'!E2` devient `='Labo 1'!#REF!`
+3. Toutes les références sont cassées!
+
+**Prévention** :
+- Avant de supprimer, vérifier si la colonne/ligne est référencée ailleurs
+- Préférer cacher les colonnes plutôt que les supprimer
+
+### Sauvegarder dans le mauvais format
+
+**Danger** : Enregistrer en .CSV
+
+```
+Fichier.xlsx    ✅ Conserve tout : formules, feuilles multiples, mise en forme
+Fichier.csv     ❌ Perd : formules (valeurs seulement), feuilles multiples (1 seule)
+```
+
+**Important** : Le format .CSV ne conserve que la première feuille et convertit toutes les formules en valeurs!
+
+**Pour ce projet** : Toujours sauvegarder en `.xlsx` ou `.xlsm`
+
+### Confusion entre types de références
+
+**Types de références** :
+
+| Type | Syntaxe | Comportement à la copie |
+|------|---------|-------------------------|
+| Relative | `A1` | Change : A1 → A2 → A3 |
+| Absolue | `$A$1` | Ne change jamais |
+| Mixte colonne | `$A1` | Colonne fixe, ligne change |
+| Mixte ligne | `A$1` | Colonne change, ligne fixe |
+
+**Dans notre exercice** :
+```excel
+=C2*P_LABO1         ✅ C2 est relatif (devient C3, C4...)
+                       P_LABO1 est un nom (toujours la même cellule)
+
+=C2*$B$1            ✅ Alternative sans nom défini
+```
+
+### Noms de cellules mal gérés
+
+**Erreurs fréquentes avec les noms** :
+
+**1. Créer le nom après avoir écrit les formules**
+```excel
+=C2*Ponderation!B1     ← Formule écrite en premier
+Puis création du nom P_LABO1
+                       ❌ La formule ne se met PAS à jour automatiquement!
+```
+
+**Solution** : Créer les noms AVANT d'écrire les formules qui les utilisent.
+
+**2. Fautes de frappe dans les noms**
+```excel
+=C2*P_LABO_1           ❌ Trait de soulignement en trop
+=C2*P_LABO1            ✅ Nom correct
+```
+
+**3. Espaces dans les noms**
+```excel
+P_LABO 1               ❌ Espace interdit dans un nom
+P_LABO1                ✅ Utiliser _ ou enlever l'espace
+PLABO1                 ✅ Alternative sans séparateur
+```
+
+## Pour aller plus loin
+
+### Amélioration 1 : Statistiques de classe
+
+Ajouter en bas du tableau de bord :
+
+```excel
+Moyenne de classe:  =MOYENNE(G2:G11)
+Note minimale:      =MIN(G2:G11)
+Note maximale:      =MAX(G2:G11)
+Nombre de réussite: =NB.SI(G2:G11;">=60")
+Taux de réussite:   =NB.SI(G2:G11;">=60")/NB(G2:G11)*100 & "%"
+```
+
+### Amélioration 2 : Mise en forme conditionnelle
+
+Appliquer une couleur aux cellules selon le score :
+
+1. Sélectionner la colonne Score (G2:G11)
+2. Accueil → Mise en forme conditionnelle → Jeux d'icônes ou Nuances de couleurs
+3. Choisir un jeu approprié (ex: feu tricolore, échelle de couleurs)
+
+### Amélioration 3 : Validation des données
+
+Empêcher la saisie de notes invalides :
+
+1. Sélectionner les cellules de notes (ex: B2:D11 dans Labo 1)
+2. Données → Validation des données
+3. Critères : Nombre entier entre 0 et 100
+4. Message d'erreur : "Veuillez entrer une note entre 0 et 100"

@@ -1,0 +1,185 @@
+---
+title: Modélisation de problème et fonctions conditionnelles
+description: Apprendre à utiliser les fonctions conditionnelles (SI, NB.SI, SOMME.SI ET, OU) dans Excel pour modéliser des scénarios complexes.
+---
+
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Vue d'ensemble
+
+Dans cette séance, nous avons construit un système complet de suivi des performances étudiantes. Ce système met en pratique plusieurs concepts essentiels d'Excel :
+
+- **Modélisation de tableur** : organiser l'information sur plusieurs feuilles
+- **Référencement entre feuilles** : récupérer des données d'autres feuilles
+- **Référencement par nom** : utiliser des noms significatifs pour les cellules
+- **Fonction MOYENNE** : calculer des moyennes automatiquement
+- **Fonction SI imbriquée** : créer des appréciations conditionnelles
+
+## Structure du classeur
+
+Notre classeur comprend 7 feuilles avec une organisation logique :
+
+```
+Resultat de ma classe  ← Tableau de bord principal
+Labo 1                 ← Évaluation 1 (4 questions)
+Labo 2                 ← Évaluation 2 (4 questions)
+Intra                  ← Examen mi-session (10 questions)
+Final                  ← Examen final (10 questions)
+Ponderation            ← Poids de chaque évaluation
+```
+
+## Étapes de construction
+
+### Étape 1 : Créer les feuilles d'évaluation
+
+Commençons par créer les feuilles pour chaque évaluation.
+
+#### Feuille "Labo 1"
+
+| Colonne | Contenu | Formule |
+|---------|---------|---------|
+| A | Matricule | (données saisies) |
+| B-D | Q1, Q2, Q3 | (notes saisies) |
+| E | Total | `=MOYENNE(B2:D2)` |
+| F | Commentaires | (optionnel) |
+
+**Points clés** :
+- Saisir les matricules des étudiants en colonne A
+- Entrer les notes pour les 3 questions (colonnes B, C, D)
+- La formule `MOYENNE` calcule automatiquement la moyenne des 3 notes
+- Copier la formule vers le bas pour tous les étudiants
+
+#### Feuille "Labo 2"
+
+Structure similaire, mais avec 5 questions (B à F) :
+
+| Colonne | Contenu | Formule |
+|---------|---------|---------|
+| A | Matricule | (données saisies) |
+| B-F | Q1 à Q5 | (notes saisies) |
+| G | Total | `=MOYENNE(B2:F2)` |
+| H | Commentaires | (optionnel) |
+
+#### Feuilles "Intra" et "Final"
+
+Structure similaire avec 10 questions :
+
+| Colonne | Contenu | Formule |
+|---------|---------|---------|
+| A | Matricule | (données saisies) |
+| B-K | Q1 à Q10 | (notes saisies) |
+| L | Total | `=MOYENNE(B2:K2)` |
+| M | Commentaire | (optionnel) |
+
+:::tip[Astuce de productivité]
+Utilisez la poignée de recopie (petit carré en bas à droite de la cellule) pour copier les formules rapidement vers le bas. Excel ajuste automatiquement les références de cellules.
+:::
+
+### Étape 2 : Créer la feuille "Ponderation"
+
+Cette feuille définit le poids de chaque évaluation dans le calcul de la note finale.
+
+| Évaluation | Poids |
+|------------|-------|
+| Labo 1 | 0,2 (20%) |
+| Labo 2 | 0,2 (20%) |
+| Intra | 0,3 (30%) |
+| Final | 0,3 (30%) |
+
+**Configuration** :
+- Colonne A : noms des évaluations
+- Colonne B : valeurs décimales (0,2 = 20%)
+- **Total doit égaler 1,0 (100%)**
+
+### Étape 3 : Définir les noms de cellules
+
+Les noms permettent d'utiliser des références significatives dans les formules.
+
+**Pour créer un nom** :
+1. Sélectionner la cellule (ex: Ponderation!B1)
+2. Cliquer dans la zone de nom (à gauche de la barre de formule)
+3. Taper le nom souhaité (ex: `P_LABO1`)
+4. Appuyer sur Entrée
+
+**Noms à créer** :
+- `P_LABO1` → Ponderation!B1 (0,2)
+- `P_LABO2` → Ponderation!B2 (0,2)
+- `P_INTRA` → Ponderation!B3 (0,3)
+- `P_FINAL` → Ponderation!B4 (0,3)
+
+:::caution[Attention]
+Les noms ne peuvent pas contenir d'espaces. Utilisez des traits de soulignement (_) pour séparer les mots.
+:::
+
+### Étape 4 : Créer le tableau de bord principal
+
+La feuille "Resultat de ma classe" centralise toutes les informations.
+
+#### Structure de la feuille
+
+| Colonne | En-tête | Formule/Contenu |
+|---------|---------|-----------------|
+| A | Matricule | (copié des autres feuilles) |
+| B | Nom | (saisie manuelle) |
+| C | Labo 1 | `='Labo 1'!E2` |
+| D | Labo 2 | `='Labo 2'!G2` |
+| E | Intra | `=Intra!L2` |
+| F | Final | `=Final!L2` |
+| G | Score | `=C2*P_LABO1 + D2*P_LABO2 + E2*P_INTRA + F2*P_FINAL` |
+| H | Appreciation | `=SI(G2>=60;SI(G2>=80;"Excellent!";"Reussi");"Échec")` |
+
+#### Explication des formules
+
+**Références entre feuilles** (colonnes C à F) :
+```excel
+='Labo 1'!E2    ← Note du Labo 1 pour l'étudiant ligne 2
+='Labo 2'!G2    ← Note du Labo 2 pour l'étudiant ligne 2
+=Intra!L2       ← Note de l'Intra pour l'étudiant ligne 2
+=Final!L2       ← Note du Final pour l'étudiant ligne 2
+```
+
+**Calcul du score pondéré** (colonne G) :
+```excel
+=C2*P_LABO1 + D2*P_LABO2 + E2*P_INTRA + F2*P_FINAL
+```
+
+Cette formule multiplie chaque note par son poids et additionne le tout :
+- Labo 1 (C2) × 20% (P_LABO1)
+- Labo 2 (D2) × 20% (P_LABO2)
+- Intra (E2) × 30% (P_INTRA)
+- Final (F2) × 30% (P_FINAL)
+
+**Appréciation conditionnelle** (colonne H) :
+```excel
+=SI(G2>=60;SI(G2>=80;"Excellent!";"Reussi");"Échec")
+```
+
+Cette formule SI imbriquée fonctionne ainsi :
+
+Si Score ≥ 60 ?
+- Oui → vérifier si Score ≥ 80
+  - Oui → "Excellent!"
+  - Non → "Reussi"
+- Non → "Échec"
+
+## Points clés à retenir
+
+:::note[Résumé des concepts]
+1. **Organisation** : Utiliser plusieurs feuilles pour structurer l'information logiquement
+3. **Références entre feuilles** : `=NomFeuille!Cellule` ou `='Nom Feuille'!Cellule`
+4. **Noms définis** : Rendre les formules plus lisibles et maintenables
+5. **SI imbriqué** : Permet de gérer plusieurs conditions en cascade
+6. **Séparateurs** : Point-virgule (;) en français, virgule (,) pour les décimales
+:::
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : Référence de cellule](https://support.microsoft.com/fr-fr/office/cr%C3%A9er-ou-modifier-une-r%C3%A9f%C3%A9rence-de-cellule-c7b8b95d-c594-4488-947e-c835903cebaa)
+- [Documentation Microsoft : Définir et utiliser des noms](https://support.microsoft.com/fr-fr/office/d%C3%A9finir-et-utiliser-des-noms-dans-les-formules-4d0f13ac-53b7-422e-afd2-abd7ff379c64)
+- [Documentation Microsoft : Fonction SI](https://support.microsoft.com/fr-fr/office/si-si-fonction-69aed7c9-4e8a-4755-a9bc-aa8bbff73be2)
+
+---
+
+{/* **Prochaine étape** : Dans la prochaine séance, nous verrons comment créer des graphiques dynamiques pour visualiser ces données de performance. */}

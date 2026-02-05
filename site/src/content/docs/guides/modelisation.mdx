@@ -1,0 +1,503 @@
+---
+title: Modélisation de problèmes avec Excel
+description: Une démarche structurée pour penser avant calculer
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+## Le défi de la modélisation
+
+<Aside type="tip" title="Réflexion initiale">
+Avant de continuer, prenez 2 minutes pour noter sur papier:
+- Un problème récurrent dans votre vie que vous pourriez résoudre avec un chiffrier
+- Qu'est-ce qui vous empêche actuellement de le faire efficacement?
+</Aside>
+
+### Le principe fondamental
+
+> **Un bon chiffrier est d'abord un bon modèle du problème.**
+> 
+> Excel ne fait qu'exécuter ce que vous avez déjà pensé.
+
+<CardGrid>
+  <Card title="❌ Approche réflexe">
+    1. Ouvrir Excel
+    2. Créer des colonnes au hasard
+    3. Essayer des formules jusqu'à ce que "ça marche"
+    4. Oublier comment ça fonctionne 2 semaines plus tard
+  </Card>
+  
+  <Card title="✅ Approche réfléchie">
+    1. Comprendre le problème (papier/crayon)
+    2. Identifier les éléments et règles (schéma)
+    3. Concevoir le modèle (structure)
+    4. Implémenter dans Excel (outils)
+  </Card>
+</CardGrid>
+
+---
+
+## Démarche de modélisation en 3 phases
+
+### Phase 1: Penser le problème (hors Excel)
+
+<Tabs>
+  <TabItem label="Étape 1.1: Définir l'objectif">
+    
+    **Questions directrices:**
+    - À quoi servira ce chiffrier?
+    - Quelle décision m'aidera-t-il à prendre?
+    - Qui l'utilisera et dans quel contexte?
+    
+    **Exercice:** Complétez cette phrase:
+    
+    > "Ce chiffrier sert à _______ afin de _______."
+    
+    **Exemple GCF:**
+    > "Ce chiffrier sert à **suivre les dépenses mensuelles d'un étudiant** afin de **respecter son budget et identifier les postes de dépenses excessives**."
+    
+  </TabItem>
+  
+  <TabItem label="Étape 1.2: Cartographier les éléments">
+    
+    **Activité de réflexion (5 min, sur papier):**
+    
+    Pour le problème de suivi budgétaire étudiant:
+    1. Listez tous les **éléments réels** à représenter
+    2. Classez-les en catégories (personnes, transactions, catégories, etc.)
+    3. Identifiez les **attributs** de chaque élément
+    
+    <Aside type="note">
+    Ne pensez pas encore en "colonnes Excel" - pensez en termes de la **réalité du problème**.
+    </Aside>
+    
+    **Exemple de cartographie:**
+```
+    Transaction de dépense:
+      - Date
+      - Montant
+      - Catégorie (alimentation, transport, loisirs...)
+      - Mode de paiement (comptant, débit, crédit)
+      - Description
+      - Essentielle ou non?
+    
+    Budget mensuel:
+      - Revenus prévus
+      - Limites par catégorie
+      - Total alloué
+```
+    
+  </TabItem>
+  
+  <TabItem label="Étape 1.3: Identifier les règles">
+    
+    **Formuler les règles en langage naturel**
+    
+    Avant toute formule Excel, écrivez les règles comme vous les exprimeriez à quelqu'un:
+    
+    **Exemples:**
+    - "Si une dépense dépasse 10% du budget mensuel, c'est une alerte"
+    - "Le budget restant = revenus - total des dépenses du mois"
+    - "Une catégorie en dépassement si dépenses > limite fixée"
+    
+    <Aside type="caution" title="Piège courant">
+    Les étudiants sautent souvent cette étape et vont directement à `=SI(...)`. 
+    Résultat: formules incompréhensibles et erreurs logiques.
+    </Aside>
+    
+  </TabItem>
+</Tabs>
+
+### Phase 2: Concevoir le modèle (encore hors Excel!)
+
+#### Distinguer les types de données
+
+<CardGrid>
+  <Card title="📝 Données saisies" icon="pencil">
+    **Ce qui change à chaque utilisation**
+    
+    Exemples GCF:
+    - Montant d'une facture
+    - Date d'une transaction
+    - Quantité vendue
+    - Heures travaillées
+  </Card>
+  
+  <Card title="📋 Données fixes" icon="document">
+    **Règles et paramètres du modèle**
+    
+    Exemples GCF:
+    - Taux de TPS/TVQ (5% et 9.975%)
+    - Salaire horaire
+    - Objectif de vente mensuel
+    - Taux d'amortissement
+  </Card>
+  
+  <Card title="🔄 Données calculées" icon="approve-check">
+    **Résultats automatiques**
+    
+    Exemples GCF:
+    - Total TPS + TVQ
+    - Salaire brut
+    - Écart budget vs réel
+    - Valeur comptable nette
+  </Card>
+</CardGrid>
+
+**Exercice de classification:**
+
+Pour un système de facturation, classez ces éléments:
+
+<details>
+<summary>Cliquez pour voir l'exercice</summary>
+
+Classez chacun en: Saisie / Fixe / Calculé
+
+1. Prix unitaire d'un article → ?
+2. Taux de TPS → ?
+3. Quantité commandée → ?
+4. Sous-total avant taxes → ?
+5. Montant total à payer → ?
+6. Conditions de paiement (30 jours) → ?
+
+<details>
+<summary>Réponses</summary>
+
+1. Prix unitaire → **Fixe** (fait partie du catalogue)
+2. Taux de TPS → **Fixe** (règle gouvernementale)
+3. Quantité → **Saisie** (change à chaque commande)
+4. Sous-total → **Calculé** (prix × quantité)
+5. Total → **Calculé** (sous-total + taxes)
+6. Conditions → **Fixe** (politique de l'entreprise)
+
+</details>
+</details>
+
+#### Organiser la structure
+
+**Principe: Une feuille = un rôle**
+
+<Tabs>
+  <TabItem label="Feuille opérationnelle">
+    **Contient:** données détaillées, une ligne par élément
+    
+    **Exemple:** Registre de transactions
+    - Chaque ligne = une transaction
+    - Colonnes = attributs de la transaction
+  </TabItem>
+  
+  <TabItem label="Feuille paramètres">
+    **Contient:** règles, seuils, constantes
+    
+    **Exemple:** Configuration du budget
+    - Limites par catégorie
+    - Revenus mensuels
+    - Paramètres d'alerte
+  </TabItem>
+  
+  <TabItem label="Feuille tableau de bord">
+    **Contient:** résumés, indicateurs, analyses
+    
+    **Exemple:** Vue d'ensemble budgétaire
+    - Totaux par catégorie
+    - Comparaisons budget/réel
+    - Alertes et messages
+  </TabItem>
+</Tabs>
+
+### Phase 3: Implémenter dans Excel
+
+<Aside type="tip" title="Checkpoint avant Excel">
+Avant d'ouvrir Excel, vous devriez pouvoir:
+1. ✅ Expliquer l'objectif en une phrase
+2. ✅ Lister tous les éléments à modéliser
+3. ✅ Classer chaque donnée (saisie/fixe/calculée)
+4. ✅ Énoncer les règles en français
+5. ✅ Esquisser l'organisation des feuilles
+
+Si vous ne pouvez pas faire ça, **retournez à la phase 1**.
+</Aside>
+
+#### Correspondance règles → formules
+
+**Exercice de traduction:**
+
+Traduisez ces règles métier en formules Excel:
+
+| Règle métier | Formule Excel |
+|--------------|---------------|
+| "Si le solde est négatif, afficher 'DÉFICIT', sinon 'OK'" | `=SI(C2<0;"DÉFICIT";"OK")` |
+| "Compter combien de dépenses sont essentielles" | `=NB.SI(E:E;"Essentielle")` |
+| "Total des dépenses de la catégorie Alimentation" | `=SOMME.SI(D:D;"Alimentation";C:C)` |
+
+**Votre tour:**
+
+Écrivez la formule pour: "Si le pourcentage dépensé dépasse 100% du budget, afficher '⚠️ DÉPASSEMENT', sinon afficher '✓'"
+
+<details>
+<summary>Solution proposée</summary>
+```excel
+=SI(Dépensé/Budget>1;"⚠️ DÉPASSEMENT";"✓")
+```
+
+Ou avec cellules:
+```excel
+=SI(C2/B2>1;"⚠️ DÉPASSEMENT";"✓")
+```
+
+</details>
+
+---
+
+## Cas d'application complet: Budget mensuel étudiant
+
+<Aside type="note" title="Activité guidée">
+Cette section vous guide à travers un exemple complet. 
+Prenez le temps de réfléchir à chaque étape avant de révéler la suite.
+</Aside>
+
+### Mise en situation
+
+Léa est étudiante en GCF. Elle reçoit 1500$ par mois (prêts et bourses + emploi à temps partiel). Elle veut créer un chiffrier pour:
+- Suivre ses dépenses quotidiennes
+- S'assurer de ne pas dépasser son budget global
+- Identifier les catégories où elle dépense trop
+- Voir combien il lui reste pour la fin du mois
+
+<details>
+<summary>Étape 1: Définir l'objectif (essayez d'abord!)</summary>
+
+**Objectif formulé:**
+> "Ce chiffrier sert à **suivre en temps réel le budget mensuel de Léa** afin de **prévenir les dépassements et ajuster ses habitudes de dépenses**."
+
+**Utilisateurs:** Léa elle-même  
+**Fréquence:** Mise à jour quotidienne/hebdomadaire  
+**Décision supportée:** Puis-je me permettre cette dépense?
+
+</details>
+
+<details>
+<summary>Étape 2: Cartographier les éléments</summary>
+
+**Éléments à modéliser:**
+
+1. **Budget mensuel** (fixe au début du mois)
+   - Revenu total
+   - Répartition par catégorie
+
+2. **Dépense** (répétitive)
+   - Date
+   - Montant
+   - Catégorie
+   - Description
+   - Mode de paiement
+
+3. **Catégories de dépenses**
+   - Nom
+   - Budget alloué
+   - Seuil d'alerte (ex: 80%)
+
+</details>
+
+<details>
+<summary>Étape 3: Classifier les données</summary>
+
+**Données SAISIES:**
+- Date de la dépense
+- Montant dépensé
+- Description
+- Mode de paiement
+
+**Données FIXES:**
+- Revenu mensuel (1500$)
+- Budgets par catégorie:
+  - Logement: 800$
+  - Alimentation: 300$
+  - Transport: 150$
+  - Loisirs: 100$
+  - Autres: 150$
+- Seuil d'alerte: 80%
+
+**Données CALCULÉES:**
+- Total dépensé (par catégorie et global)
+- Budget restant
+- Pourcentage utilisé
+- Statut (OK / Attention / Dépassement)
+- Jours restants dans le mois
+- Budget quotidien recommandé
+
+</details>
+
+<details>
+<summary>Étape 4: Formuler les règles</summary>
+
+**Règles métier:**
+
+1. "Le budget restant = revenu mensuel - total des dépenses"
+2. "Le pourcentage utilisé = (total dépensé ÷ budget alloué) × 100"
+3. "Si % > 100% → Dépassement, si % > 80% → Attention, sinon → OK"
+4. "Total par catégorie = somme des dépenses de cette catégorie uniquement"
+5. "Budget quotidien suggéré = budget restant ÷ jours restants"
+
+</details>
+
+<details>
+<summary>Étape 5: Concevoir la structure</summary>
+
+**Organisation en 3 feuilles:**
+
+**1. Feuille "Paramètres"**
+```
+Revenu mensuel: 1500$
+
+Catégorie    | Budget | Seuil alerte
+-------------|--------|-------------
+Logement     |  800$  |    80%
+Alimentation |  300$  |    80%
+Transport    |  150$  |    80%
+...
+```
+
+**2. Feuille "Transactions"**
+```
+Date | Catégorie | Montant | Description | Mode paiement
+-----|-----------|---------|-------------|---------------
+...  |    ...    |   ...   |     ...     |      ...
+```
+
+**3. Feuille "Tableau de bord"**
+```
+Vue d'ensemble:
+- Budget total vs dépensé
+- Graphique par catégorie
+- Alertes automatiques
+- Projection fin de mois
+```
+
+</details>
+
+---
+
+## Validation de votre modèle
+
+Avant de commencer à implémenter dans Excel, vérifiez:
+
+<CardGrid>
+  <Card title="✅ Clarté" icon="approve-check">
+    - L'objectif est-il clair et spécifique?
+    - Quelqu'un d'autre comprendrait-il le modèle?
+  </Card>
+  
+  <Card title="✅ Complétude" icon="list-format">
+    - Tous les éléments pertinents sont-ils identifiés?
+    - Toutes les règles sont-elles formulées?
+  </Card>
+  
+  <Card title="✅ Logique" icon="puzzle">
+    - Les règles sont-elles cohérentes?
+    - Y a-t-il des contradictions?
+  </Card>
+  
+  <Card title="✅ Simplicité" icon="star">
+    - Le modèle est-il aussi simple que possible?
+    - Peut-on éliminer des éléments superflus?
+  </Card>
+</CardGrid>
+
+---
+
+## Exercices d'application
+
+### Exercice 1: Système de facturation simple
+
+**Contexte:** Une petite entreprise de services veut automatiser ses factures.
+
+**Votre tâche (SANS Excel pour l'instant):**
+
+1. Définissez l'objectif en une phrase
+2. Listez les éléments à modéliser
+3. Classez les données (saisies/fixes/calculées)
+4. Formulez 5 règles métier en français
+5. Esquissez l'organisation des feuilles
+
+<Aside type="tip">
+Indices: pensez à la TPS/TVQ, aux informations client, aux articles/services, aux conditions de paiement...
+</Aside>
+
+### Exercice 2: Suivi de remboursement de prêt étudiant
+
+**Contexte:** Planifier le remboursement d'un prêt de 15000$ sur 5 ans à 4% d'intérêt.
+
+**Votre tâche:**
+Suivez la même démarche que l'exercice 1.
+
+<Aside type="note">
+Cet exercice est plus complexe (calculs d'intérêts, amortissement). C'est normal si vous devez faire des recherches pour comprendre les règles du domaine.
+</Aside>
+
+---
+
+## Erreurs fréquentes à éviter
+
+<Tabs>
+  <TabItem label="Commencer par Excel">
+    **❌ Mauvaise approche:**
+    "Je vais ouvrir Excel et voir ce que je peux faire..."
+    
+    **✅ Bonne approche:**
+    "Laisse-moi d'abord comprendre le problème sur papier, puis je choisirai les bons outils Excel."
+  </TabItem>
+  
+  <TabItem label="Formules cachées">
+    **❌ Mauvaise approche:**
+    Mettre les valeurs fixes directement dans les formules: `=C2*0.05`
+    
+    **✅ Bonne approche:**
+    Référencer une cellule nommée: `=C2*TauxTPS` où TauxTPS est visible quelque part
+  </TabItem>
+  
+  <TabItem label="Structure confuse">
+    **❌ Mauvaise approche:**
+    Tout mélanger sur une seule feuille: données, paramètres, résultats, calculs intermédiaires...
+    
+    **✅ Bonne approche:**
+    Séparer logiquement: une feuille par rôle (saisie / paramètres / résultats)
+  </TabItem>
+  
+  <TabItem label="Logique non testée">
+    **❌ Mauvaise approche:**
+    Écrire une formule complexe et supposer qu'elle fonctionne
+    
+    **✅ Bonne approche:**
+    Tester avec des cas simples, des cas limites (0, maximum, valeurs négatives)
+  </TabItem>
+</Tabs>
+
+---
+
+## Message final
+
+<Aside type="tip" title="La vraie compétence">
+**Savoir utiliser Excel, ce n'est pas mémoriser des formules.**
+
+C'est savoir:
+1. Analyser un problème réel
+2. Le décomposer en éléments logiques
+3. Formuler des règles claires
+4. Choisir les bons outils pour les implémenter
+5. Valider et améliorer le modèle
+
+Cette compétence de modélisation vous servira dans tous les logiciels (Excel, Python, bases de données, systèmes comptables...) et dans votre carrière professionnelle.
+</Aside>
+
+---
+
+## Pour aller plus loin
+
+- 📚 Consultez les exemples de chiffriers commentés (section Ressources)
+- 🎯 Pratiquez avec les exercices progressifs (section Pratique)
+- 💬 Partagez vos modèles dans le forum de discussion
+
+**Prochaine étape:** [Fonctions Excel essentielles pour la GCF](/excel/fonctions-essentielles)

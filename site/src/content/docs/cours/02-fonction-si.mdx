@@ -1,0 +1,162 @@
+---
+title: Fonction SI
+description: Apprendre à utiliser la fonction SI 
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import QuizClassification from './../../../components/QuizClassification';
+
+## Pourquoi utiliser la fonction SI ?
+
+La fonction SI permet de prendre des décisions dans vos feuilles de calcul en fonction de conditions spécifiques. 
+Elle est essentielle pour créer des formules dynamiques qui s'adaptent aux données saisies.
+
+## Rappel des opérateurs de comparaison
+
+Voici les principaux opérateurs de comparaison disponible dans Excel:
+
+
+| Opérateur   | Description               | Exemple        |
+|-------------|---------------------------|----------------|
+| `=`         | Égal à                    | `A1=10`        |
+| `<>`        | Différent de              | `A1<>10`       |
+| `>`         | Supérieur à               | `A1>10`        |
+| `<`         | Inférieur à               | `A1<10`        |
+| `>=`        | Supérieur ou égal à       | `A1>=10`       |
+| `<=`        | Inférieur ou égal à       | `A1<=10`       |
+
+
+Ils sont utilisés dans la fonction `SI` pour exprimer le `test_logique` sous forme de comparaison entre des valeurs ou des cellules.
+
+## Syntaxe de la fonction SI
+
+La fonction SI a la syntaxe suivante :
+
+```excel
+=SI(test_logique; valeur_si_vrai; valeur_si_faux)
+```
+Elle nécessite trois arguments :
+- `test_logique` : une condition qui peut être VRAI ou FAUX. 
+    - Généralement le test prend la forme d'une comparaison entre des valeurs ou des cellules.
+    - Exemple: `A1>10` teste si la valeur dans la cellule A1 est supérieure à 10.
+- `valeur_si_vrai` : la **valeur** ou **formule** à retourner si le test est VRAI
+- `valeur_si_faux` : la **valeur** ou **formule** à retourner si le test est FAUX
+
+
+<Aside type="caution" title="Attention: Séparateurs dans les formules">
+Dans la **version française** d'Excel, les **arguments d'une formule sont séparés** par des **points-virgules (;)** au lieu de virgules (,).  
+Vérifiez toujours le séparateur correct selon la langue de votre version d'Excel. 
+Il est visible dans la barre de formule lorsque vous tappez la formule.
+</Aside>
+
+## Exemples simples: Affichage conditionnel
+
+### Exemple 1 : Vérifier l'âge
+
+```excel
+=SI(A1>=18;"Majeur";"Mineur")
+```
+Si la valeur dans A1 est 20, le résultat sera "Majeur". Si A1 est 16, le résultat sera "Mineur".
+
+### Exemple 2 : Appliquer une remise
+
+```excel
+=SI(A1>100;A1*0,9;A1)
+```
+Si le montant dans A1 est 150, le résultat sera 135 (10% de remise). Si A1 est 80, le résultat sera 80 (pas de remise).
+
+## SI imbriqué
+
+Comme indiqué plus haut, lorsqu'on utilise la fonction SI, on indique la `valeur_si_vrai` qui peut etre simplement une valeur à afficher ou 
+de préférence une formule à appliquer. C'est dans ce cas que l'on peut imbriquer un second SI pour faire un test supplémentaire.
+
+La fonction SI peut être imbriquée pour gérer plusieurs conditions.
+
+### Exemple 3 : Classification des notes
+
+Si on veut classer les notes en "Fort", "Moyen", "Faible" selon les critères suivants :
+- "Fort" si la note ≥ 80
+- "Moyen" si la note ≥ 60
+- "Faible" sinon
+On peut utiliser la formule suivante :
+
+```text
+=SI(A1>=80;"Fort";SI(A1>=60;"Moyen";"Faible"))
+```
+
+Si on suppose que la formule est dans la cellule `B1` et que `A1` contient la note, alors :
+- Si A1=85, le résultat affiché dans B1 sera "Fort"
+- Si A1=70, le résultat affiché dans B1 sera "Moyen
+- Si A1=50, le résultat affiché dans B1 sera "Faible"
+
+## Quiz rapide
+
+
+export const quizData1 = [
+//   {
+//     id: 'q1',
+//     question: 'Quelle formule affiche "Passé" si la note est ≥ 50, sinon "Échoué" ?',
+//     options: [`=SI(A1>=50;"Échoué";"Passé")`, `=SI(A1>=50;"Passé";"Échoué")`, `=SI(A1>50;"Passé";"Échoué")`, `=SI(A1=50;"Passé";"Échoué")`],
+//     correct: `=SI(A1>=50;"Passé";"Échoué")`,
+//     explanation: `- Le test doit être >=50 (supérieur ou égal). 
+// - Le premier argument après le test est la valeur si VRAI. 
+// - Le deuxième argument est la valeur si FAUX.`
+//   },
+//   {
+//     id: 'q2',
+//     question: 'Quelle formule classe les notes : "A" pour ≥85, "B" pour ≥70, sinon "C" ?',
+//     options: [`=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`, `=SI(A1>=70;"B";SI(A1>=85;"A";"C"))`, `=SI(A1>=85;"A";"B";A1>=70;"C")`, `=SI(ET(A1>=85);"A";SI(A1>=70;"B";"C"))`],
+//     correct: `=SI(A1>=85;"A";SI(A1>=70;"B";"C"))`,
+//     explanation: `- Il faut tester d'abord la condition la plus restrictive (≥85). 
+// - Puis imbriquer un second SI pour la condition suivante (≥70). 
+// - L'option B teste les conditions dans le mauvais ordre.`
+//   },
+//   {
+//     id: 'q3',
+//     question: 'Combien de SI imbriqués sont nécessaires pour 4 catégories distinctes ?',
+//     options: ['2 SI imbriqués', '3 SI imbriqués', '4 SI imbriqués', '5 SI imbriqués'],
+//     correct: '3 SI imbriqués',
+//     explanation: "**3 SI imbriqués** sont nécessaires pour 4 catégories.\n\n **Exemple:**\n\nPour distinguer les appréciations de note en A, B, C, D : \n\n`=SI(note >= 90; \"A\"; SI(note >= 80; \"B\"; SI(note >= 70; \"C\"; \"D\")))`\n\n**Règle générale :** pour N catégories, il faut N-1 SI imbriqués."
+//   },
+  {
+    id: 'q4',
+    question: 'Que retourne cette formule si A1=75 ? `=SI(A1>=60;SI(A1>=80;"Excellent";"Bon");"Échec")`',
+    options: ['Excellent', 'Bon', 'Échec', 'Erreur'],
+    correct: 'Bon',
+    explanation: `1. Premier test : 75 ≥ 60 ? **Oui** → on continue dans la première branche
+2. Deuxième test : 75 ≥ 80 ? **Non** → on prend la valeur FAUX du second SI
+3. Résultat : "Bon"`
+  },
+  {
+    id: 'q5',
+    question: "Quelle est l'erreur dans cette formule ? `=SI(A1>50,\"Passé\",\"Échoué\")`",
+    options: ['Il manque des parenthèses', 'On doit utiliser des points-virgules (;) en français', 'Il faut utiliser >= au lieu de >', "Il n'y a pas d'erreur"],
+    correct: 'On doit utiliser des points-virgules (;) en français',
+    explanation: "Version correcte : `=SI(A1>50;\"Passé\";\"Échoué\")`.\n\n En Excel français, le séparateur d'arguments est le point-virgule. La virgule est réservée pour les décimales (ex: 3,14)."
+  }
+];
+
+<QuizClassification client:visible questions={quizData1} title="Quiz: Utilisation de SI" />
+
+
+## Autres fonctions conditionnelles
+
+En plus de la fonction SI, Excel propose plusieurs autres fonctions pour gérer des conditions :
+
+- `NB.SI` : Compte le nombre de cellules qui répondent à un critère spécifique.
+- `SOMME.SI` : Additionne les valeurs qui répondent à un crit
+- `MOYENNE.SI` : Calcule la moyenne des valeurs qui répondent à un critère spécifique.
+- `ET` : Vérifie si toutes les conditions sont vraies.
+- `OU` : Vérifie si au moins une condition est vraie.
+
+Ces fonctions sont très utiles pour analyser des données en fonction de critères spécifiques.
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : Fonction SI](https://support.microsoft.com/fr-fr/office/si-si-fonction-69aed7c9-4e8a-4755-a9bc-aa8bbff73be2)
+
+---
+
+{/* **Prochaine étape** : Dans la prochaine séance, nous verrons comment créer des graphiques dynamiques pour visualiser ces données de performance. */}
