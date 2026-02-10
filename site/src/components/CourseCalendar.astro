@@ -1,0 +1,334 @@
+---
+/**
+ * Calendrier de session pour le cours 420-20P-AH (Hiver 2026)
+ * Met en évidence automatiquement la semaine en cours.
+ */
+
+interface Week {
+  number: number;
+  date: string;       // ex. "26 janv."
+  startDate: string;  // ISO date for comparison, ex. "2026-01-26"
+  title: string;
+  topics: string[];
+  evaluation?: string; // ex. "Laboratoire 1 (20%)"
+  isBreak?: boolean;
+}
+
+interface Props {
+  /** Override "today" for testing (ISO date string) */
+  today?: string;
+}
+
+const { today } = Astro.props;
+
+const weeks: Week[] = [
+  {
+    number: 1, date: "26 janv.", startDate: "2026-01-26",
+    title: "Introduction & Révision",
+    topics: ["Présentation du plan de cours", "Mise en forme", "Organisation d'un classeur", "Références et noms de cellules"],
+  },
+  {
+    number: 2, date: "2 févr.", startDate: "2026-02-02",
+    title: "Formules complexes I",
+    topics: ["Modélisation de problèmes", "Fonction SI", "Fonctions d'agrégation (SOMME.SI, NB.SI, MOYENNE.SI)", "Imbrication de fonctions conditionnelles"],
+  },
+  {
+    number: 3, date: "9 févr.", startDate: "2026-02-09",
+    title: "Formules complexes II",
+    topics: ["Résolution de problème complexe", "Fonctions conditionnelles (ET, OU, NON)", "Mise en forme conditionnelle"],
+  },
+  {
+    number: 4, date: "16 févr.", startDate: "2026-02-16",
+    title: "Formules complexes III",
+    topics: ["Fonctions de dates (DATE, AUJOURDHUI, DATEDIF, JOURSEM)", "Fonctions textes (MAJUSCULE, GAUCHE, DROITE)"],
+  },
+  {
+    number: 5, date: "23 févr.", startDate: "2026-02-23",
+    title: "Formules complexes IV",
+    topics: ["Fonctions financières (VPM, INTPER, PRINCPER)", "Applications en contexte de gestion"],
+    evaluation: "Laboratoire 1 (20 %)",
+  },
+  {
+    number: 6, date: "2 mars", startDate: "2026-03-02",
+    title: "Semaine de relâche",
+    topics: [],
+    isBreak: true,
+  },
+  {
+    number: 7, date: "9 mars", startDate: "2026-03-09",
+    title: "Formules complexes V",
+    topics: ["RECHERCHEV, INDEX, EQUIV", "Combinaison de fonctions de recherche", "Résolution de problèmes complexes"],
+  },
+  {
+    number: 8, date: "16 mars", startDate: "2026-03-16",
+    title: "Tableaux croisés dynamiques",
+    topics: ["Création et configuration", "Regroupement et filtrage", "Mise en forme et actualisation"],
+  },
+  {
+    number: 9, date: "23 mars", startDate: "2026-03-23",
+    title: "Graphiques avancés",
+    topics: ["Choix du type de graphique", "Sparklines", "Graphiques interactifs avec segments"],
+  },
+  {
+    number: 10, date: "30 mars", startDate: "2026-03-30",
+    title: "Révision",
+    topics: ["Préparation pour l'intra"],
+    evaluation: "Examen intra (30 %)",
+  },
+  {
+    number: 11, date: "6 avril", startDate: "2026-04-06",
+    title: "Macro-commandes",
+    topics: ["Enregistrement et exécution de macros", "Modification de macros simples", "Boutons et raccourcis", "Bonnes pratiques et sécurité"],
+  },
+  {
+    number: 12, date: "13 avril", startDate: "2026-04-13",
+    title: "Validation et nettoyage",
+    topics: ["Règles de validation", "Listes déroulantes", "Messages d'erreur personnalisés", "Doublons"],
+  },
+  {
+    number: 13, date: "20 avril", startDate: "2026-04-20",
+    title: "Structuration des données",
+    topics: ["Tableaux Excel (Tables)", "Relations entre tableaux", "Importation de données externes (CSV, TXT, web)"],
+  },
+  {
+    number: 14, date: "27 avril", startDate: "2026-04-27",
+    title: "Analyse et regroupement",
+    topics: ["Sous-totaux et regroupements", "Consolidation de données", "Power Query"],
+    evaluation: "Laboratoire 2 (20 %)",
+  },
+  {
+    number: 15, date: "4 mai", startDate: "2026-05-04",
+    title: "Introduction à Salesforce",
+    topics: ["Vue d'ensemble du CRM", "Navigation dans l'interface", "Objets standard (Comptes, Contacts, Opportunités, Leads)"],
+  },
+  {
+    number: 16, date: "11 mai", startDate: "2026-05-11",
+    title: "Importation et exportation",
+    topics: ["Préparation des données Excel pour Salesforce", "Assistant d'importation", "Mappage des champs", "Exportation vers Excel"],
+  },
+  {
+    number: 17, date: "18 mai", startDate: "2026-05-18",
+    title: "Conclusion & Révision",
+    topics: ["Retour réflexif", "Révision pour le final"],
+    evaluation: "Examen final (30 %)",
+  },
+];
+
+// Determine current week
+function getCurrentWeekIndex(todayOverride?: string): number {
+  const now = todayOverride ? new Date(todayOverride) : new Date();
+  for (let i = weeks.length - 1; i >= 0; i--) {
+    const weekStart = new Date(weeks[i].startDate);
+    if (now >= weekStart) return i;
+  }
+  return -1; // before session
+}
+
+const currentIdx = getCurrentWeekIndex(today);
+
+// Group weeks by phase
+const phases = [
+  { label: "Phase 0 — Introduction et rappel", range: [0, 0] },
+  { label: "Phase 1 — Maîtrise avancée d'Excel", range: [1, 9] },
+  { label: "Phase 2 — Automatisation et nettoyage", range: [10, 13] },
+  { label: "Phase 3 — Salesforce et intégration", range: [14, 16] },
+];
+---
+
+<div class="calendar">
+  {phases.map((phase) => (
+    <details open={currentIdx >= phase.range[0] && currentIdx <= phase.range[1]}>
+      <summary class="phase-header">
+        <span>{phase.label}</span>
+      </summary>
+      <div class="weeks">
+        {weeks.slice(phase.range[0], phase.range[1] + 1).map((week, i) => {
+          const actualIdx = phase.range[0] + i;
+          const isCurrent = actualIdx === currentIdx;
+          const isPast = actualIdx < currentIdx;
+          return (
+            <div
+              class:list={[
+                "week-row",
+                { current: isCurrent, past: isPast, break: week.isBreak },
+              ]}
+            >
+              <div class="week-number">
+                {isCurrent && <span class="current-dot" />}
+                <span class="num">S{week.number}</span>
+                <span class="date">{week.date}</span>
+              </div>
+              <div class="week-content">
+                <span class="week-title">{week.title}</span>
+                {week.topics.length > 0 && (
+                  <span class="week-topics">{week.topics.join(" · ")}</span>
+                )}
+                {week.evaluation && (
+                  <span class="week-eval">📝 {week.evaluation}</span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  details {
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: -1rem;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    background: rgba(128, 128, 128, 0.05);
+    user-select: none;
+  }
+
+  .phase-header:hover {
+    background: rgba(128, 128, 128, 0.1);
+  }
+
+  .weeks {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .week-row {
+    display: flex;
+    gap: 1rem;
+    margin-left: -1rem;
+    padding: 0.6rem 1rem;
+    border-top: 1px solid rgba(128, 128, 128, 0.1);
+    align-items: flex-start;
+    transition: background 0.15s;
+  }
+
+  .week-row.past {
+    opacity: 0.5;
+  }
+
+  .week-row.current {
+    background: rgba(59, 130, 246, 0.08);
+    border-left: 3px solid rgb(59, 130, 246);
+    opacity: 1;
+  }
+
+  :global([data-theme="dark"]) .week-row.current,
+  :global(.dark) .week-row.current {
+    background: rgba(96, 165, 250, 0.1);
+    border-left-color: rgb(96, 165, 250);
+  }
+
+  .week-row.break {
+    background: rgba(128, 128, 128, 0.05);
+    font-style: italic;
+  }
+
+  .week-number {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    gap: 0.15rem;
+    position: relative;
+  }
+
+  .current-dot {
+    position: absolute;
+    top: 50%;
+    left: -14px;
+    transform: translateY(50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgb(59, 130, 246);
+  }
+
+  .num {
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+    .week-row.break .num {
+      opacity: 0.7;
+    }
+
+    .week-row.current .num {
+      color: rgb(59, 130, 246);
+      font-size: 1rem;
+    }
+
+    .week-row.current .date {
+      color: #000;
+      font-size: 0.85rem;
+    }
+
+  .date {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  .week-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    flex: 1;
+  }
+
+  .week-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  .week-topics {
+    font-size: 0.8rem;
+    opacity: 0.65;
+    line-height: 1.5;
+  }
+
+  .week-eval {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    background: rgba(220, 38, 38, 0.1);
+    color: rgb(220, 38, 38);
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  :global([data-theme="dark"]) .week-eval,
+  :global(.dark) .week-eval {
+    background: rgba(248, 113, 113, 0.12);
+    color: rgb(248, 113, 113);
+  }
+
+  @media (max-width: 480px) {
+    .week-row {
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .week-number {
+      flex-direction: row;
+      gap: 0.5rem;
+    }
+  }
+</style>

@@ -1,0 +1,45 @@
+---
+title: Fonction utiliataires importantes à connaître
+description: Découvrez les fonctions utilitaires essentielles telles que CONCAT et ARRONDI pour optimiser vos feuilles de calcul.
+---
+
+
+## 7️⃣ Fonctions utilitaires importantes à connaître
+
+### CONCAT
+
+La fonction `CONCAT` permet de concaténer (combiner) plusieurs chaînes de texte en une seule.
+Elle est très utile pour créer des étiquettes, des messages personnalisés ou pour combiner des données provenant de différentes cellules.
+
+#### Syntaxe:
+
+```text
+=CONCAT(texte1; texte2; ...)
+```
+
+#### Exemple: Combiner le prénom et le nom d'un client
+
+Supposons que la colonne A contient les prénoms et la colonne B les noms de famille. Pour créer une colonne C avec le nom complet :
+
+```text
+=CONCAT(A2; " "; B2)
+```
+
+### ARRONDI
+
+La fonction `ARRONDI` permet d'arrondir un nombre à un nombre spécifié de décimales.
+
+#### Syntaxe:
+
+```text
+=ARRONDI(nombre; nombre_de_décimales)
+```
+
+#### Exemple: Arrondir une moyenne à 2 décimales
+
+Supposons que la cellule A2 représente un montant avec taxes ou un total de dépenses, et que tu souhaites l'arrondir à 2 décimales pour une présentation plus propre.
+Pour l'arrondir à 2 décimales :
+
+```text
+=ARRONDI(A2; 2)
+```

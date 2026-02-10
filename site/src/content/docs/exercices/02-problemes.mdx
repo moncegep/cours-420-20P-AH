@@ -1,0 +1,290 @@
+---
+title: Problèmes - Fonctions conditionnelles et modélisation
+description: Problèmes de modélisation complets utilisant les fonctions conditionnelles dans Excel.
+sidebar:
+  label: Fonctions conditionnelles
+  order: 3
+---
+
+## 🔵 Problèmes de modélisation (raisonnement complet)
+
+:::note[Note pédagogique]
+Ces problèmes sont plus ouverts et nécessitent une réflexion complète sur la modélisation. L'étudiant doit concevoir la structure du chiffrier avant de le réaliser.
+:::
+
+<CardGrid>
+  <Card title="Problème 1 – Suivi des ventes individuelles" icon="document">
+    Modélise un système de suivi de performance pour 10 vendeurs répartis en 3 départements avec calcul automatique des bonus.
+  </Card>
+  <Card title="Problème 2 – Analyse par département" icon="puzzle">
+    Crée une vue d'ensemble par département avec comparaison des performances et identification automatique des forces et faiblesses.
+  </Card>
+  <Card title="Problème 3 – Pilotage et aide à la décision" icon="star">
+    Développe un système complet avec classification à 3 niveaux, primes progressives et tableau de bord exécutif automatisé.
+  </Card>
+</CardGrid>
+
+### Problème 1 – Suivi des ventes individuelles
+
+**Mise en contexte**  
+Tech Solutions Inc., une entreprise québécoise de vente de matériel informatique, emploie 10 vendeurs répartis en 3 départements (Montréal, Québec, Laval). Chaque vendeur a un objectif mensuel de ventes personnalisé. L'entreprise veut suivre la performance individuelle et déterminer automatiquement qui mérite un bonus.
+
+<Tabs>
+<TabItem label="📝 Description">
+
+**Situation réelle**
+- 10 vendeurs avec des objectifs différents selon leur ancienneté
+- 3 départements avec des marchés de tailles différentes
+- Bonus de 500 $ pour ceux qui atteignent leur objectif
+- Rapport mensuel à produire pour la direction
+
+**Éléments à modéliser**
+
+1. **Données fixes**
+   - Montant du bonus : 500 $
+   - Mois de référence
+
+2. **Données saisies**
+   - Nom de chaque vendeur
+   - Département d'affectation
+   - Objectif mensuel individuel (varie selon le vendeur)
+   - Nombre de ventes réalisées
+
+3. **Données calculées**
+   - Pourcentage de l'objectif atteint
+   - Bonus (Oui/Non ou 500$/0$)
+   - Atteinte de l'objectif (Oui/Non)
+
+</TabItem>
+
+<TabItem label="📐 Règles">
+
+**Règles de gestion**
+- Bonus = 500 $ SI ventes réalisées ≥ objectif
+- Sinon, bonus = 0 $
+
+**Livrables attendus**
+
+1. **Tableau principal** contenant :
+   - Informations de chaque vendeur
+   - Calculs automatiques (%, bonus, statut)
+
+2. **Zone de paramètres** avec :
+   - Mois de référence
+   - Montant du bonus
+   - (Ces valeurs doivent être modifiables facilement)
+
+3. **Rapport de synthèse** montrant :
+   - Nombre total de vendeurs
+   - Nombre de vendeurs ayant atteint l'objectif
+   - Total des bonus à verser
+   - Vendeur avec la meilleure performance (optionnel)
+
+</TabItem>
+
+<TabItem label="🎯 Démarche">
+
+**Démarche de réalisation**
+
+<Steps>
+
+1. **Réflexion préalable** (15 min)
+   - Dessine sur papier la structure du chiffrier
+   - Identifie où placer : paramètres, données, calculs, synthèse
+   - Liste les formules nécessaires
+
+2. **Construction** (30 min)
+   - Crée les zones dans l'ordre : paramètres → données → calculs → synthèse
+   - Teste chaque formule avant de passer à la suivante
+   - Vérifie avec les données d'exemple
+
+3. **Validation** (10 min)
+   - Change l'objectif d'un vendeur → bonus se met-il à jour?
+   - Change le montant du bonus → totaux corrects?
+   - Ajoute un 11e vendeur → synthèse s'ajuste-t-elle?
+
+</Steps>
+
+**Critères d'évaluation**
+- ✅ Structure claire et organisée
+- ✅ Références absolues utilisées correctement
+- ✅ Formules fonctionnelles et robustes
+- ✅ Synthèse complète et automatisée
+- ✅ Mise en forme professionnelle
+
+</TabItem>
+</Tabs>
+
+---
+
+### Problème 2 – Analyse par département
+
+**Mise en contexte**  
+Suite au problème 1, la direction de Tech Solutions Inc. veut maintenant une **vue d'ensemble par département**. Chaque département (Montréal, Québec, Laval) a des caractéristiques différentes, et la direction veut identifier lequel performe le mieux.
+
+<Tabs>
+<TabItem label="📝 Description">
+
+**Situation réelle**
+- Les données du problème 1 servent de base
+- Chaque département a un nombre différent de vendeurs
+- La direction veut comparer les départements objectivement
+- Un message automatique doit résumer la situation
+
+**Nouveaux éléments à modéliser**
+
+1. **Analyse par département** (3 départements)
+   - Nombre de vendeurs par département
+   - Total des ventes par département
+   - Nombre de vendeurs ayant atteint leur objectif par département
+   - Moyenne des ventes par département
+
+2. **Comparaison inter-départements**
+   - Département avec le plus de ventes
+   - Département avec le meilleur taux de réussite
+   - Département nécessitant du soutien
+
+</TabItem>
+
+<TabItem label="📐 Formules">
+
+**Données calculées supplémentaires**
+
+Pour chaque département :
+- `=NB.SI(plage_départements; "Montréal")` → nombre de vendeurs
+- `=SOMME.SI(...)` → total des ventes
+- `=NB.SI.ENS(...)` → nombre ayant atteint objectif
+- Taux de réussite = vendeurs ayant réussi / total vendeurs
+
+**Fonctions à utiliser**
+- `NB.SI` et `NB.SI.ENS` pour les comptages
+- `SOMME.SI` pour les totaux
+- `MAX` et `MIN` pour identifier les extrêmes
+- `SI` pour les messages conditionnels
+- `CONCAT` ou `CONCATENER` pour les phrases dynamiques
+
+</TabItem>
+
+<TabItem label="🎯 Structure">
+
+**Structure suggérée**
+
+```
+Section 1 : DONNÉES INDIVIDUELLES (du problème 1)
+[Tableau des 10 vendeurs]
+
+Section 2 : ANALYSE PAR DÉPARTEMENT
+Département  Nb vendeurs  Total ventes  Ont atteint  Taux réussite
+Montréal     [calculé]    [calculé]     [calculé]    [calculé]
+Québec       [calculé]    [calculé]     [calculé]    [calculé]
+Laval        [calculé]    [calculé]     [calculé]    [calculé]
+
+Section 3 : RAPPORT EXÉCUTIF
+Message de synthèse automatique
+Département champion : [identifié automatiquement]
+Département à soutenir : [identifié automatiquement]
+```
+
+**Défi supplémentaire (optionnel)**  
+Crée un graphique à barres comparant les ventes totales par département.
+
+</TabItem>
+</Tabs>
+
+---
+
+### Problème 3 – Pilotage et aide à la décision
+
+**Mise en contexte**  
+Tech Solutions Inc. affine son système de gestion. La direction veut maintenant un **système de classification à 3 niveaux** pour mieux identifier les besoins d'accompagnement et ajuster les stratégies commerciales. De plus, un nouveau système de primes progressives est mis en place.
+
+<Tabs>
+<TabItem label="📝 Description">
+
+**Situation réelle**
+- Le système binaire (objectif atteint/non atteint) est trop simpliste
+- Certains vendeurs dépassent largement les objectifs → doivent être récompensés davantage
+- D'autres sont en difficulté et nécessitent un accompagnement
+- La direction veut un tableau de bord exécutif automatisé
+
+**Nouvelles règles de classification**
+
+**Niveaux de performance** :
+1. **⚠️ Sous objectif** : moins de 20 ventes
+   - Nécessite accompagnement
+   - Prime : 0 $
+   
+2. **✅ Objectif atteint** : entre 20 et 29 ventes
+   - Performance satisfaisante
+   - Prime Bronze : 500 $
+
+3. **⭐ Excellent** : 30 ventes ou plus
+   - Performance exceptionnelle
+   - Prime Or : 800 $
+
+</TabItem>
+
+<TabItem label="📐 Formules complexes">
+
+**Formules complexes à développer**
+
+1. **Niveau de performance** (SI imbriqués)
+```text
+=SI(ventes<20;"⚠️ Sous objectif";SI(ventes<30;"✅ Objectif atteint";"⭐ Excellent"))
+```
+
+2. **Prime progressive**
+```text
+=SI(ventes<20;0;SI(ventes<30;500;800))
+```
+
+3. **Message automatique de gestion** (CONCAT complexe)
+```text
+=CONCAT("Performance globale ";SI(taux_reussite>=70%;"excellente";"à améliorer");
+". ";nb_excellent;" vendeurs sont en mode Excellence. ";
+SI(nb_sous_objectif>3;"Attention : "&nb_sous_objectif&" vendeurs en difficulté.";""))
+```
+
+4. **Recommandations conditionnelles**
+```text
+=SI(nb_sous_objectif/total_vendeurs>0.3;"▸ URGENT : Révision stratégie commerciale requise";"")
+```
+
+</TabItem>
+
+<TabItem label="🎯 Livrables">
+
+**Livrables attendus**
+
+<Steps>
+
+1. **Feuille "Données vendeurs"** (évolution du Problème 1)
+   - Colonne "Niveau de performance" ajoutée
+   - Colonne "Prime" utilisant le nouveau barème
+   - Tout fonctionne automatiquement
+
+2. **Feuille "Analyse départements"** (du Problème 2)
+   - Mise à jour avec les nouveaux niveaux
+   - Analyse par niveau et par département
+
+3. **Feuille "Résumé exécutif"** (nouvelle)
+   - Tableau de bord complet
+   - Messages automatiques
+   - Recommandations conditionnelles
+
+4. **Interconnexion des feuilles**
+   - Les données de "Données vendeurs" alimentent "Résumé exécutif"
+   - Modifier une vente met à jour tout le système
+
+</Steps>
+
+**Défi d'intégration**
+
+Le système doit être suffisamment flexible pour :
+- ✅ Changer les seuils de performance (20 et 30) dans une zone de paramètres
+- ✅ Modifier les montants des primes
+- ✅ Ajouter ou retirer des vendeurs
+- ✅ Tout recalculer automatiquement
+
+</TabItem>
+</Tabs>

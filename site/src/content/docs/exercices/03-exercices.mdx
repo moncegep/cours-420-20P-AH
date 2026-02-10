@@ -1,0 +1,326 @@
+---
+title: Exercices - Fonctions conditionnelles
+description: Exercices pratiques pour maîtriser SI, NB.SI, SOMME.SI, ET et OU dans Excel
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+## Introduction
+
+Cette page propose des exercices progressifs pour pratiquer les fonctions conditionnelles dans Excel. Les exercices sont organisés par niveau de difficulté et par type de fonction.
+
+<Aside type="tip" title="Comment utiliser ces exercices">
+1. **Reproduisez les données** dans Excel selon les tableaux fournis
+2. **Tentez de résoudre** les questions par vous-même
+3. **Consultez les solutions** uniquement après avoir essayé
+4. **Vérifiez vos résultats** avec les réponses attendues
+</Aside>
+
+## Niveau 1 : Fonction SI - Exercices de base
+
+### Exercice 1.1 : Évaluation d'étudiants
+
+**Contexte :** Vous gérez les notes d'un groupe d'étudiants du Cégep de Montréal.
+
+**Données à reproduire :**
+
+| A - Nom | B - Note |
+|---------|----------|
+| Alice Tremblay | 85 |
+| Bruno Lavoie | 62 |
+| Camille Roy | 45 |
+| David Gagnon | 78 |
+| Emma Côté | 91 |
+| Félix Martin | 58 |
+
+**Questions :**
+
+1. En colonne C, affichez "Réussi" si la note est ≥ 60, sinon "Échoué"
+2. En colonne D, affichez "Excellent" si la note est ≥ 90, sinon afficher la note elle-même
+3. En colonne E, calculez un bonus de 5 points si la note est < 60, sinon aucun bonus (0)
+
+### Exercice 1.2 : Gestion de rabais
+
+**Contexte :** Un magasin à Québec offre des rabais selon le montant d'achat.
+
+**Données à reproduire :**
+
+| A - Client | B - Montant |
+|------------|-------------|
+| Jean Pelletier | 75 |
+| Marie Bouchard | 150 |
+| Luc Bergeron | 120 |
+| Sophie Dupuis | 45 |
+| Marc Lefebvre | 200 |
+
+**Questions :**
+
+1. En colonne C, appliquez un rabais de 10% si le montant ≥ 100$, sinon aucun rabais
+2. En colonne D, calculez le montant final après rabais
+3. En colonne E, affichez "Livraison gratuite" si le montant final ≥ 90$, sinon "Frais 15$"
+
+
+## Niveau 2 : SI imbriqué
+
+### Exercice 2.1 : Classification des notes
+
+**Contexte :** Attribuez des lettres selon les notes des étudiants.
+
+**Données à reproduire :**
+
+| A - Étudiant | B - Note |
+|--------------|----------|
+| Alex Morin | 92 |
+| Béatrice Lévesque | 78 |
+| Charles Gagné | 65 |
+| Diane Fortin | 58 |
+| Éric Simard | 88 |
+| Francine Beaulieu | 45 |
+
+**Barème :**
+- A : Note ≥ 85
+- B : Note ≥ 70
+- C : Note ≥ 60
+- D : Note < 60
+
+**Question :**
+En colonne C, affichez la lettre correspondant à la note.
+
+
+### Exercice 2.2 : Tarification par paliers
+
+**Contexte :** Une entreprise de télécommunications à Laval offre des forfaits selon la consommation de données.
+
+**Données à reproduire :**
+
+| A - Client | B - GB utilisés |
+|------------|-----------------|
+| Client A | 2 |
+| Client B | 8 |
+| Client C | 15 |
+| Client D | 25 |
+| Client E | 6 |
+
+**Tarification :**
+- Moins de 5 GB : 30$
+- Entre 5 et 10 GB : 45$
+- Entre 10 et 20 GB : 60$
+- Plus de 20 GB : 80$
+
+**Question :**
+En colonne C, calculez le montant facturé selon la consommation.
+
+---
+
+## Niveau 3 : Fonctions NB.SI, SOMME.SI, MOYENNE.SI
+
+### Exercice 3.1 : Analyse des ventes régionales
+
+**Contexte :** Analysez les ventes d'une entreprise dans différentes villes du Québec.
+
+**Données à reproduire :**
+
+| A - Région | B - Ventes | C - Type |
+|------------|------------|----------|
+| Montréal | 5000 | Entreprise |
+| Québec | 3500 | Particulier |
+| Laval | 7200 | Entreprise |
+| Gatineau | 2800 | Particulier |
+| Montréal | 4100 | Particulier |
+| Québec | 6300 | Entreprise |
+| Laval | 1900 | Particulier |
+| Sherbrooke | 4500 | Entreprise |
+| Montréal | 5800 | Entreprise |
+
+**Questions :**
+Créez un tableau d'analyse à partir de la ligne 12 :
+
+1. Combien de ventes ont été réalisées à Montréal ? (cellule B12)
+2. Quel est le total des ventes pour les Entreprises ? (cellule B13)
+3. Quelle est la moyenne des ventes à Québec ? (cellule B14)
+4. Combien de ventes sont supérieures à 5000$ ? (cellule B15)
+5. Quel est le total des ventes à Laval ? (cellule B16)
+---
+
+### Exercice 3.2 : Gestion de l'inventaire
+
+**Contexte :** Gérez l'inventaire d'un entrepôt à Longueuil.
+
+**Données à reproduire :**
+
+| A - Produit | B - Catégorie | C - Quantité | D - Prix unitaire |
+|-------------|---------------|--------------|-------------------|
+| Ordinateur portable | Électronique | 15 | 1200 |
+| Souris | Électronique | 85 | 25 |
+| Chaise de bureau | Mobilier | 32 | 350 |
+| Bureau | Mobilier | 12 | 800 |
+| Imprimante | Électronique | 8 | 450 |
+| Lampe | Mobilier | 48 | 75 |
+| Clavier | Électronique | 62 | 80 |
+| Classeur | Mobilier | 28 | 120 |
+
+**Questions :**
+
+1. Combien de produits de catégorie "Électronique" avez-vous ? (cellule B12)
+2. Quelle est la quantité totale de produits "Mobilier" ? (cellule B13)
+3. Quel est le prix unitaire moyen des produits "Électronique" ? (cellule B14)
+4. Combien de produits ont une quantité inférieure à 20 ? (cellule B15)
+5. Quelle est la valeur totale de l'inventaire "Mobilier" ? (Quantité × Prix) (cellule B16)
+
+---
+
+## Niveau 4 : Fonctions ET et OU
+
+### Exercice 4.1 : Admissibilité à un programme
+
+**Contexte :** Déterminez l'admissibilité des candidats à un programme de bourses.
+
+**Données à reproduire :**
+
+| A - Candidat | B - Moyenne | C - Activités | D - Revenu familial |
+|--------------|-------------|---------------|---------------------|
+| Sarah Dubois | 85 | 3 | 45000 |
+| Thomas Richard | 78 | 5 | 62000 |
+| Julie Caron | 92 | 2 | 38000 |
+| Pierre Nadeau | 88 | 4 | 55000 |
+| Amélie Poulin | 75 | 1 | 48000 |
+| Nicolas Bérubé | 90 | 6 | 35000 |
+
+**Critères d'admissibilité :**
+- Moyenne ≥ 80 **ET** Activités ≥ 3 **ET** Revenu < 50000$
+
+**Question :**
+En colonne E, affichez "Admissible" si tous les critères sont satisfaits, sinon "Non admissible".
+
+---
+
+### Exercice 4.2 : Système de rabais multiple
+
+**Contexte :** Une boutique à Trois-Rivières offre des rabais selon différents critères.
+
+**Données à reproduire :**
+
+| A - Client | B - Montant | C - Membre | D - Ancienneté (ans) |
+|------------|-------------|------------|----------------------|
+| Martin Roy | 150 | Oui | 2 |
+| Sylvie Morin | 85 | Non | 0 |
+| André Côté | 220 | Oui | 5 |
+| Louise Gagnon | 95 | Oui | 1 |
+| Robert Lapointe | 180 | Non | 0 |
+| Claire Boucher | 120 | Oui | 3 |
+
+**Règles de rabais :**
+- Rabais de 20% si : (Montant > 200$) **OU** (Membre ET Ancienneté ≥ 3 ans)
+- Rabais de 10% si : Membre **OU** Montant > 100$
+- Sinon : Aucun rabais
+
+**Questions :**
+1. En colonne E, calculez le pourcentage de rabais (20, 10 ou 0)
+2. En colonne F, calculez le montant du rabais
+3. En colonne G, calculez le montant final
+
+---
+
+## Niveau 5 : Exercices combinés avancés
+
+### Exercice 5.1 : Tableau de bord RH
+
+**Contexte :** Analysez les employés d'une entreprise à Montréal.
+
+**Données à reproduire :**
+
+| A - Employé | B - Département | C - Salaire | D - Ancienneté | E - Performance |
+|-------------|-----------------|-------------|----------------|-----------------|
+| Alice Martin | Ventes | 55000 | 3 | 85 |
+| Bruno Lefebvre | IT | 72000 | 7 | 92 |
+| Carole Dubois | RH | 48000 | 2 | 78 |
+| Daniel Roy | Ventes | 62000 | 5 | 88 |
+| Emma Gagné | IT | 68000 | 4 | 90 |
+| François Côté | RH | 52000 | 6 | 82 |
+| Geneviève Morin | Ventes | 58000 | 8 | 95 |
+| Henri Lavoie | IT | 75000 | 9 | 87 |
+
+**Questions :**
+
+1. En colonne F, accordez une prime de 5% si : (Performance ≥ 90) **OU** (Ancienneté ≥ 7 ET Performance ≥ 85)
+2. En colonne G, affichez "Augmentation" si : Département = "Ventes" **ET** Performance ≥ 85 **ET** Salaire < 60000
+3. Créez un tableau d'analyse :
+   - Nombre d'employés en IT
+   - Salaire moyen des Ventes
+   - Nombre d'employés avec performance ≥ 90
+   - Total des salaires pour RH
+   - Nombre d'employés éligibles à une augmentation
+
+---
+
+### Exercice 5.2 : Gestion de projet complexe
+
+**Contexte :** Suivez l'avancement de projets pour une agence web à Sherbrooke.
+
+**Données à reproduire :**
+
+| A - Projet | B - Budget | C - Dépensé | D - Échéance | E - Statut |
+|------------|------------|-------------|--------------|------------|
+| Site Corp A | 50000 | 38000 | 2026-02-15 | En cours |
+| App Mobile B | 75000 | 72000 | 2026-01-20 | En cours |
+| Refonte C | 30000 | 28000 | 2026-03-01 | En cours |
+| E-commerce D | 90000 | 45000 | 2026-02-28 | En cours |
+| Portail E | 60000 | 62000 | 2026-01-15 | En cours |
+| Site Vitrine F | 25000 | 15000 | 2026-03-15 | En cours |
+
+**Questions :**
+
+1. En colonne F, calculez le pourcentage utilisé du budget (Dépensé / Budget × 100)
+2. En colonne G, affichez "ALERTE" si : (Dépensé > Budget) **OU** (% utilisé > 90 ET Échéance < 01/03/2026)
+3. En colonne H, calculez le budget restant (si négatif, afficher 0)
+4. En colonne I, affichez "Urgent" si : Échéance < 01/02/2026 **ET** % utilisé > 80
+5. Créez un tableau d'analyse :
+   - Nombre de projets en alerte
+   - Budget total de tous les projets
+   - Total des dépassements (montants négatifs uniquement)
+   - Nombre de projets urgents
+   - Budget moyen restant pour les projets non urgents
+
+
+## Exercices de synthèse
+
+### Exercice 6 : Cas pratique complet - Gestion d'un tournoi sportif
+
+**Contexte :** Organisez le classement d'un tournoi de hockey au Québec.
+
+**Données à reproduire :**
+
+| A - Équipe | B - Victoires | C - Défaites | D - Points marqués | E - Points encaissés |
+|------------|---------------|--------------|--------------------|--------------------|
+| Canadiens Jr | 12 | 3 | 48 | 22 |
+| Nordiques Jr | 10 | 5 | 42 | 28 |
+| Olympiques | 8 | 7 | 38 | 35 |
+| Tigres | 11 | 4 | 45 | 25 |
+| Remparts | 7 | 8 | 35 | 40 |
+| Saguenéens | 9 | 6 | 40 | 32 |
+
+**Règles :**
+- Points = (Victoires × 2) + (Défaites × 0)
+- Différentiel = Points marqués - Points encaissés
+- Qualification si : (Points ≥ 18) **ET** (Différentiel > 5)
+- Prime de performance si : (Victoires ≥ 10) **OU** (Différentiel ≥ 15)
+
+**Questions :**
+
+1. Colonne F : Calculez les points de classement
+2. Colonne G : Calculez le différentiel
+3. Colonne H : Affichez "Qualifié" ou "Non qualifié"
+4. Colonne I : Calculez une prime de 5000$ si éligible, sinon 0
+5. Colonne J : Attribuez un rang :
+   - "Excellent" si Points ≥ 22 ET Différentiel ≥ 20
+   - "Bon" si Points ≥ 18 ET Différentiel ≥ 10
+   - "Moyen" si Points ≥ 14
+   - "Faible" sinon
+6. Tableau d'analyse :
+   - Nombre d'équipes qualifiées
+   - Points moyens des équipes qualifiées
+   - Total des primes à distribuer
+   - Équipe(s) avec le meilleur différentiel
+   - Nombre d'équipes avec rang "Excellent" ou "Bon"

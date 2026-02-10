@@ -1,18 +1,30 @@
 ---
-title: <strong style='color:rgb(218,30,16)'>420-20P-AH</strong> <br> Informatique pour la gestion de données en entreprise
+title: Informatique pour la gestion de données en entreprise
 description: Site présentant le matériel de support du cours 420-20P-AH (Informatique pour la gestion de données en entreprise).
 template: splash # Remove or comment out this line to display the site sidebar on this page.
 hero:
+  title: <b style='color:rgb(218,30,16)'>420-20P-AH</b> <br> Informatique pour la gestion de données en entreprise
   tagline: Modélisation et analyse de données avec Excel
   image:
     file: ../../assets/houston.webp
   actions:
     - text: Matériel de cours
-      link: /cours/02-conditions
+      link: /cours/03-fonction-etou
       icon: right-arrow
+    - text: Guides et références
+      link: /guides/modelisation-excel
+      icon: open-book
+      variant: minimal
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import CourseFooter from './../../components/Footer.astro';
+import LessonVideo from './../../components/LessonVideo.astro';
+import LessonCard from './../../components/LessonCard.astro';
+
+
+
+
 
 ## Cette semaine
 
@@ -23,17 +35,41 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
 		**la mise en forme conditionnelle.**
 	</Card>
 	<Card title="Exerices" icon="puzzle">
-		À venir
-	</Card>
-	<Card title="Capsules" icon="seti:video">
-		À venir
+		- Modélisation de données avec formules conditionnelles
+		- Mise en forme conditionnelle
+		- Analyse de données avec formules conditionnelles
 	</Card>
 	<Card title="Guide et Références" icon="open-book">
-		À venir
+		- [Modélisation de problèmes avec Excel](./guides/modelisation-excel.mdx)
 	</Card>
 </CardGrid>
 
-<footer>
 
-  <p>© 2026 420-20P-AH. Tous droits réservés.</p>
-</footer>
+## Capsules récentes
+
+<div class="video-grid">
+  <LessonCard
+    title="Référencement absolu"
+    embedSrc="https://www.youtube.com/embed/rZF8xCsr9f8?rel=0&modestbranding=1"
+    youtubeUrl="https://youtu.be/rZF8xCsr9f8"
+    level="Débutant"
+    duration="3 min"
+  />
+
+  <LessonCard
+    title="Fonction SI"
+    embedSrc="https://www.youtube.com/embed/PS4vBejd6x8?rel=0&modestbranding=1"
+    youtubeUrl="https://youtu.be/PS4vBejd6x8"
+    level="Débutant"
+    duration="10 min"
+  />
+</div>
+
+## Calendrier de la session
+
+import CourseCalendar from '../../components/CourseCalendar.astro';
+
+<CourseCalendar />
+
+
+<CourseFooter author={'L-E Lafontant'} />

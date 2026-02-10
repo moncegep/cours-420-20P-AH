@@ -31,18 +31,32 @@ export default defineConfig({
 						},
 						{
 							label: 'Semaine 2',
-							badge: 'Nouveau',
 							items: [
 								{ label: "Modélisation: Suivi d'une classe", slug: 'cours/02-conditions' },
 								{ label: 'Fonction SI', slug: 'cours/02-fonction-si' },
-								{ label: 'Exercices', slug: 'cours/02-exercices' },
+								{ label: 'Fonction conditionnel', slug: 'cours/02-fonction-conditionnel' },
+								{ label: 'Synthèse', slug: 'cours/02-synthese' },
+								{ label: "Exercices", items: [
+									{ label: 'Exercices', slug: 'cours/02-exercices' },
+									// { label: 'Problèmes', slug: 'exercices/02-exercices' },
+								]}
+							]
+						},
+						{
+							label: 'Semaine 3',
+							badge: 'Nouveau',
+							items: [
+								{ label: 'Fonction ET, OU', slug: 'cours/03-fonction-etou' },
+								{ label: 'Mise en forme conditionnelle', slug: 'cours/03-mise-en-forme' },
+								{ label: "Exercices", items: [
+									{ label: 'Exercices', slug: 'exercices/03-exercices' },
+								]}
 							]
 						},
 					],
 				},
 				{
 					label: 'Guides',
-					badge: 'Nouveau',
 					items: [
 						{ label: 'Modélisation de problèmes', slug: 'guides/modelisation-excel' },
 					],

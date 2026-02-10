@@ -1,0 +1,495 @@
+---
+title: Fonctions logiques ET et OU
+description: Apprendre à utiliser les fonctions ET et OU pour combiner plusieurs conditions avec SI
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import QuizClassification from '../../../components/QuizClassification';
+
+## Pourquoi utiliser ET et OU ?
+
+Les fonctions **ET** et **OU** permettent de combiner plusieurs conditions dans une même formule. Elles sont particulièrement utiles lorsqu'utilisées avec la fonction **SI** pour créer des tests logiques complexes.
+
+**Cas d'usage typiques :**
+- Vérifier qu'un étudiant a réussi **toutes** les évaluations (ET)
+- Déterminer si **au moins une** condition est remplie pour accorder un rabais (OU)
+- Valider qu'un candidat satisfait **plusieurs critères** simultanément (ET)
+
+## La fonction ET
+
+La fonction **ET** retourne VRAI uniquement si **toutes** les conditions sont vraies. Si au moins une condition est fausse, elle retourne FAUX.
+
+### Syntaxe
+```text
+=ET(condition1; condition2; [condition3]; ...)
+```
+
+**Arguments :**
+- `condition1`, `condition2`, etc. : jusqu'à 255 conditions à vérifier
+- Retourne **VRAI** si toutes les conditions sont vraies
+- Retourne **FAUX** si au moins une condition est fausse
+
+### Table de vérité ET
+
+| Condition 1 | Condition 2 | Résultat ET |
+|-------------|-------------|-------------|
+| VRAI        | VRAI        | **VRAI**    |
+| VRAI        | FAUX        | FAUX        |
+| FAUX        | VRAI        | FAUX        |
+| FAUX        | FAUX        | FAUX        |
+
+### Exemples simples
+
+#### Exemple 1 : Vérifier deux notes
+```text
+=ET(A1>=60; B1>=60)
+```
+Retourne VRAI si les deux notes sont ≥ 60. Si A1=70 et B1=55, retourne FAUX.
+
+#### Exemple 2 : Valider une plage de valeurs
+```text
+=ET(A1>=18; A1<=65)
+```
+Retourne VRAI si l'âge est entre 18 et 65 ans inclusivement.
+
+#### Exemple 3 : Combiner plusieurs critères
+```text
+=ET(A1="Montréal"; B1>1000; C1>=50)
+```
+Retourne VRAI seulement si :
+- La région est Montréal **ET**
+- Le montant est supérieur à 1000 **ET**
+- La quantité est ≥ 50
+
+## La fonction OU
+
+La fonction **OU** retourne VRAI si **au moins une** condition est vraie. Elle retourne FAUX uniquement si **toutes** les conditions sont fausses.
+
+### Syntaxe
+```text
+=OU(condition1; condition2; [condition3]; ...)
+```
+
+**Arguments :**
+- `condition1`, `condition2`, etc. : jusqu'à 255 conditions à vérifier
+- Retourne **VRAI** si au moins une condition est vraie
+- Retourne **FAUX** si toutes les conditions sont fausses
+
+### Table de vérité OU
+
+| Condition 1 | Condition 2 | Résultat OU |
+|-------------|-------------|-------------|
+| VRAI        | VRAI        | **VRAI**    |
+| VRAI        | FAUX        | **VRAI**    |
+| FAUX        | VRAI        | **VRAI**    |
+| FAUX        | FAUX        | FAUX        |
+
+### Exemples simples
+
+#### Exemple 1 : Vérifier l'admissibilité
+```text
+=OU(A1="Montréal"; A1="Laval"; A1="Longueuil")
+```
+Retourne VRAI si la ville est Montréal, Laval OU Longueuil.
+
+#### Exemple 2 : Détecter une note critique
+```text
+=OU(A1<50; B1<50)
+```
+Retourne VRAI si au moins une des deux notes est inférieure à 50.
+
+#### Exemple 3 : Identifier un client prioritaire
+```text
+=OU(A1="VIP"; B1>10000; C1>=5)
+```
+Retourne VRAI si le client :
+- Est VIP **OU**
+- A un solde > 10000$ **OU**
+- A fait 5 commandes ou plus
+
+## Combiner ET/OU avec SI
+
+C'est en combinant **ET** ou **OU** avec **SI** qu'on obtient la puissance de ces fonctions.
+
+### Pattern général
+```text
+=SI(ET(condition1; condition2); valeur_si_vrai; valeur_si_faux)
+=SI(OU(condition1; condition2); valeur_si_vrai; valeur_si_faux)
+```
+
+### Exemples avec ET
+
+#### Exemple 1 : Bonus pour double performance
+```text
+=SI(ET(A1>=80; B1>=80); "Bonus"; "Pas de bonus")
+```
+Affiche "Bonus" seulement si les deux notes sont ≥ 80.
+
+#### Exemple 2 : Remise pour gros achat récent
+```text
+=SI(ET(B1>5000; C1>=2024); B1*0,9; B1)
+```
+Applique 10% de remise si le montant > 5000$ **ET** l'année ≥ 2024.
+
+#### Exemple 3 : Validation de candidature
+```text
+=SI(ET(A1>=18; B1="Diplôme"; C1>=2); "Admissible"; "Non admissible")
+```
+Le candidat est admissible s'il a :
+- 18 ans ou plus **ET**
+- Un diplôme **ET**
+- Au moins 2 ans d'expérience
+
+### Exemples avec OU
+
+#### Exemple 1 : Alerte de performance faible
+```text
+=SI(OU(A1<50; B1<50); "Attention"; "Correct")
+```
+Affiche "Attention" si **au moins une** note est inférieure à 50.
+
+#### Exemple 2 : Frais de livraison gratuits
+```text
+=SI(OU(A1>100; B1="Membre"); 0; 15)
+```
+Frais gratuits (0$) si le montant > 100$ **OU** si le client est membre.
+
+#### Exemple 3 : Éligibilité à un programme
+```text
+=SI(OU(A1="Montréal"; A1="Québec"; A1="Sherbrooke"); "Éligible"; "Non éligible")
+```
+Éligible si la ville est Montréal, Québec **OU** Sherbrooke.
+
+## Combiner ET et OU ensemble
+
+On peut imbriquer ET et OU pour créer des conditions très complexes.
+
+### Exemple 1 : Système de rabais sophistiqué
+```text
+=SI(ET(OU(A1="VIP"; B1>5000); C1>=3); "Rabais 20%"; "Rabais 10%")
+```
+
+**Logique :**
+- Rabais de 20% si le client est VIP **OU** commande > 5000$
+- **ET** a fait au moins 3 achats
+- Sinon rabais de 10%
+
+### Exemple 2 : Admission avec critères multiples
+```text
+=SI(ET(A1>=75; OU(B1="Sport-Études"; C1>=85)); "Admis"; "Refusé")
+```
+
+**Logique :**
+- Admis si note ≥ 75
+- **ET** (élève en Sport-Études **OU** moyenne antérieure ≥ 85)
+
+### Exemple 3 : Classification complexe
+```text
+=SI(OU(ET(A1>=90; B1>=80); ET(A1>=80; B1>=90)); "Excellence"; "Standard")
+```
+
+**Logique :**
+- Excellence si (note1 ≥ 90 **ET** note2 ≥ 80)
+- **OU** (note1 ≥ 80 **ET** note2 ≥ 90)
+
+<Aside type="tip" title="Conseil de lisibilité">
+Pour les formules complexes, utilisez des espaces après les points-virgules et documentez la logique dans une cellule adjacente. Cela facilite la maintenance et le débogage.
+</Aside>
+
+## Différences clés : ET vs OU
+
+<CardGrid>
+  <Card title="Fonction ET" icon="approve-check">
+    **Toutes** les conditions doivent être vraies.
+    
+    Utilisez ET quand vous voulez être **restrictif** :
+    - Validation stricte
+    - Critères cumulatifs
+    - Conditions obligatoires
+  </Card>
+  
+  <Card title="Fonction OU" icon="list-format">
+    **Au moins une** condition doit être vraie.
+    
+    Utilisez OU quand vous voulez être **permissif** :
+    - Plusieurs options valides
+    - Critères alternatifs
+    - Flexibilité dans les conditions
+  </Card>
+</CardGrid>
+
+## Tableau comparatif
+
+| Fonction | Retourne VRAI quand... | Retourne FAUX quand... | Usage typique |
+|----------|----------------------|----------------------|---------------|
+| **ET**   | **Toutes** les conditions sont vraies | **Au moins une** condition est fausse | Critères obligatoires cumulés |
+| **OU**   | **Au moins une** condition est vraie | **Toutes** les conditions sont fausses | Options alternatives |
+
+## Erreurs fréquentes à éviter
+
+1. **Confondre ET et OU**
+```text
+   ❌ =SI(OU(A1>=60; B1>=60); "Réussi"; "Échoué")
+   ✅ =SI(ET(A1>=60; B1>=60); "Réussi"; "Échoué")
+```
+   Si on veut que les deux notes soient ≥ 60, il faut ET, pas OU.
+
+2. **Oublier les parenthèses**
+```text
+   ❌ =SI(ET A1>=60; B1>=60; "Réussi"; "Échoué")
+   ✅ =SI(ET(A1>=60; B1>=60); "Réussi"; "Échoué")
+```
+
+3. **Utiliser ET/OU sans SI pour afficher du texte**
+```text
+   ❌ =ET(A1>=60; B1>=60; "Réussi"; "Échoué")
+   ✅ =SI(ET(A1>=60; B1>=60); "Réussi"; "Échoué")
+```
+   ET/OU retournent VRAI ou FAUX, pas du texte personnalisé.
+
+## Quiz rapide
+
+export const quizData = [
+  {
+    id: 'q1',
+    question: 'Que retourne `=ET(10>5; 20>15; 30>25)` ?',
+    options: ['VRAI', 'FAUX', '10', 'Erreur'],
+    correct: 'VRAI',
+    explanation: `Toutes les trois conditions sont vraies :
+- 10 > 5 → VRAI
+- 20 > 15 → VRAI  
+- 30 > 25 → VRAI
+
+Puisque **toutes** les conditions sont vraies, **ET** retourne **VRAI**.`
+  },
+  {
+    id: 'q2',
+    question: 'Que retourne `=OU(5>10; 15>20; 25>20)` ?',
+    options: ['VRAI', 'FAUX', '25', 'Erreur'],
+    correct: 'VRAI',
+    explanation: `Vérifions chaque condition :
+- 5 > 10 → FAUX
+- 15 > 20 → FAUX
+- 25 > 20 → **VRAI** ✓
+
+Puisqu'**au moins une** condition est vraie (la dernière), **OU** retourne **VRAI**.`
+  },
+  {
+    id: 'q3',
+    question: 'Quelle formule affiche "Admis" si les deux notes sont ≥ 60 ?',
+    options: [
+      `=SI(OU(A1>=60; B1>=60); "Admis"; "Refusé")`,
+      `=SI(ET(A1>=60; B1>=60); "Admis"; "Refusé")`,
+      `=ET(SI(A1>=60; "Admis"); SI(B1>=60; "Admis"))`,
+      `=SI(A1>=60; B1>=60; "Admis"; "Refusé")`
+    ],
+    correct: `=SI(ET(A1>=60; B1>=60); "Admis"; "Refusé")`,
+    explanation: `**Il faut ET, pas OU**, car les **deux** notes doivent être ≥ 60.
+
+**Avec ET :** Les deux conditions doivent être vraies  
+**Avec OU :** Une seule note ≥ 60 suffirait (incorrect ici)
+
+**Exemple :**  
+Si A1=70 et B1=55 :
+- Avec ET : FAUX → "Refusé" ✓
+- Avec OU : VRAI → "Admis" ✗ (une seule note suffit)`
+  },
+  {
+    id: 'q4',
+    question: 'Quelle formule donne livraison gratuite si montant > 50$ OU client VIP ?',
+    options: [
+      `=SI(ET(A1>50; B1="VIP"); "Gratuit"; "15$")`,
+      `=SI(OU(A1>50; B1="VIP"); "Gratuit"; "15$")`,
+      `=SI(A1>50; "Gratuit"; SI(B1="VIP"; "Gratuit"; "15$"))`,
+      `=OU(SI(A1>50; "Gratuit"); SI(B1="VIP"; "Gratuit"; "15$"))`
+    ],
+    correct: `=SI(OU(A1>50; B1="VIP"); "Gratuit"; "15$")`,
+    explanation: `Le mot-clé est **"OU"** dans l'énoncé : une **seule condition** suffit.
+
+**Structure correcte :**  
+\`=SI(OU(condition1; condition2); valeur_si_vrai; valeur_si_faux)\`
+
+**Avec OU :** Montant > 50$ **OU** VIP → Gratuit  
+**Avec ET :** Il faudrait les deux conditions (incorrect ici)
+
+**Exemples :**
+- Montant=60$, VIP=Non → Gratuit ✓
+- Montant=30$, VIP=Oui → Gratuit ✓
+- Montant=30$, VIP=Non → 15$ ✓`
+  },
+  {
+    id: 'q5',
+    question: 'Si A1=75 et B1=55, que retourne `=SI(ET(A1>=60; B1>=60); "Passé"; "Échoué")` ?',
+    options: ['Passé', 'Échoué', 'VRAI', 'FAUX'],
+    correct: 'Échoué',
+    explanation: `**Étape 1 :** Évaluer ET(A1>=60; B1>=60)
+- A1>=60 → 75>=60 → VRAI ✓
+- B1>=60 → 55>=60 → **FAUX** ✗
+
+**Étape 2 :** Résultat de ET  
+Puisqu'une condition est FAUX, ET retourne **FAUX**
+
+**Étape 3 :** Évaluer SI  
+SI(FAUX; "Passé"; "Échoué") → **"Échoué"**
+
+**Rappel :** Avec ET, **toutes** les conditions doivent être vraies.`
+  },
+  {
+    id: 'q6',
+    question: 'Que retourne cette formule si A1=85, B1=70 ?\n`=SI(OU(ET(A1>=90; B1>=80); ET(A1>=80; B1>=90)); "Excellence"; "Standard")`',
+    options: ['Excellence', 'Standard', 'VRAI', 'Erreur'],
+    correct: 'Standard',
+    explanation: `**Décomposition de la formule :**
+
+OU(ET(A1>=90; B1>=80); ET(A1>=80; B1>=90))
+
+**Premier ET :** A1>=90 ET B1>=80  
+- 85>=90 → **FAUX** ✗  
+- 70>=80 → FAUX  
+→ Premier ET = **FAUX**
+
+**Deuxième ET :** A1>=80 ET B1>=90  
+- 85>=80 → VRAI ✓  
+- 70>=90 → **FAUX** ✗  
+→ Deuxième ET = **FAUX**
+
+**OU final :** OU(FAUX; FAUX) = **FAUX**
+
+**SI final :** SI(FAUX; "Excellence"; "Standard") → **"Standard"**
+
+Pour "Excellence", il faudrait : (note1≥90 ET note2≥80) OU (note1≥80 ET note2≥90)`
+  },
+  {
+    id: 'q7',
+    question: 'Quelle est l\'erreur dans cette formule ?\n`=SI(ET(A1>=18; A1<=65; B1="Québec"); "Éligible"; "Non éligible")`',
+    options: [
+      'Il manque des parenthèses',
+      'On ne peut pas mélanger >= et = dans ET',
+      'Il faut utiliser OU au lieu de ET',
+      'Il n\'y a pas d\'erreur'
+    ],
+    correct: 'Il n\'y a pas d\'erreur',
+    explanation: `Cette formule est **parfaitement correcte** !
+
+**Elle vérifie trois conditions avec ET :**
+1. A1 >= 18 (âge minimum)
+2. A1 <= 65 (âge maximum)
+3. B1 = "Québec" (province)
+
+Les trois conditions doivent être vraies pour être éligible.
+
+**Exemple valide :** A1=25, B1="Québec" → "Éligible"  
+**Exemple invalide :** A1=70, B1="Québec" → "Non éligible" (trop âgé)  
+**Exemple invalide :** A1=25, B1="Ontario" → "Non éligible" (mauvaise province)
+
+**Note :** On peut combiner autant de conditions qu'on veut dans ET ou OU (jusqu'à 255).`
+  },
+  {
+    id: 'q8',
+    question: 'Pour un rabais de 15% si (client VIP ET achat > 1000$) OU (achat > 5000$), quelle formule ?',
+    options: [
+      `=SI(OU(ET(A1="VIP"; B1>1000); B1>5000); B1*0,85; B1)`,
+      `=SI(ET(OU(A1="VIP"; B1>1000); B1>5000); B1*0,85; B1)`,
+      `=SI(OU(A1="VIP"; B1>1000; B1>5000); B1*0,85; B1)`,
+      `=SI(ET(A1="VIP"; OU(B1>1000; B1>5000)); B1*0,85; B1)`
+    ],
+    correct: `=SI(OU(ET(A1="VIP"; B1>1000); B1>5000); B1*0,85; B1)`,
+    explanation: `**Analyse de la condition :**  
+"(VIP **ET** achat > 1000$) **OU** (achat > 5000$)"
+
+**Structure logique :**
+\`\`\`
+OU(
+  ET(A1="VIP"; B1>1000),  ← Première option
+  B1>5000                  ← Deuxième option
+)
+\`\`\`
+
+**Cas d'application du rabais :**
+1. Client VIP **ET** achète > 1000$ → 15% ✓
+2. **OU** achète > 5000$ (même non-VIP) → 15% ✓
+
+**Exemples :**
+- VIP=Oui, 1500$ → Rabais ✓ (option 1)
+- VIP=Non, 6000$ → Rabais ✓ (option 2)
+- VIP=Oui, 800$ → Pas de rabais (aucune option)
+- VIP=Non, 3000$ → Pas de rabais (aucune option)
+
+**L'option C** est incorrecte car elle donne le rabais si VIP seul (sans montant minimum).`
+  }
+];
+
+<QuizClassification client:visible questions={quizData} title="Quiz: Fonctions ET et OU" />
+
+## Exemple pratique complet
+
+Imaginons un système d'évaluation d'admissibilité pour un programme d'études avec les critères suivants :
+
+**Données :**
+- Colonne A : Moyenne générale
+- Colonne B : Note en mathématiques
+- Colonne C : Statut (Régulier, Sport-Études, International)
+- Colonne D : Nombre d'années d'expérience
+
+**Critères d'admission :**
+1. **Admission régulière :** Moyenne ≥ 75 ET maths ≥ 70
+2. **Admission Sport-Études :** Statut Sport-Études ET moyenne ≥ 65
+3. **Admission expérience :** Expérience ≥ 3 ans ET moyenne ≥ 70
+
+**Formule complète :**
+```text
+=SI(
+  OU(
+    ET(A2>=75; B2>=70);
+    ET(C2="Sport-Études"; A2>=65);
+    ET(D2>=3; A2>=70)
+  );
+  "ADMIS";
+  "REFUSÉ"
+)
+```
+
+**Explication :**
+- Le OU externe vérifie si **au moins un** des trois critères est satisfait
+- Chaque ET interne vérifie que **toutes** les conditions d'un critère sont remplies
+
+## Alternatives : Fonctions SI.CONDITIONS
+
+Pour des formules très complexes, Excel propose aussi **SI.CONDITIONS** qui peut parfois remplacer ET/OU imbriqués :
+```text
+=SI.CONDITIONS(
+  ET(A1>=75; B1>=70); "Admission régulière";
+  ET(C1="Sport-Études"; A1>=65); "Admission Sport-Études";
+  ET(D1>=3; A1>=70); "Admission avec expérience";
+  VRAI; "Refusé"
+)
+```
+
+<Aside type="note" title="Note sur SI.CONDITIONS">
+SI.CONDITIONS évalue les conditions dans l'ordre et retourne le résultat de la première condition vraie. C'est utile pour éviter les SI imbriqués profonds, mais ET et OU restent essentiels pour combiner plusieurs conditions.
+</Aside>
+
+{/* ## Astuces de débogage
+
+1. **Tester ET/OU séparément :**  
+   Avant d'ajouter SI, testez votre condition seule :
+```text
+   =ET(A1>=60; B1>=60)  // Doit retourner VRAI ou FAUX
+```
+
+2. **Utiliser EVALFORMULE (Évaluer la formule) :**  
+   Onglet Formules → Évaluation de formule pour voir étape par étape
+
+3. **Diviser les formules complexes :**  
+   Créez des cellules intermédiaires pour les sous-conditions */}
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : Fonction ET](https://support.microsoft.com/fr-fr/office/et-et-fonction-5f19b2e8-e1df-4408-897a-ce285a19e9d9)
+- [Documentation Microsoft : Fonction OU](https://support.microsoft.com/fr-fr/office/ou-ou-fonction-7d17ad14-8700-4281-b308-00b131e22af0)
+
+---
+
+{/* **Prochaine étape** : Découvrir la mise en forme conditionnelle pour visualiser automatiquement les données selon des critères. */}

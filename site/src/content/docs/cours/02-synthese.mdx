@@ -1,0 +1,272 @@
+---
+title: Récapitulatif de la semaine
+description: Référencement, fonctions SI et fonctions conditionnelles appliquées à la gestion comptable et financière
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Objectif de la semaine
+
+Cette semaine, nous avons appris à :
+- modéliser un problème de gestion dans Excel
+- structurer correctement un chiffrier
+- utiliser le **référencement**
+- automatiser des décisions avec les **fonctions conditionnelles**
+
+## 1️⃣ Modélisation de problème
+
+Avant de se lancer dans la construction d’un chiffrier Excel, il est essentiel de suivre une démarche structurée pour s’assurer que le modèle répondra aux besoins de gestion.
+
+### Démarche utilisée
+1. Définir **l’objectif**
+2. Identifier les **données à saisir**
+3. Identifier les **données calculées**
+4. Repérer les **conditions**
+5. Structurer les feuilles et colonnes
+
+### Exemple: Suivi budgétaire d'un département
+
+1. **Objectif:** Vérifier si un département respecte son budget mensuel.
+2. **Données à saisir:**
+   - Département
+   - Budget mensuel
+   - Dépenses mensuelles
+3. **Données calculées:**
+    - Écart (*Budget - Dépenses*)
+    - Statut (*Dépassement* ou *OK*)
+4. **Conditions:**
+   - Si l'écart est négatif, alors le statut indique "Dépassement", sinon "OK"
+5. **Structuration:**
+
+| Département | Budget | Dépenses | Écart | Statut |
+|------------|--------|----------|-------|--------|
+
+
+## 2️⃣ Référencement de cellules
+
+Le référencement indique **où Excel doit aller chercher une valeur**.
+Il existe plusieurs types de référencement :
+
+### Référencement relatif
+
+C'est le référencement par défaut. Il est dit "relatif" car il s'adapte en fonction de l'endroit (feuille) où la formule est copiée.
+Lorsqu'on copie la fomule d'une cellule à l'autre, la cellule de référence change également.  
+
+#### Exemple
+
+Si on a la formule suivante en E2 :
+
+```text
+=B2 + C2 + D2
+```
+
+et qu'on la copie en glissant la souris vers la ligne 3, on obtiendra en E3 :
+
+```text
+=B3 + C3 + D3
+```
+
+Cette technique est très utile pour appliquer la même logique de calcul à plusieurs lignes ou colonnes sans avoir à réécrire la formule à chaque fois.
+
+
+### Référencement absolu
+
+Le référencement absolu est utilisé lorsque tu veux que la référence à une cellule reste fixe, même lorsque tu copies la formule dans d'autres cellules.  
+Pour créer une référence absolue, tu dois ajouter un signe dollar (`$`) avant la lettre de la colonne et le numéro de la ligne.
+
+Exemple: Si tu as une formule en C2 qui fait référence à E1 et que tu veux que la référence à E1 reste fixe lorsque tu copies la formule, tu écrirais :
+```text
+=B2 * $E$1
+```
+
+Cette approche est très utilisé pour les taux de taxes, seuils et paramètres.
+
+### Référencement mixte
+
+Un peu plus flexible que le référencement absolu, le référencement mixte permet de fixer soit la colonne, soit la ligne, mais pas les deux.
+
+| Formule | Effet        |
+| ------- | ------------ |
+| `$A1`   | Colonne fixe |
+| `A$1`   | Ligne fixe   |
+
+Ce type de référencement est particulièrement utile dans des tableaux croisés ou des calculs matriciels.
+
+### Référencement entre feuilles
+
+Supposons une feuille nommée "Parametres".
+Pour faire référence à une cellule de cette feuille, il faut inclure le nom de la feuille suivi d'un point d'exclamation (`!`) avant la référence de la cellule.
+
+```text
+=Parametres!B2
+```
+
+<Aside type="tip" title="Astuce importante">
+
+Pour simplifier l'écriture et la lecture de formules qui font référence à d'autres feuilles, 
+il est souvent préférable de ramener les valeurs externes dans la feuille locale avant de les
+utiliser dans des calculs.
+
+Par exemple, au lieu de faire référece directement à une autre feuille :
+```text
+=B2 * Parametres!B2
+```
+on peut d'abord ramener la valeur dans une cellule locale, puis utiliser cette cellule :
+```text
+D2 = Parametres!B2
+E2 = B2 * D2
+```
+
+Ceci facilite la lecture et la maintenance du classeur Excel.
+</Aside>
+
+
+## 3️⃣ Fonction SI
+
+La fonction `SI` est une fonction conditionnelle qui permet de faire des choix dans les formules en fonction de critères spécifiques.
+
+### Syntaxe
+
+```text
+=SI(condition; valeur_si_vrai; valeur_si_faux)
+```
+- `condition` : une expression qui peut être évaluée comme vraie ou fausse (ex: `C2 > B2`)
+- `valeur_si_vrai` : la valeur ou l'expression à retourner si la
+condition est vraie (ex: "Dépassement")
+- `valeur_si_faux` : la valeur ou l'expression à retourner si la condition est fausse (ex: "OK")
+
+### Exemple: Indiquer un dépassement de budget
+
+Supposons que la cellule `B2` contient le budget et la cellule `C2` contient les dépenses.
+Pour indiquer si le département a dépassé son budget ou non, on peut utiliser la formule suivante en `D2` :
+
+```text
+=SI(C2>B2; "Dépassement"; "OK")
+```
+
+## 4️⃣ SI imbriqué (SI dans un SI)
+
+Le SI imbriqué est une forme avancée de la fonction SI qui permet de tester plusieurs conditions tour à tour.
+Elle est utilisé lorsqu'il y a plus de deux cas possibles.
+
+### Syntaxe
+
+```text
+=SI(condition1;
+    valeur1;
+    SI(condition2;
+       valeur2;
+       valeur_par_defaut))
+
+```
+
+### Exemple: Évaluation financière (simple)
+
+Supposons que tu souhaites évaluer la performance financière d'un département 
+en fonction de son chiffre d'affaires (CA) dans la cellule `C2`.
+- Si le CA est supérieur à 10,000 $, la performance est "Excellent"
+- Si le CA est entre 5,000 $ et 10,000 $, la performance est "Acceptable"
+- Si le CA est inférieur à 5,000 $, la performance est "Insuffisant"
+
+```text
+=SI(C2>10000;
+    "Excellent";
+    SI(C2>=5000;
+       "Acceptable";
+       "Insuffisant"))
+```
+
+<Aside type="caution" title="Attention aux longs SI imbriqués">
+Les SI imbriqués peuvent devenir complexes rapidement. 
+Il faut bien évaluer la logique avant de les construire et considerer d'autres fonctions conditionnelles pour des cas plus complexes.
+</Aside>
+
+## 5️⃣ Fonctions conditionnelles
+
+### NB.SI
+
+La fonction `NB.SI` permet de compter le nombre de cellules qui répondent à un critère spécifique.
+
+Syntaxe:
+
+```text
+=NB.SI(plage; critère)
+```
+
+- `plage` : la plage de cellules à évaluer
+- `critère` : la condition à remplir (ex: ">10000", "Dépassement", etc.)
+
+#### Exemple: Nombre de factures en retard
+
+Supposons que la colonne `F` contient les statuts des factures
+
+```text
+=NB.SI(F2:F50; "En retard")
+```
+
+### SOMME.SI
+
+La fonction `SOMME.SI` permet de sommer les valeurs d'une plage qui répondent à un critère spécifique.
+
+#### Syntaxe:
+
+```text
+=SOMME.SI(plage; critère; [plage_somme])
+```
+
+- `plage` : la plage de cellules à évaluer
+- `critère` : la condition à remplir (ex: ">10000", "Dépassement", etc.)
+- `plage_somme` (*optionnel*) : la plage de cellules à sommer — Utiliser si différente de la plage d'évaluation.
+
+#### Exemple: Valeur à sommer dans la même plage que les critères
+
+Supposons que la colonne `A` contient les montants des ventes. Si on veut sommer les ventes supérieures à 10,000 $ :
+
+```text
+=SOMME.SI(A2:A100; ">10000")
+```
+
+#### Exemple: Valeur à sommer dans une plage différente des critères
+
+Supposons que la colonne `A` contient les noms des clients et la colonne `B` les montants des ventes.
+Si on veut sommer les ventes de "Desjardins" :
+
+```text
+=SOMME.SI(A2:A100; "Desjardins"; B2:B100)
+```
+
+### MOYENNE.SI
+
+La fonction `MOYENNE.SI` permet de calculer la moyenne des valeurs d'une plage qui répondent à un critère spécifique.
+
+Syntaxe:
+
+```text
+=MOYENNE.SI(plage; critère; [plage_moyenne])
+```
+
+- `plage` : la plage de cellules à évaluer
+- `critère` : la condition à remplir (ex: ">10000", "Dépassement", etc.)
+- `plage_moyenne` (*optionnel*) : la plage de cellules à calculer la moyenne — Utiliser si différente de la plage d'évaluation.
+
+#### Exemple: Moyenne des ventes supérieures à 1,000 $
+
+Supposons que la colonne `A` contient les montants des ventes. Si on veut calculer la moyenne des ventes supérieures à 1,000 $ :
+
+```text
+=MOYENNE.SI(A2:A100; ">1000")
+```
+
+#### Exemple: Moyenne des dépenses admissibles
+
+Supposons que la colonne `D` contient les statuts d'admissibilité ("Oui" ou "Non") et la colonne `C` les montants des dépenses. 
+Si on veut calculer la moyenne des dépenses admissibles :
+
+```text 
+=MOYENNE.SI(D2:D50; "Oui"; C2:C50)
+```
+
+# Conclusion
+
+Cette semaine, nous avons couvert des concepts élémentaires mais puissants pour la gestion comptable et financière avec Excel, 
+notamment la modélisation de problèmes, le référencement de cellules et l'utilisation des fonctions conditionnelles telles que SI, NB.SI, SOMME.SI et MOYENNE.SI.

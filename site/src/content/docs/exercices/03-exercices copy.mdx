@@ -1,0 +1,861 @@
+---
+title: Exercices - Fonctions conditionnelles
+description: Exercices pratiques pour maîtriser SI, NB.SI, SOMME.SI, ET et OU dans Excel
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+## Introduction
+
+Cette page propose des exercices progressifs pour pratiquer les fonctions conditionnelles dans Excel. Les exercices sont organisés par niveau de difficulté et par type de fonction.
+
+<Aside type="tip" title="Comment utiliser ces exercices">
+1. **Reproduisez les données** dans Excel selon les tableaux fournis
+2. **Tentez de résoudre** les questions par vous-même
+3. **Consultez les solutions** uniquement après avoir essayé
+4. **Vérifiez vos résultats** avec les réponses attendues
+</Aside>
+
+## Niveau 1 : Fonction SI - Exercices de base
+
+### Exercice 1.1 : Évaluation d'étudiants
+
+**Contexte :** Vous gérez les notes d'un groupe d'étudiants du Cégep de Montréal.
+
+**Données à reproduire :**
+
+| A - Nom | B - Note |
+|---------|----------|
+| Alice Tremblay | 85 |
+| Bruno Lavoie | 62 |
+| Camille Roy | 45 |
+| David Gagnon | 78 |
+| Emma Côté | 91 |
+| Félix Martin | 58 |
+
+**Questions :**
+
+1. En colonne C, affichez "Réussi" si la note est ≥ 60, sinon "Échoué"
+2. En colonne D, affichez "Excellent" si la note est ≥ 90, sinon afficher la note elle-même
+3. En colonne E, calculez un bonus de 5 points si la note est < 60, sinon aucun bonus (0)
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :**
+- Utilisez SI avec le test `B2>=60`
+- Pensez aux valeurs à afficher si VRAI ou FAUX
+
+**Question 2 :**
+- Si VRAI : afficher "Excellent"
+- Si FAUX : afficher la note (référence à B2)
+
+**Question 3 :**
+- Attention : bonus si note < 60
+- Retourner un nombre (5 ou 0)
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Question 1 - Colonne C (Statut) :**
+```text
+=SI(B2>=60;"Réussi";"Échoué")
+```
+
+**Question 2 - Colonne D (Mention) :**
+```text
+=SI(B2>=90;"Excellent";B2)
+```
+
+**Question 3 - Colonne E (Bonus) :**
+```text
+=SI(B2<60;5;0)
+```
+
+**Résultats attendus :**
+
+| Nom | Note | Statut | Mention | Bonus |
+|-----|------|--------|---------|-------|
+| Alice Tremblay | 85 | Réussi | 85 | 0 |
+| Bruno Lavoie | 62 | Réussi | 62 | 0 |
+| Camille Roy | 45 | Échoué | 45 | 5 |
+| David Gagnon | 78 | Réussi | 78 | 0 |
+| Emma Côté | 91 | Réussi | Excellent | 0 |
+| Félix Martin | 58 | Échoué | 58 | 5 |
+</TabItem>
+</Tabs>
+
+---
+
+### Exercice 1.2 : Gestion de rabais
+
+**Contexte :** Un magasin à Québec offre des rabais selon le montant d'achat.
+
+**Données à reproduire :**
+
+| A - Client | B - Montant |
+|------------|-------------|
+| Jean Pelletier | 75 |
+| Marie Bouchard | 150 |
+| Luc Bergeron | 120 |
+| Sophie Dupuis | 45 |
+| Marc Lefebvre | 200 |
+
+**Questions :**
+
+1. En colonne C, appliquez un rabais de 10% si le montant ≥ 100$, sinon aucun rabais
+2. En colonne D, calculez le montant final après rabais
+3. En colonne E, affichez "Livraison gratuite" si le montant final ≥ 90$, sinon "Frais 15$"
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :**
+- Rabais de 10% = Montant × 0,1
+- Si montant < 100, rabais = 0
+
+**Question 2 :**
+- Montant final = Montant original - Rabais
+- Référencez la colonne C
+
+**Question 3 :**
+- Testez le montant FINAL (colonne D)
+- Seuil : 90$
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Question 1 - Colonne C (Rabais) :**
+```text
+=SI(B2>=100;B2*0,1;0)
+```
+
+**Question 2 - Colonne D (Montant final) :**
+```text
+=B2-C2
+```
+
+**Question 3 - Colonne E (Livraison) :**
+```text
+=SI(D2>=90;"Livraison gratuite";"Frais 15$")
+```
+
+**Résultats attendus :**
+
+| Client | Montant | Rabais | Montant final | Livraison |
+|--------|---------|--------|---------------|-----------|
+| Jean Pelletier | 75 | 0 | 75 | Frais 15$ |
+| Marie Bouchard | 150 | 15 | 135 | Livraison gratuite |
+| Luc Bergeron | 120 | 12 | 108 | Livraison gratuite |
+| Sophie Dupuis | 45 | 0 | 45 | Frais 15$ |
+| Marc Lefebvre | 200 | 20 | 180 | Livraison gratuite |
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 2 : SI imbriqué
+
+### Exercice 2.1 : Classification des notes
+
+**Contexte :** Attribuez des lettres selon les notes des étudiants.
+
+**Données à reproduire :**
+
+| A - Étudiant | B - Note |
+|--------------|----------|
+| Alex Morin | 92 |
+| Béatrice Lévesque | 78 |
+| Charles Gagné | 65 |
+| Diane Fortin | 58 |
+| Éric Simard | 88 |
+| Francine Beaulieu | 45 |
+
+**Barème :**
+- A : Note ≥ 85
+- B : Note ≥ 70
+- C : Note ≥ 60
+- D : Note < 60
+
+**Question :**
+En colonne C, affichez la lettre correspondant à la note.
+
+<Tabs>
+<TabItem label="💡 Indices">
+- Testez d'abord la condition la plus restrictive (≥ 85)
+- Imbriquez les SI pour chaque niveau
+- Pensez à l'ordre : A, puis B, puis C, sinon D
+- Structure : `=SI(test1; "A"; SI(test2; "B"; SI(test3; "C"; "D")))`
+</TabItem>
+
+<TabItem label="✅ Solution">
+**Colonne C (Lettre) :**
+```text
+=SI(B2>=85;"A";SI(B2>=70;"B";SI(B2>=60;"C";"D")))
+```
+
+**Résultats attendus :**
+
+| Étudiant | Note | Lettre |
+|----------|------|--------|
+| Alex Morin | 92 | A |
+| Béatrice Lévesque | 78 | B |
+| Charles Gagné | 65 | C |
+| Diane Fortin | 58 | D |
+| Éric Simard | 88 | A |
+| Francine Beaulieu | 45 | D |
+</TabItem>
+</Tabs>
+
+---
+
+### Exercice 2.2 : Tarification par paliers
+
+**Contexte :** Une entreprise de télécommunications à Laval offre des forfaits selon la consommation de données.
+
+**Données à reproduire :**
+
+| A - Client | B - GB utilisés |
+|------------|-----------------|
+| Client A | 2 |
+| Client B | 8 |
+| Client C | 15 |
+| Client D | 25 |
+| Client E | 6 |
+
+**Tarification :**
+- Moins de 5 GB : 30$
+- Entre 5 et 10 GB : 45$
+- Entre 10 et 20 GB : 60$
+- Plus de 20 GB : 80$
+
+**Question :**
+En colonne C, calculez le montant facturé selon la consommation.
+
+<Tabs>
+<TabItem label="💡 Indices">
+- Commencez par tester si < 5
+- Ensuite si < 10 (car on sait déjà que ≥ 5)
+- Puis si < 20
+- Sinon c'est ≥ 20
+</TabItem>
+
+<TabItem label="✅ Solution">
+**Colonne C (Montant) :**
+```text
+=SI(B2<5;30;SI(B2<10;45;SI(B2<20;60;80)))
+```
+
+**Ou avec ≤ pour plus de clarté :**
+```text
+=SI(B2<5;30;SI(B2<=10;45;SI(B2<=20;60;80)))
+```
+
+**Résultats attendus :**
+
+| Client | GB utilisés | Montant |
+|--------|-------------|---------|
+| Client A | 2 | 30 |
+| Client B | 8 | 45 |
+| Client C | 15 | 60 |
+| Client D | 25 | 80 |
+| Client E | 6 | 45 |
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 3 : Fonctions NB.SI, SOMME.SI, MOYENNE.SI
+
+### Exercice 3.1 : Analyse des ventes régionales
+
+**Contexte :** Analysez les ventes d'une entreprise dans différentes villes du Québec.
+
+**Données à reproduire :**
+
+| A - Région | B - Ventes | C - Type |
+|------------|------------|----------|
+| Montréal | 5000 | Entreprise |
+| Québec | 3500 | Particulier |
+| Laval | 7200 | Entreprise |
+| Gatineau | 2800 | Particulier |
+| Montréal | 4100 | Particulier |
+| Québec | 6300 | Entreprise |
+| Laval | 1900 | Particulier |
+| Sherbrooke | 4500 | Entreprise |
+| Montréal | 5800 | Entreprise |
+
+**Questions :**
+Créez un tableau d'analyse à partir de la ligne 12 :
+
+1. Combien de ventes ont été réalisées à Montréal ? (cellule B12)
+2. Quel est le total des ventes pour les Entreprises ? (cellule B13)
+3. Quelle est la moyenne des ventes à Québec ? (cellule B14)
+4. Combien de ventes sont supérieures à 5000$ ? (cellule B15)
+5. Quel est le total des ventes à Laval ? (cellule B16)
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :** Utilisez NB.SI sur la colonne Région
+**Question 2 :** Utilisez SOMME.SI sur la colonne Type, additionnez les ventes
+**Question 3 :** Utilisez MOYENNE.SI
+**Question 4 :** Utilisez NB.SI avec un critère ">"
+**Question 5 :** Utilisez SOMME.SI sur la colonne Région
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Tableau d'analyse :**
+
+| A - Analyse | B - Résultat |
+|-------------|--------------|
+| Ventes à Montréal | `=NB.SI(A2:A10;"Montréal")` |
+| Total Entreprises | `=SOMME.SI(C2:C10;"Entreprise";B2:B10)` |
+| Moyenne Québec | `=MOYENNE.SI(A2:A10;"Québec";B2:B10)` |
+| Ventes > 5000$ | `=NB.SI(B2:B10;">5000")` |
+| Total Laval | `=SOMME.SI(A2:A10;"Laval";B2:B10)` |
+
+**Résultats attendus :**
+
+| Analyse | Résultat |
+|---------|----------|
+| Ventes à Montréal | 3 |
+| Total Entreprises | 23 000 |
+| Moyenne Québec | 4 900 |
+| Ventes > 5000$ | 4 |
+| Total Laval | 9 100 |
+</TabItem>
+</Tabs>
+
+---
+
+### Exercice 3.2 : Gestion de l'inventaire
+
+**Contexte :** Gérez l'inventaire d'un entrepôt à Longueuil.
+
+**Données à reproduire :**
+
+| A - Produit | B - Catégorie | C - Quantité | D - Prix unitaire |
+|-------------|---------------|--------------|-------------------|
+| Ordinateur portable | Électronique | 15 | 1200 |
+| Souris | Électronique | 85 | 25 |
+| Chaise de bureau | Mobilier | 32 | 350 |
+| Bureau | Mobilier | 12 | 800 |
+| Imprimante | Électronique | 8 | 450 |
+| Lampe | Mobilier | 48 | 75 |
+| Clavier | Électronique | 62 | 80 |
+| Classeur | Mobilier | 28 | 120 |
+
+**Questions :**
+
+1. Combien de produits de catégorie "Électronique" avez-vous ? (cellule B12)
+2. Quelle est la quantité totale de produits "Mobilier" ? (cellule B13)
+3. Quel est le prix unitaire moyen des produits "Électronique" ? (cellule B14)
+4. Combien de produits ont une quantité inférieure à 20 ? (cellule B15)
+5. Quelle est la valeur totale de l'inventaire "Mobilier" ? (Quantité × Prix) (cellule B16)
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :** NB.SI sur la colonne Catégorie
+**Question 2 :** SOMME.SI pour additionner les quantités
+**Question 3 :** MOYENNE.SI sur les prix unitaires
+**Question 4 :** NB.SI avec critère `"<20"`
+**Question 5 :** Créez d'abord une colonne E pour Valeur = Quantité × Prix, puis SOMME.SI
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**D'abord, créez la colonne E (Valeur totale) :**
+```text
+E2: =C2*D2
+```
+(Copiez jusqu'à E9)
+
+**Formules d'analyse :**
+
+```text
+B12: =NB.SI(B2:B9;"Électronique")
+B13: =SOMME.SI(B2:B9;"Mobilier";C2:C9)
+B14: =MOYENNE.SI(B2:B9;"Électronique";D2:D9)
+B15: =NB.SI(C2:C9;"<20")
+B16: =SOMME.SI(B2:B9;"Mobilier";E2:E9)
+```
+
+**Résultats attendus :**
+
+| Analyse | Résultat |
+|---------|----------|
+| Produits Électronique | 4 |
+| Quantité Mobilier | 120 |
+| Prix moyen Électronique | 438,75 |
+| Produits < 20 unités | 3 |
+| Valeur Mobilier | 24 760 |
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 4 : Fonctions ET et OU
+
+### Exercice 4.1 : Admissibilité à un programme
+
+**Contexte :** Déterminez l'admissibilité des candidats à un programme de bourses.
+
+**Données à reproduire :**
+
+| A - Candidat | B - Moyenne | C - Activités | D - Revenu familial |
+|--------------|-------------|---------------|---------------------|
+| Sarah Dubois | 85 | 3 | 45000 |
+| Thomas Richard | 78 | 5 | 62000 |
+| Julie Caron | 92 | 2 | 38000 |
+| Pierre Nadeau | 88 | 4 | 55000 |
+| Amélie Poulin | 75 | 1 | 48000 |
+| Nicolas Bérubé | 90 | 6 | 35000 |
+
+**Critères d'admissibilité :**
+- Moyenne ≥ 80 **ET** Activités ≥ 3 **ET** Revenu < 50000$
+
+**Question :**
+En colonne E, affichez "Admissible" si tous les critères sont satisfaits, sinon "Non admissible".
+
+<Tabs>
+<TabItem label="💡 Indices">
+- Utilisez ET() pour combiner les trois conditions
+- Toutes les conditions doivent être vraies simultanément
+- Imbriquez ET() dans SI()
+</TabItem>
+
+<TabItem label="✅ Solution">
+**Colonne E (Statut) :**
+```text
+=SI(ET(B2>=80;C2>=3;D2<50000);"Admissible";"Non admissible")
+```
+
+**Résultats attendus :**
+
+| Candidat | Moyenne | Activités | Revenu | Statut |
+|----------|---------|-----------|--------|--------|
+| Sarah Dubois | 85 | 3 | 45000 | Admissible |
+| Thomas Richard | 78 | 5 | 62000 | Non admissible |
+| Julie Caron | 92 | 2 | 38000 | Non admissible |
+| Pierre Nadeau | 88 | 4 | 55000 | Non admissible |
+| Amélie Poulin | 75 | 1 | 48000 | Non admissible |
+| Nicolas Bérubé | 90 | 6 | 35000 | Admissible |
+
+**Explications :**
+- Sarah : ✓ moyenne, ✓ activités, ✓ revenu → Admissible
+- Thomas : ✗ moyenne trop faible
+- Julie : ✗ pas assez d'activités
+- Pierre : ✗ revenu trop élevé
+- Amélie : ✗ moyenne + activités insuffisantes
+- Nicolas : ✓ tous les critères → Admissible
+</TabItem>
+</Tabs>
+
+---
+
+### Exercice 4.2 : Système de rabais multiple
+
+**Contexte :** Une boutique à Trois-Rivières offre des rabais selon différents critères.
+
+**Données à reproduire :**
+
+| A - Client | B - Montant | C - Membre | D - Ancienneté (ans) |
+|------------|-------------|------------|----------------------|
+| Martin Roy | 150 | Oui | 2 |
+| Sylvie Morin | 85 | Non | 0 |
+| André Côté | 220 | Oui | 5 |
+| Louise Gagnon | 95 | Oui | 1 |
+| Robert Lapointe | 180 | Non | 0 |
+| Claire Boucher | 120 | Oui | 3 |
+
+**Règles de rabais :**
+- Rabais de 20% si : (Montant > 200$) **OU** (Membre ET Ancienneté ≥ 3 ans)
+- Rabais de 10% si : Membre **OU** Montant > 100$
+- Sinon : Aucun rabais
+
+**Questions :**
+1. En colonne E, calculez le pourcentage de rabais (20, 10 ou 0)
+2. En colonne F, calculez le montant du rabais
+3. En colonne G, calculez le montant final
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :**
+- Testez d'abord le rabais de 20% : `OU(montant>200; ET(membre; ancienneté≥3))`
+- Sinon testez le rabais de 10% : `OU(membre; montant>100)`
+- Sinon 0
+
+**Question 2 :**
+- Rabais = Montant × (Pourcentage / 100)
+
+**Question 3 :**
+- Montant final = Montant - Rabais
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Colonne E (Pourcentage de rabais) :**
+```text
+=SI(OU(B2>200;ET(C2="Oui";D2>=3));20;SI(OU(C2="Oui";B2>100);10;0))
+```
+
+**Colonne F (Montant du rabais) :**
+```text
+=B2*(E2/100)
+```
+
+**Colonne G (Montant final) :**
+```text
+=B2-F2
+```
+
+**Résultats attendus :**
+
+| Client | Montant | Membre | Ancienneté | % Rabais | Rabais | Final |
+|--------|---------|--------|------------|----------|--------|-------|
+| Martin Roy | 150 | Oui | 2 | 10 | 15 | 135 |
+| Sylvie Morin | 85 | Non | 0 | 0 | 0 | 85 |
+| André Côté | 220 | Oui | 5 | 20 | 44 | 176 |
+| Louise Gagnon | 95 | Oui | 1 | 10 | 9,5 | 85,5 |
+| Robert Lapointe | 180 | Non | 0 | 10 | 18 | 162 |
+| Claire Boucher | 120 | Oui | 3 | 20 | 24 | 96 |
+
+**Explications :**
+- Martin : Membre + Montant>100 → 10%
+- Sylvie : Aucun critère → 0%
+- André : Montant>200 **OU** (Membre ET Ancien≥3) → 20%
+- Louise : Membre → 10%
+- Robert : Montant>100 → 10%
+- Claire : Membre ET Ancien≥3 → 20%
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 5 : Exercices combinés avancés
+
+### Exercice 5.1 : Tableau de bord RH
+
+**Contexte :** Analysez les employés d'une entreprise à Montréal.
+
+**Données à reproduire :**
+
+| A - Employé | B - Département | C - Salaire | D - Ancienneté | E - Performance |
+|-------------|-----------------|-------------|----------------|-----------------|
+| Alice Martin | Ventes | 55000 | 3 | 85 |
+| Bruno Lefebvre | IT | 72000 | 7 | 92 |
+| Carole Dubois | RH | 48000 | 2 | 78 |
+| Daniel Roy | Ventes | 62000 | 5 | 88 |
+| Emma Gagné | IT | 68000 | 4 | 90 |
+| François Côté | RH | 52000 | 6 | 82 |
+| Geneviève Morin | Ventes | 58000 | 8 | 95 |
+| Henri Lavoie | IT | 75000 | 9 | 87 |
+
+**Questions :**
+
+1. En colonne F, accordez une prime de 5% si : (Performance ≥ 90) **OU** (Ancienneté ≥ 7 ET Performance ≥ 85)
+2. En colonne G, affichez "Augmentation" si : Département = "Ventes" **ET** Performance ≥ 85 **ET** Salaire < 60000
+3. Créez un tableau d'analyse :
+   - Nombre d'employés en IT
+   - Salaire moyen des Ventes
+   - Nombre d'employés avec performance ≥ 90
+   - Total des salaires pour RH
+   - Nombre d'employés éligibles à une augmentation
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :**
+- OU avec deux conditions
+- Deuxième condition utilise ET
+- Prime = Salaire × 0,05
+
+**Question 2 :**
+- Trois conditions avec ET
+- Retourner "Augmentation" ou ""
+
+**Question 3 :**
+- Utilisez NB.SI, SOMME.SI, MOYENNE.SI
+- Pour la dernière, comptez les "Augmentation" en colonne G
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Colonne F (Prime) :**
+```text
+=SI(OU(E2>=90;ET(D2>=7;E2>=85));C2*0,05;0)
+```
+
+**Colonne G (Augmentation) :**
+```text
+=SI(ET(B2="Ventes";E2>=85;C2<60000);"Augmentation";"")
+```
+
+**Tableau d'analyse (à partir de la ligne 12) :**
+
+```text
+B12: =NB.SI(B2:B9;"IT")
+B13: =MOYENNE.SI(B2:B9;"Ventes";C2:C9)
+B14: =NB.SI(E2:E9;">=90")
+B15: =SOMME.SI(B2:B9;"RH";C2:C9)
+B16: =NB.SI(G2:G9;"Augmentation")
+```
+
+**Résultats attendus :**
+
+| Employé | Dép. | Salaire | Anc. | Perf. | Prime | Augmentation |
+|---------|------|---------|------|-------|-------|--------------|
+| Alice Martin | Ventes | 55000 | 3 | 85 | 0 | Augmentation |
+| Bruno Lefebvre | IT | 72000 | 7 | 92 | 3600 | |
+| Carole Dubois | RH | 48000 | 2 | 78 | 0 | |
+| Daniel Roy | Ventes | 62000 | 5 | 88 | 0 | |
+| Emma Gagné | IT | 68000 | 4 | 90 | 3400 | |
+| François Côté | RH | 52000 | 6 | 82 | 0 | |
+| Geneviève Morin | Ventes | 58000 | 8 | 95 | 2900 | Augmentation |
+| Henri Lavoie | IT | 75000 | 9 | 87 | 3750 | |
+
+**Analyse :**
+- Employés IT : 3
+- Salaire moyen Ventes : 58 333
+- Performance ≥ 90 : 3
+- Total RH : 100 000
+- Éligibles augmentation : 2
+</TabItem>
+</Tabs>
+
+---
+
+### Exercice 5.2 : Gestion de projet complexe
+
+**Contexte :** Suivez l'avancement de projets pour une agence web à Sherbrooke.
+
+**Données à reproduire :**
+
+| A - Projet | B - Budget | C - Dépensé | D - Échéance | E - Statut |
+|------------|------------|-------------|--------------|------------|
+| Site Corp A | 50000 | 38000 | 2026-02-15 | En cours |
+| App Mobile B | 75000 | 72000 | 2026-01-20 | En cours |
+| Refonte C | 30000 | 28000 | 2026-03-01 | En cours |
+| E-commerce D | 90000 | 45000 | 2026-02-28 | En cours |
+| Portail E | 60000 | 62000 | 2026-01-15 | En cours |
+| Site Vitrine F | 25000 | 15000 | 2026-03-15 | En cours |
+
+**Questions :**
+
+1. En colonne F, calculez le pourcentage utilisé du budget (Dépensé / Budget × 100)
+2. En colonne G, affichez "ALERTE" si : (Dépensé > Budget) **OU** (% utilisé > 90 ET Échéance < 01/03/2026)
+3. En colonne H, calculez le budget restant (si négatif, afficher 0)
+4. En colonne I, affichez "Urgent" si : Échéance < 01/02/2026 **ET** % utilisé > 80
+5. Créez un tableau d'analyse :
+   - Nombre de projets en alerte
+   - Budget total de tous les projets
+   - Total des dépassements (montants négatifs uniquement)
+   - Nombre de projets urgents
+   - Budget moyen restant pour les projets non urgents
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Question 1 :** (C/B)*100
+**Question 2 :** OU avec deux conditions, deuxième utilise ET
+**Question 3 :** `SI(B-C<0; 0; B-C)` ou `MAX(0; B-C)`
+**Question 4 :** Comparer avec DATE(2026;2;1)
+**Question 5 :** 
+- Comptez les "ALERTE"
+- SOMME pour budget total
+- SOMME.SI pour les dépassements (budget restant < 0)
+- Comptez les "Urgent"
+- MOYENNE.SI pour budget restant où I n'est pas "Urgent"
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Colonne F (% utilisé) :**
+```text
+=(C2/B2)*100
+```
+
+**Colonne G (Alerte) :**
+```text
+=SI(OU(C2>B2;ET(F2>90;D2<DATE(2026;3;1)));"ALERTE";"")
+```
+
+**Colonne H (Budget restant) :**
+```text
+=SI(B2-C2<0;0;B2-C2)
+```
+Ou plus simplement :
+```text
+=MAX(0;B2-C2)
+```
+
+**Colonne I (Urgence) :**
+```text
+=SI(ET(D2<DATE(2026;2;1);F2>80);"Urgent";"")
+```
+
+**Tableau d'analyse :**
+
+```text
+Projets en alerte: =NB.SI(G2:G7;"ALERTE")
+Budget total: =SOMME(B2:B7)
+Dépassements: =SOMME.SI(H2:H7;0)-SOMME(H2:H7) 
+  ou =SOMME(C2:C7)-SOMME(B2:B7) si positif
+Projets urgents: =NB.SI(I2:I7;"Urgent")
+Budget moyen (non urgents): =MOYENNE.SI(I2:I7;"";H2:H7)
+```
+
+**Résultats attendus :**
+
+| Projet | Budget | Dépensé | Échéance | % | Alerte | Restant | Urgent |
+|--------|--------|---------|----------|---|--------|---------|--------|
+| Site A | 50000 | 38000 | 15/02 | 76 | | 12000 | |
+| App B | 75000 | 72000 | 20/01 | 96 | ALERTE | 3000 | Urgent |
+| Refonte C | 30000 | 28000 | 01/03 | 93,3 | ALERTE | 2000 | |
+| E-comm D | 90000 | 45000 | 28/02 | 50 | | 45000 | |
+| Portail E | 60000 | 62000 | 15/01 | 103,3 | ALERTE | 0 | Urgent |
+| Vitrine F | 25000 | 15000 | 15/03 | 60 | | 10000 | |
+
+**Analyse :**
+- Projets en alerte : 3
+- Budget total : 330 000
+- Dépassements : 2 000
+- Projets urgents : 2
+- Budget moyen (non urgents) : 17 250
+</TabItem>
+</Tabs>
+
+---
+
+## Exercices de synthèse
+
+### Exercice 6 : Cas pratique complet - Gestion d'un tournoi sportif
+
+**Contexte :** Organisez le classement d'un tournoi de hockey au Québec.
+
+**Données à reproduire :**
+
+| A - Équipe | B - Victoires | C - Défaites | D - Points marqués | E - Points encaissés |
+|------------|---------------|--------------|--------------------|--------------------|
+| Canadiens Jr | 12 | 3 | 48 | 22 |
+| Nordiques Jr | 10 | 5 | 42 | 28 |
+| Olympiques | 8 | 7 | 38 | 35 |
+| Tigres | 11 | 4 | 45 | 25 |
+| Remparts | 7 | 8 | 35 | 40 |
+| Saguenéens | 9 | 6 | 40 | 32 |
+
+**Règles :**
+- Points = (Victoires × 2) + (Défaites × 0)
+- Différentiel = Points marqués - Points encaissés
+- Qualification si : (Points ≥ 18) **ET** (Différentiel > 5)
+- Prime de performance si : (Victoires ≥ 10) **OU** (Différentiel ≥ 15)
+
+**Questions :**
+
+1. Colonne F : Calculez les points de classement
+2. Colonne G : Calculez le différentiel
+3. Colonne H : Affichez "Qualifié" ou "Non qualifié"
+4. Colonne I : Calculez une prime de 5000$ si éligible, sinon 0
+5. Colonne J : Attribuez un rang :
+   - "Excellent" si Points ≥ 22 ET Différentiel ≥ 20
+   - "Bon" si Points ≥ 18 ET Différentiel ≥ 10
+   - "Moyen" si Points ≥ 14
+   - "Faible" sinon
+6. Tableau d'analyse :
+   - Nombre d'équipes qualifiées
+   - Points moyens des équipes qualifiées
+   - Total des primes à distribuer
+   - Équipe(s) avec le meilleur différentiel
+   - Nombre d'équipes avec rang "Excellent" ou "Bon"
+
+<Tabs>
+<TabItem label="💡 Indices">
+**Questions 1-4 :** Formules directes
+**Question 5 :** SI imbriqués, testez d'abord "Excellent"
+**Question 6 :**
+- MAX() pour trouver le meilleur différentiel
+- SI.CONDITIONS ou SI imbriqués multiples
+- OU pour compter "Excellent" + "Bon"
+</TabItem>
+
+<TabItem label="✅ Solutions">
+**Colonne F (Points) :**
+```text
+=B2*2
+```
+
+**Colonne G (Différentiel) :**
+```text
+=D2-E2
+```
+
+**Colonne H (Qualification) :**
+```text
+=SI(ET(F2>=18;G2>5);"Qualifié";"Non qualifié")
+```
+
+**Colonne I (Prime) :**
+```text
+=SI(OU(B2>=10;G2>=15);5000;0)
+```
+
+**Colonne J (Rang) :**
+```text
+=SI(ET(F2>=22;G2>=20);"Excellent";SI(ET(F2>=18;G2>=10);"Bon";SI(F2>=14;"Moyen";"Faible")))
+```
+
+**Tableau d'analyse :**
+
+```text
+Équipes qualifiées: =NB.SI(H2:H7;"Qualifié")
+Points moyens qualifiés: =MOYENNE.SI(H2:H7;"Qualifié";F2:F7)
+Total primes: =SOMME(I2:I7)
+Meilleur différentiel: =MAX(G2:G7)
+Équipes Excellent/Bon: =NB.SI(J2:J7;"Excellent")+NB.SI(J2:J7;"Bon")
+```
+
+**Résultats attendus :**
+
+| Équipe | V | D | PM | PE | Pts | Diff | Qualif | Prime | Rang |
+|--------|---|---|----|----|-----|------|--------|-------|------|
+| Canadiens | 12 | 3 | 48 | 22 | 24 | 26 | Qualifié | 5000 | Excellent |
+| Nordiques | 10 | 5 | 42 | 28 | 20 | 14 | Qualifié | 5000 | Bon |
+| Olympiques | 8 | 7 | 38 | 35 | 16 | 3 | Non qual | 0 | Moyen |
+| Tigres | 11 | 4 | 45 | 25 | 22 | 20 | Qualifié | 5000 | Excellent |
+| Remparts | 7 | 8 | 35 | 40 | 14 | -5 | Non qual | 0 | Moyen |
+| Saguenéens | 9 | 6 | 40 | 32 | 18 | 8 | Qualifié | 0 | Bon |
+
+**Analyse :**
+- Équipes qualifiées : 4
+- Points moyens qualifiés : 21
+- Total primes : 15 000
+- Meilleur différentiel : 26
+- Excellent/Bon : 4
+</TabItem>
+</Tabs>
+
+---
+
+## Conseils pour réussir les exercices
+
+<CardGrid>
+  <Card title="1. Vérifiez vos données" icon="approve-check">
+    Assurez-vous que vos données sont exactement comme dans l'énoncé avant de commencer les formules.
+  </Card>
+  
+  <Card title="2. Testez étape par étape" icon="puzzle">
+    Ne créez pas une formule complexe d'un coup. Testez chaque partie séparément.
+  </Card>
+  
+  <Card title="3. Utilisez des colonnes temporaires" icon="document">
+    Pour les formules complexes, créez des colonnes intermédiaires pour vérifier vos calculs.
+  </Card>
+  
+  <Card title="4. Attention aux références" icon="warning">
+    Vérifiez si vous devez utiliser des références absolues ($) ou relatives.
+  </Card>
+</CardGrid>
+
+## Ressources complémentaires
+
+Une fois ces exercices maîtrisés, vous pouvez :
+- Créer vos propres ensembles de données
+- Combiner ces fonctions avec la mise en forme conditionnelle
+- Explorer les fonctions SI.CONDITIONS et SI.MULTIPLE
+- Pratiquer avec des données réelles de vos cours ou projets
+
+---
+
+**Bon travail !** 🎯

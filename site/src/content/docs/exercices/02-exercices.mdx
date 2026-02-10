@@ -1,0 +1,1031 @@
+---
+title: Exercices Excel – Fonctions conditionnelles et modélisation
+description: Série d'exercices progressifs pour maîtriser les fonctions conditionnelles (SI, NB.SI, SOMME.SI) et la modélisation de problèmes réels avec Excel
+sidebar:
+  label: Fonctions conditionnelles
+  order: 3
+---
+
+import { Aside } from '@astrojs/starlight/components';
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+:::note[Informations du cours]
+**Thème** : Fonctions conditionnelles et modélisation avec Excel  
+**Fonctions utilisées** : `SI`, `NB.SI`, `SOMME.SI`, `MOYENNE`, `CONCAT`
+:::
+
+{/* ## 🎯 Objectifs pédagogiques
+
+À la fin de cette série d'exercices, tu seras capable de :
+
+- comprendre un **problème réel** et le traduire en chiffrier Excel
+- distinguer les **données saisies**, **données fixes** et **données calculées**
+- utiliser les **fonctions conditionnelles** pour automatiser des décisions
+- structurer un chiffrier clair et cohérent
+- expliquer ta démarche de modélisation
+
+:::caution[Important]
+**Les formules viennent après la réflexion**. Pour chaque exercice, tu dois d'abord réfléchir à la structure du chiffrier.
+::: */}
+
+## Rappel de la démarche
+
+Pour chaque exercice, prends le temps d'identifier :
+
+<Steps>
+
+1. **Les éléments à modéliser** (ce qui existe dans la situation réelle)
+2. **Les données fixes** (règles, seuils, objectifs)
+3. **Les données saisies** (entrées manuelles)
+4. **Les données calculées** (résultats automatiques)
+5. **Les conditions logiques** à appliquer
+6. **Les formules Excel** nécessaires
+
+</Steps>
+
+---
+
+## Niveau 1 – Découverte de la fonction SI
+
+### Exercice 1 – Résultat d'un examen
+
+**Contexte enrichi**  
+Dans un cours collégial, un enseignant souhaite automatiser la correction préliminaire des examens afin de repérer rapidement les étudiants qui ont réussi et ceux qui devront reprendre certains contenus. Le chiffrier sera utilisé chaque session avec de nouvelles notes.
+
+**Objectif du chiffrier**  
+Indiquer clairement si chaque étudiant a **réussi ou échoué**, sans avoir à refaire le calcul manuellement.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Seuil de réussite** : 60%
+- **Liste d'étudiants à traiter** : 8 étudiants
+
+**Structure du chiffrier**
+
+| Zone | Contenu | Type |
+|------|---------|------|
+| A1 | "Seuil de réussite (%)" | Étiquette |
+| B1 | 60 | **Donnée fixe** |
+| A3:B3 | En-têtes : "Étudiant" / "Note (/100)" | Étiquettes |
+| C3 | "Résultat" | Étiquette |
+| A4:A11 | Noms des étudiants | Données saisies |
+| B4:B11 | Notes sur 100 | **Données saisies** |
+| C4:C11 | Résultat automatique | **Données calculées** |
+
+**Données d'exemple à saisir**
+
+```
+Étudiant          Note (/100)
+Amélie Tremblay   72
+Marc Gagnon       58
+Sophie Lavoie     85
+Thomas Roy        45
+Julie Bergeron    61
+David Martin      90
+Marie Côté        52
+Alex Bouchard     67
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Zone des paramètres** (en haut du chiffrier)
+   - Cellule A1 : Inscris "Seuil de réussite (%)"
+   - Cellule B1 : Inscris **60**
+   - Applique un fond de couleur différent pour identifier cette zone
+
+2. **Tableau des résultats**
+   - Ligne 3 : Crée les en-têtes "Étudiant", "Note (/100)", "Résultat"
+   - Colonnes A et B : Saisis les 8 étudiants et leurs notes
+   
+3. **Formule en C4**
+   ```text
+   =SI(B4>=$B$1;"Réussi";"Échoué")
+   ```
+   
+4. **Recopie** la formule jusqu'en C11
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Amélie, Sophie, Julie, David et Alex affichent "Réussi"
+- ✅ Marc, Thomas et Marie affichent "Échoué"
+- ✅ Si tu changes le seuil à 70 en B1, les résultats se mettent à jour automatiquement
+- ✅ La formule utilise une **référence absolue** ($B$1) pour le seuil
+
+**Résultat attendu**
+```
+Seuil de réussite (%) : 60
+
+Étudiant          Note (/100)  Résultat
+Amélie Tremblay   72           Réussi
+Marc Gagnon       58           Échoué
+Sophie Lavoie     85           Réussi
+Thomas Roy        45           Échoué
+Julie Bergeron    61           Réussi
+David Martin      90           Réussi
+Marie Côté        52           Échoué
+Alex Bouchard     67           Réussi
+```
+
+</TabItem>
+</Tabs>
+
+:::tip[Astuce technique]
+Utilise **$B$1** (référence absolue) pour le seuil afin que la formule pointe toujours vers la même cellule lors de la recopie.
+:::
+
+---
+
+### Exercice 2 – Admissibilité à l'examen
+
+**Contexte enrichi**  
+Avant d'autoriser un étudiant à se présenter à l'examen final, le département exige une présence minimale de 80% aux cours. Le responsable veut éviter les erreurs et assurer l'équité en automatisant cette vérification.
+
+**Objectif du chiffrier**  
+Déterminer automatiquement si un étudiant est **admissible** ou **non admissible** à l'examen selon son taux de présence.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Nombre total de cours dans la session** : 15 cours
+- **Seuil minimal de présence** : 80%
+- **Liste d'étudiants à vérifier** : 6 étudiants
+
+**Données d'exemple à saisir**
+
+```
+Paramètres:
+Nombre total de cours : 15
+Seuil de présence requis (%) : 80
+
+Étudiant           Cours suivis
+Catherine Dubois   14
+Philippe Martin    11
+Isabelle Roy       15
+Antoine Leblanc    10
+Valérie Côté       13
+Samuel Gagnon      12
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Zone des paramètres**
+   - A1 : "Nombre total de cours"
+   - B1 : **15**
+   - A2 : "Seuil de présence requis (%)"
+   - B2 : **80**
+   - Applique un fond gris clair à A1:B2
+
+2. **Tableau de présence**
+   - Ligne 4 : Crée les en-têtes "Étudiant", "Cours suivis", "Taux de présence (%)", "Admissibilité"
+   - Saisis les 6 étudiants et leur nombre de cours suivis
+
+3. **Formule du taux de présence en C5**
+   ```text
+   =ARRONDI((B5/$B$1)*100;1)
+   ```
+
+4. **Formule d'admissibilité en D5**
+   ```text
+   =SI(C5>=$B$2;"Admissible";"Non admissible")
+   ```
+
+5. **Recopie** les formules jusqu'à la ligne 10
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Catherine (93,3%) : Admissible
+- ✅ Philippe (73,3%) : Non admissible
+- ✅ Isabelle (100%) : Admissible
+- ✅ Antoine (66,7%) : Non admissible
+- ✅ Valérie (86,7%) : Admissible
+- ✅ Samuel (80,0%) : Admissible
+- ✅ Si tu changes le seuil à 90% en B2, seules Catherine et Isabelle restent admissibles
+
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 2 – Comptage conditionnel (NB.SI)
+
+### Exercice 3 – Absences justifiées
+
+**Contexte enrichi**  
+Un secrétariat scolaire tient un registre des absences pour un cours. Certaines absences sont justifiées (billet médical, raison officielle), d'autres non. Le responsable doit produire rapidement des statistiques fiables pour le département.
+
+**Objectif du chiffrier**  
+Compter automatiquement le nombre d'absences **justifiées** et **non justifiées**, sans tri manuel.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Période d'analyse** : Février 2026
+- **Types d'absences possibles** : "Justifiée" ou "Non justifiée"
+- **Nombre d'absences enregistrées** : 12
+
+**Données d'exemple à saisir**
+
+```
+Date         Étudiant          Type d'absence
+2026-02-03   Lucas Martin      Justifiée
+2026-02-03   Emma Tremblay     Non justifiée
+2026-02-05   Noah Gagnon       Justifiée
+2026-02-07   Olivia Roy        Non justifiée
+2026-02-10   Liam Boucher      Justifiée
+2026-02-12   Ava Bergeron      Justifiée
+2026-02-14   William Côté      Non justifiée
+2026-02-17   Mia Lavoie        Non justifiée
+2026-02-19   James Lefebvre    Justifiée
+2026-02-21   Charlotte Dubois  Justifiée
+2026-02-24   Benjamin Martin   Non justifiée
+2026-02-26   Sophia Gagnon     Justifiée
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Registre des absences**
+   - A1 : "Registre des absences - Février 2026"
+   - Ligne 3 : En-têtes "Date", "Étudiant", "Type d'absence"
+   - Saisis les 12 absences dans le tableau
+
+2. **Tableau de synthèse** (à partir de E3)
+   - E3 : "STATISTIQUES"
+   - E4 : "Absences justifiées :"
+   - E5 : "Absences non justifiées :"
+   - E6 : "Total des absences :"
+
+3. **Formules de comptage**
+   - F4 : `=NB.SI(C4:C15;"Justifiée")`
+   - F5 : `=NB.SI(C4:C15;"Non justifiée")`
+   - F6 : `=NB(C4:C15)` ou `=F4+F5`
+
+4. **Mise en forme**
+   - Applique un fond coloré au tableau de synthèse
+   - Utilise des bordures pour délimiter les zones
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Absences justifiées : **7**
+- ✅ Absences non justifiées : **5**
+- ✅ Total : **12**
+- ✅ Si tu ajoutes une absence justifiée en ligne 16, le compte F4 devient 8
+- ✅ Les formules utilisent des plages de cellules, pas de valeurs fixes
+
+</TabItem>
+</Tabs>
+
+:::note[Fonction NB.SI]
+La syntaxe de base est : `NB.SI(plage; critère)`
+- **plage** : les cellules à examiner
+- **critère** : la condition à vérifier (peut être du texte entre guillemets)
+:::
+
+---
+
+### Exercice 4 – Ventes confirmées
+
+**Contexte enrichi**  
+Une entreprise québécoise de vente d'équipements informatiques consigne toutes ses ventes dans un tableau. Certaines ventes sont encore en attente de paiement, d'autres sont annulées par le client ou confirmées. Le gestionnaire veut connaître le nombre réel de ventes conclues pour établir ses prévisions.
+
+**Objectif du chiffrier**  
+Calculer automatiquement le nombre de ventes par statut : **Confirmée**, **En attente**, et **Annulée**.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Période** : Janvier 2026
+- **Statuts possibles** : "Confirmée", "En attente", "Annulée"
+- **Nombre de transactions** : 15
+
+**Données d'exemple à saisir**
+
+```
+No. commande  Client                  Montant    Statut
+CMD-2601      Tech Solutions Inc.     2 450 $    Confirmée
+CMD-2602      Bureau Plus Ltée        1 890 $    En attente
+CMD-2603      Informatique 2000       3 200 $    Confirmée
+CMD-2604      Services Pro            1 250 $    Annulée
+CMD-2605      Gestion Expert          4 100 $    Confirmée
+CMD-2606      Logiciels Québec        980 $      En attente
+CMD-2607      Data Systems            5 600 $    Confirmée
+CMD-2608      Bureau Moderne          2 100 $    Confirmée
+CMD-2609      Tech Avenir             1 750 $    Annulée
+CMD-2610      Solutions IT            3 850 $    Confirmée
+CMD-2611      Informatech             2 900 $    En attente
+CMD-2612      Gestion Plus            1 450 $    Confirmée
+CMD-2613      Bureau Smart            3 100 $    En attente
+CMD-2614      Tech Pro                4 250 $    Confirmée
+CMD-2615      Services Info           1 600 $    Confirmée
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Journal des ventes**
+   - A1 : "Journal des ventes - Janvier 2026"
+   - Ligne 3 : En-têtes "No. commande", "Client", "Montant", "Statut"
+   - Saisis les 15 transactions
+
+2. **Tableau de synthèse** (à partir de F3)
+   - F3 : "ANALYSE DES VENTES"
+   - F4 : "Ventes confirmées :"
+   - F5 : "Ventes en attente :"
+   - F6 : "Ventes annulées :"
+   - F7 : "Total des transactions :"
+
+3. **Formules de comptage**
+   - G4 : `=NB.SI(D4:D18;"Confirmée")`
+   - G5 : `=NB.SI(D4:D18;"En attente")`
+   - G6 : `=NB.SI(D4:D18;"Annulée")`
+   - G7 : `=NB(D4:D18)` ou `=G4+G5+G6`
+
+4. **Mise en forme**
+   - Formate la colonne Montant en format monétaire canadien
+   - Applique un fond vert clair aux lignes "Confirmée"
+   - Applique un fond rouge clair aux lignes "Annulée"
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Ventes confirmées : **9**
+- ✅ Ventes en attente : **4**
+- ✅ Ventes annulées : **2**
+- ✅ Total : **15**
+- ✅ Si tu changes CMD-2602 de "En attente" à "Confirmée", le compte G4 devient 10 et G5 devient 3
+
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 3 – Calcul conditionnel (SOMME.SI)
+
+### Exercice 5 – Heures supplémentaires
+
+**Contexte enrichi**  
+Un service des ressources humaines d'une PME québécoise suit les heures travaillées par les employés durant la semaine. Certaines heures sont régulières (payées au taux normal), d'autres sont supplémentaires (payées à temps et demi). Le système de paie a besoin de ces totaux pour calculer correctement les salaires.
+
+**Objectif du chiffrier**  
+Calculer automatiquement le total des **heures régulières** et des **heures supplémentaires** pour préparer la paie hebdomadaire.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Période** : Semaine du 3 au 9 février 2026
+- **Types d'heures** : "Régulières" ou "Supplémentaires"
+- **Nombre d'entrées** : 20 entrées
+
+**Données d'exemple à saisir**
+
+```
+Employé          Date         Type d'heures      Nombre d'heures
+Martin Lavoie    2026-02-03   Régulières         8
+Martin Lavoie    2026-02-04   Régulières         8
+Martin Lavoie    2026-02-05   Régulières         8
+Martin Lavoie    2026-02-05   Supplémentaires    2
+Sophie Gagnon    2026-02-03   Régulières         7,5
+Sophie Gagnon    2026-02-04   Régulières         8
+Sophie Gagnon    2026-02-06   Régulières         8
+Sophie Gagnon    2026-02-06   Supplémentaires    3
+Luc Tremblay     2026-02-03   Régulières         8
+Luc Tremblay     2026-02-04   Régulières         8
+Luc Tremblay     2026-02-07   Régulières         6
+Julie Bergeron   2026-02-03   Régulières         8
+Julie Bergeron   2026-02-04   Régulières         8
+Julie Bergeron   2026-02-05   Régulières         8
+Julie Bergeron   2026-02-05   Supplémentaires    4
+Marc Dubois      2026-02-03   Régulières         8
+Marc Dubois      2026-02-04   Régulières         8
+Marc Dubois      2026-02-06   Régulières         7
+Marc Dubois      2026-02-06   Supplémentaires    1,5
+Marc Dubois      2026-02-07   Régulières         8
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Feuille de temps**
+   - A1 : "Feuille de temps - Semaine du 3 au 9 février 2026"
+   - Ligne 3 : En-têtes "Employé", "Date", "Type d'heures", "Nombre d'heures"
+   - Saisis les 20 entrées
+
+2. **Tableau de synthèse** (à partir de F3)
+   - F3 : "SOMMAIRE DE LA PAIE"
+   - F4 : "Total heures régulières :"
+   - F5 : "Total heures supplémentaires :"
+   - F6 : "Total général :"
+
+3. **Formules de calcul**
+   - G4 : `=SOMME.SI(C4:C23;"Régulières";D4:D23)`
+   - G5 : `=SOMME.SI(C4:C23;"Supplémentaires";D4:D23)`
+   - G6 : `=SOMME(D4:D23)` ou `=G4+G5`
+
+4. **Mise en forme**
+   - Formate les heures avec 1 décimale
+   - Ajoute " h" après chaque nombre dans le tableau de synthèse
+   - Applique des bordures distinctives
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Total heures régulières : **145,5 h**
+- ✅ Total heures supplémentaires : **10,5 h**
+- ✅ Total général : **156 h**
+- ✅ Si tu ajoutes 3 heures supplémentaires pour Martin Lavoie, G5 devient 13,5 h
+- ✅ Les formules utilisent SOMME.SI, pas SOMME avec des filtres manuels
+
+</TabItem>
+</Tabs>
+
+:::note[Fonction SOMME.SI]
+La syntaxe est : `SOMME.SI(plage_critère; critère; plage_somme)`
+- **plage_critère** : les cellules à vérifier
+- **critère** : la condition
+- **plage_somme** : les cellules à additionner si la condition est vraie
+:::
+
+---
+
+### Exercice 6 – Budget par catégorie
+
+**Contexte enrichi**  
+Dans un projet de développement informatique au CÉGEP, un responsable doit suivre les dépenses selon leur nature (transport, matériel, repas, formation, etc.). Il souhaite savoir rapidement combien a été dépensé pour chaque catégorie afin de respecter l'enveloppe budgétaire allouée.
+
+**Objectif du chiffrier**  
+Obtenir automatiquement le total dépensé par catégorie de dépenses.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Projet** : Mise à niveau du laboratoire informatique
+- **Budget total** : 15 000 $
+- **Catégories** : Transport, Matériel, Repas, Formation, Divers
+- **Nombre de dépenses** : 18
+
+**Données d'exemple à saisir**
+
+```
+Budget total alloué : 15 000 $
+
+Date         Description                    Catégorie   Montant
+2026-01-10   Déplacement fournisseur       Transport   125,50 $
+2026-01-12   Ordinateurs portables         Matériel    8 500,00 $
+2026-01-15   Repas réunion équipe          Repas       85,00 $
+2026-01-18   Formation Excel avancé        Formation   450,00 $
+2026-01-20   Câbles réseau                 Matériel    250,00 $
+2026-01-22   Taxi aéroport                 Transport   65,00 $
+2026-01-25   Souris sans fil (x10)         Matériel    180,00 $
+2026-01-28   Déjeuner clients              Repas       95,00 $
+2026-02-01   Formation sécurité            Formation   380,00 $
+2026-02-03   Moniteurs (x4)                Matériel    1 200,00 $
+2026-02-05   Kilométrage (200 km)          Transport   90,00 $
+2026-02-08   Repas conférence              Repas       120,00 $
+2026-02-10   Licences logiciels            Matériel    2 100,00 $
+2026-02-12   Fournitures bureau            Divers      75,00 $
+2026-02-15   Stationnement                 Transport   35,00 $
+2026-02-18   Claviers ergonomiques         Matériel    340,00 $
+2026-02-20   Formation gestion projet      Formation   520,00 $
+2026-02-22   Impression documentation      Divers      45,00 $
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **En-tête**
+   - A1 : "Projet : Mise à niveau laboratoire"
+   - A2 : "Budget total alloué :"
+   - B2 : **15000** (format monétaire)
+
+2. **Registre des dépenses**
+   - Ligne 3 : En-têtes "Date", "Description", "Catégorie", "Montant"
+   - Saisis les 18 dépenses
+
+3. **Tableau de synthèse** (à partir de F3)
+   - F3 : "ANALYSE PAR CATÉGORIE"
+   - F4 : "Transport :"
+   - F5 : "Matériel :"
+   - F6 : "Repas :"
+   - F7 : "Formation :"
+   - F8 : "Divers :"
+   - F9 : "TOTAL DÉPENSÉ :"
+
+4. **Formules de calcul**
+   - G4 : `=SOMME.SI(C4:C21;"Transport";D4:D21)`
+   - G5 : `=SOMME.SI(C4:C21;"Matériel";D4:D21)`
+   - G6 : `=SOMME.SI(C4:C21;"Repas";D4:D21)`
+   - G7 : `=SOMME.SI(C4:C21;"Formation";D4:D21)`
+   - G8 : `=SOMME.SI(C4:C21;"Divers";D4:D21)`
+   - G9 : `=SOMME(D4:D21)`
+
+5. **Ajout d'un indicateur budgétaire**
+   - F10 : "Budget restant :"
+   - G10 : `=B2-G9`
+
+6. **Mise en forme**
+   - Applique le format monétaire canadien à toutes les colonnes de montants
+   - Mets en gras la ligne du total
+   - Utilise la mise en forme conditionnelle : G10 en rouge si négatif, vert si positif
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Transport : **315,50 $**
+- ✅ Matériel : **12 570,00 $**
+- ✅ Repas : **300,00 $**
+- ✅ Formation : **1 350,00 $**
+- ✅ Divers : **120,00 $**
+- ✅ Total dépensé : **14 655,50 $**
+- ✅ Budget restant : **344,50 $**
+- ✅ Si tu ajoutes une dépense de 500$ en Matériel, G5 devient 13 070,00 $
+
+</TabItem>
+</Tabs>
+
+---
+
+## Niveau 4 – Combinaison de conditions et indicateurs
+
+### Exercice 7 – Moyenne d'un groupe
+
+**Contexte enrichi**  
+Dans un cours comportant plusieurs groupes (A, B et C), la direction souhaite comparer les performances moyennes de chaque groupe afin d'identifier des besoins d'accompagnement pédagogique ou d'ajuster les méthodes d'enseignement.
+
+**Objectif du chiffrier**  
+Calculer la **moyenne des notes** de chaque groupe séparément, ainsi que des statistiques complémentaires (nombre d'étudiants, note minimale et maximale).
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Cours** : Bases de données (420-BD6)
+- **Groupes** : A, B, C
+- **Évaluation** : Examen de mi-session (/100)
+- **Nombre d'étudiants** : 18
+
+**Données d'exemple à saisir**
+
+```
+Nom étudiant        Groupe  Note (/100)
+Émilie Lavoie       A       78
+Alexandre Roy       A       85
+Catherine Dubois    A       92
+Thomas Gagnon       A       71
+Isabelle Martin     A       88
+Philippe Tremblay   A       65
+Sophie Bergeron     B       74
+Marc Lefebvre       B       82
+Julie Côté          B       69
+David Boucher       B       91
+Marie Lavoie        B       77
+Antoine Roy         B       84
+Valérie Gagnon      C       88
+Samuel Martin       C       95
+Camille Dubois      C       72
+Lucas Tremblay      C       81
+Chloé Bergeron      C       86
+Raphaël Côté        C       79
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Liste des résultats**
+   - A1 : "Résultats examen mi-session - Bases de données (420-BD6)"
+   - Ligne 3 : En-têtes "Nom étudiant", "Groupe", "Note (/100)"
+   - Saisis les 18 étudiants
+
+2. **Tableau d'analyse** (à partir de E3)
+   - E3:G3 : Fusionner et centrer "ANALYSE PAR GROUPE"
+   - Ligne 4 : En-têtes "Groupe", "Nb étudiants", "Moyenne"
+   - Ligne 5 : "A"
+   - Ligne 6 : "B"
+   - Ligne 7 : "C"
+   - Ligne 8 : "CLASSE COMPLÈTE"
+
+3. **Formules pour le groupe A (ligne 5)**
+   - F5 : `=NB.SI(B4:B21;"A")`
+   - G5 : `=SOMME.SI(B4:B21;"A";C4:C21)/F5`
+   
+4. **Formules pour le groupe B (ligne 6)**
+   - F6 : `=NB.SI(B4:B21;"B")`
+   - G6 : `=SOMME.SI(B4:B21;"B";C4:C21)/F6`
+
+5. **Formules pour le groupe C (ligne 7)**
+   - F7 : `=NB.SI(B4:B21;"C")`
+   - G7 : `=SOMME.SI(B4:B21;"C";C4:C21)/F7`
+
+6. **Formules pour la classe complète (ligne 8)**
+   - F8 : `=NB(C4:C21)`
+   - G8 : `=MOYENNE(C4:C21)`
+
+7. **Mise en forme**
+   - Formate les moyennes avec 1 décimale
+   - Applique un fond de couleur différent pour chaque groupe
+   - Mets en gras la ligne "CLASSE COMPLÈTE"
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Groupe A : 6 étudiants, moyenne **79,8**
+- ✅ Groupe B : 6 étudiants, moyenne **79,5**
+- ✅ Groupe C : 6 étudiants, moyenne **83,5**
+- ✅ Classe complète : 18 étudiants, moyenne **80,9**
+- ✅ Si tu changes la note de Catherine (A) à 72, la moyenne du groupe A baisse à 76,5
+
+</TabItem>
+</Tabs>
+
+:::tip[Astuce - Calcul de moyenne conditionnelle]
+Il n'existe pas de fonction `MOYENNE.SI` en Excel de base. On combine donc `SOMME.SI` et `NB.SI` :
+```text
+=SOMME.SI(plage_critère; critère; plage_valeurs) / NB.SI(plage_critère; critère)
+```
+:::
+
+---
+
+### Exercice 8 – Message automatique
+
+**Contexte enrichi**  
+Un gestionnaire de magasin suit les ventes quotidiennes et veut un indicateur visuel simple lui permettant de savoir, d'un coup d'œil, si la performance de la journée est satisfaisante. Le système doit afficher un message clair sans qu'il ait besoin d'analyser les chiffres en détail.
+
+**Objectif du chiffrier**  
+Créer un tableau de bord simple qui affiche automatiquement un **message d'évaluation** selon le nombre de ventes réalisées dans la journée.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Objectif quotidien** : 10 ventes
+- **Période d'analyse** : Semaine du 3 au 9 février 2026
+- **Messages possibles** :
+  - Objectif atteint : "✅ EXCELLENT - Objectif atteint!"
+  - Objectif non atteint : "⚠️ À améliorer - Sous l'objectif"
+
+**Données d'exemple à saisir**
+
+```
+PARAMÈTRES
+Objectif quotidien : 10 ventes
+
+JOURNAL DES VENTES
+Date         Jour        Nombre de ventes
+2026-02-03   Lundi       12
+2026-02-04   Mardi       8
+2026-02-05   Mercredi    15
+2026-02-06   Jeudi       9
+2026-02-07   Vendredi    11
+2026-02-08   Samedi      18
+2026-02-09   Dimanche    7
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Zone des paramètres**
+   - A1 : "PARAMÈTRES"
+   - A2 : "Objectif quotidien :"
+   - B2 : **10**
+   - C2 : "ventes"
+
+2. **Journal des ventes**
+   - A4 : "JOURNAL DES VENTES"
+   - Ligne 4 : En-têtes "Date", "Jour", "Nombre de ventes"
+   - Saisis les données des 7 jours
+
+3. **Tableau de bord** (à partir de E4)
+   - E4 : "TABLEAU DE BORD"
+   - Ligne 5 : En-têtes "Jour", "Statut"
+   - E6:E11 : Copie les jours depuis B5:B11
+
+4. **Formule du message en F6**
+   ```text
+   =SI(C5>=$B$2;"✅ EXCELLENT - Objectif atteint!";"⚠️ À améliorer - Sous l'objectif")
+   ```
+
+5. **Recopie** la formule jusqu'en F11
+
+6. **Ajout d'un résumé hebdomadaire**
+   - E13 : "Résumé de la semaine :"
+   - F13 : `=NB.SI(C5:C11;">="&$B$2)&" jours sur "&NB(C5:C11)&" ont atteint l'objectif"`
+
+7. **Mise en forme**
+   - Applique un fond vert aux cellules "✅ EXCELLENT"
+   - Applique un fond jaune aux cellules "⚠️ À améliorer"
+   - Utilise la mise en forme conditionnelle basée sur le contenu
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Lundi (12) : ✅ EXCELLENT - Objectif atteint!
+- ✅ Mardi (8) : ⚠️ À améliorer - Sous l'objectif
+- ✅ Mercredi (15) : ✅ EXCELLENT - Objectif atteint!
+- ✅ Jeudi (9) : ⚠️ À améliorer - Sous l'objectif
+- ✅ Vendredi (11) : ✅ EXCELLENT - Objectif atteint!
+- ✅ Samedi (18) : ✅ EXCELLENT - Objectif atteint!
+- ✅ Dimanche (7) : ⚠️ À améliorer - Sous l'objectif
+- ✅ Résumé : "4 jours sur 7 ont atteint l'objectif"
+- ✅ Si tu changes l'objectif à 15 en B2, seuls Mercredi et Samedi affichent "EXCELLENT"
+
+</TabItem>
+</Tabs>
+
+:::tip[Concatenation avec formules]
+Pour créer des messages dynamiques, tu peux combiner du texte avec des formules :
+```text
+=NB.SI(...)&" jours sur "&NB(...)&" ont atteint l'objectif"
+```
+L'opérateur `&` permet de coller ensemble du texte et des valeurs.
+:::
+
+---
+
+## Niveau 5 – Mini-système de décision
+
+### Exercice 9 – Prime de performance
+
+**Contexte enrichi**  
+Une entreprise de vente au détail met en place un système de primes progressives afin de motiver ses vendeurs et de récompenser la surperformance. Les primes sont calculées automatiquement chaque mois selon le nombre de ventes réalisées. Le service des ressources humaines veut un système fiable et transparent.
+
+**Objectif du chiffrier**  
+Calculer automatiquement la **prime mensuelle** de chaque employé selon son niveau de performance, et produire un rapport de synthèse pour la direction.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Période** : Janvier 2026
+- **Barème des primes** :
+  - Moins de 20 ventes → Aucune prime (0 $)
+  - De 20 à 29 ventes → Prime Bronze (500 $)
+  - 30 ventes ou plus → Prime Or (800 $)
+- **Nombre d'employés** : 12
+
+**Données d'exemple à saisir**
+
+```
+BARÈME DES PRIMES - JANVIER 2026
+Niveau              Ventes requises  Prime
+Aucune prime        < 20             0 $
+Prime Bronze        20 à 29          500 $
+Prime Or            ≥ 30             800 $
+
+PERFORMANCE DES VENDEURS
+Nom employé          Département  Nombre de ventes  Prime ($)
+Caroline Tremblay    Électronique 28               [calculé]
+Mathieu Gagnon       Vêtements    15               [calculé]
+Stéphanie Roy        Électronique 32               [calculé]
+François Lavoie      Sports       22               [calculé]
+Nathalie Dubois      Vêtements    18               [calculé]
+Patrick Martin       Sports       35               [calculé]
+Isabelle Bergeron    Électronique 26               [calculé]
+Simon Côté           Vêtements    29               [calculé]
+Mélanie Boucher      Sports       31               [calculé]
+Alexandre Lefebvre   Électronique 12               [calculé]
+Valérie Lavoie       Vêtements    24               [calculé]
+Marc-André Roy       Sports       27               [calculé]
+```
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Barème des primes** (zone de référence)
+   - Crée le tableau du barème en A1:D4
+   - Applique un fond de couleur distinctif
+   - Ce tableau servira de référence visuelle
+
+2. **Performance des vendeurs**
+   - Ligne 6 : En-têtes "Nom employé", "Département", "Nombre de ventes", "Prime ($)"
+   - Saisis les 12 employés (sans les primes)
+
+3. **Formule de calcul de prime en D7** (avec SI imbriqués)
+   ```text
+   =SI(C7<20;0;SI(C7<30;500;800))
+   ```
+
+4. **Recopie** la formule jusqu'en D18
+
+5. **Rapport de synthèse** (à partir de F6)
+   - F6 : "RAPPORT DE SYNTHÈSE"
+   - F7 : "Total employés :"
+   - G7 : `=NB(C7:C18)`
+   - F8 : "Employés Prime Or (≥30) :"
+   - G8 : `=NB.SI(C7:C18;">=30")`
+   - F9 : "Employés Prime Bronze (20-29) :"
+   - G9 : `=NB.SI.ENS(C7:C18;">=20";C7:C18;"<30")`
+   - F10 : "Employés sans prime (`<20`) :"
+   - G10 : `=NB.SI(C7:C18;"<20")`
+   - F11 : "TOTAL DES PRIMES :"
+   - G11 : `=SOMME(D7:D18)`
+   - Formate G11 en format monétaire
+
+6. **Mise en forme**
+   - Applique une mise en forme conditionnelle sur D7:D18 :
+     - 800 $ → fond or
+     - 500 $ → fond bronze
+     - 0 $ → fond gris clair
+   - Mets en gras la ligne du total des primes
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Caroline (28 ventes) : **500 $** (Prime Bronze)
+- ✅ Mathieu (15 ventes) : **0 $** (Aucune prime)
+- ✅ Stéphanie (32 ventes) : **800 $** (Prime Or)
+- ✅ Patrick (35 ventes) : **800 $** (Prime Or)
+- ✅ Total employés : **12**
+- ✅ Employés Prime Or : **4**
+- ✅ Employés Prime Bronze : **5**
+- ✅ Employés sans prime : **3**
+- ✅ Total des primes : **5 700 $**
+- ✅ Si Mathieu passe à 20 ventes, sa prime devient 500 $ et le total passe à 6 200 $
+
+</TabItem>
+</Tabs>
+
+:::note[SI imbriqués]
+Les SI imbriqués testent plusieurs conditions en séquence :
+```text
+=SI(condition1; résultat1; SI(condition2; résultat2; résultat3))
+```
+Excel évalue de gauche à droite :
+- Si condition1 est vraie → résultat1
+- Sinon, si condition2 est vraie → résultat2
+- Sinon → résultat3
+:::
+
+---
+
+### Exercice 10 – Tableau de synthèse complet
+
+**Contexte enrichi**  
+La direction d'une PME québécoise souhaite obtenir un tableau de bord exécutif consolidant toutes les informations clés sur les ventes mensuelles. Ce tableau doit permettre une prise de décision rapide en affichant automatiquement les statistiques importantes et un message d'interprétation dynamique.
+
+**Objectif du chiffrier**  
+Créer un **système complet de suivi des ventes** avec données détaillées, analyses statistiques et rapport exécutif généré automatiquement.
+
+<Tabs>
+<TabItem label="📋 Consignes">
+
+**Données du problème**
+- **Période** : Février 2026
+- **Produits** : Ordinateurs portables, Tablettes, Imprimantes, Accessoires
+- **Objectif mensuel** : 100 000 $ de ventes
+- **Nombre de transactions** : 25
+
+Voir l'onglet "À faire" pour les données complètes.
+
+</TabItem>
+
+<TabItem label="✅ À faire">
+
+<Steps>
+
+1. **Paramètres et journal**
+   - Crée la zone des paramètres (A1:B2)
+   - Ligne 4 : En-têtes du journal
+   - Saisis les 25 transactions
+   - Calcule le Total en F5 : `=D5*E5`
+   - Recopie jusqu'en F29
+
+2. **Analyse par produit** (à partir de H4)
+   - H4 : "ANALYSE PAR PRODUIT"
+   - Ligne 5 : En-têtes "Produit", "Ventes totales"
+   - Liste les 4 produits en H6:H9
+   - Formules en I6:I9 utilisant `SOMME.SI`
+   - H10 : "TOTAL"
+   - I10 : `=SOMME(F5:F29)`
+
+3. **Calculs de pourcentages**
+   - J5 : "% du total"
+   - J6 : `=I6/$I$10*100` (formate en %)
+   - Recopie jusqu'en J9
+
+4. **Tableau de bord exécutif** (à partir de K4)
+   - K4 : "TABLEAU DE BORD EXÉCUTIF"
+   - K5-K10 : Indicateurs clés (période, objectif, ventes, etc.)
+   - L10 : Message d'évaluation avec SI
+
+5. **Message de synthèse dynamique**
+   - K12 : "MESSAGE EXÉCUTIF :"
+   - K13 : (fusionner K13:L13)
+   - Formule en K13 utilisant `CONCAT` pour générer un rapport narratif
+
+6. **Mise en forme finale**
+   - Applique un thème professionnel
+   - Utilise des bordures pour délimiter chaque section
+   - Applique la mise en forme conditionnelle
+   - Mets en gras tous les totaux et titres
+   - Ajoute un graphique à barres pour l'analyse par produit (optionnel)
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="🔍 Validation">
+
+**Critères de validation**
+- ✅ Ventes Ordinateurs portables : **22 800 $** (environ 60,9%)
+- ✅ Ventes Tablettes : **7 200 $** (environ 19,2%)
+- ✅ Ventes Imprimantes : **2 450 $** (environ 6,5%)
+- ✅ Ventes Accessoires : **5 000 $** (environ 13,3%)
+- ✅ Total des ventes : **37 450 $**
+- ✅ Atteinte de l'objectif : **37,5%**
+- ✅ Nombre de transactions : **25**
+- ✅ Message d'évaluation : "⚠️ SOUS L'OBJECTIF"
+- ✅ Message exécutif mentionne le produit dominant (Ordinateur portable)
+- ✅ Si on ajoute des ventes pour atteindre 100 000 $, le message change automatiquement
+
+</TabItem>
+</Tabs>
+
+:::tip[CONCAT pour messages complexes]
+La fonction `CONCAT` permet de créer des messages narratifs dynamiques :
+```text
+=CONCAT("En ";mois;", nous avons réalisé ";nb_ventes;" ventes pour un total de ";
+TEXTE(total;"# ##0 $");". Le produit dominant est ";nom_produit)
+```
+Utilise `TEXTE()` pour formater les nombres dans les chaînes de caractères.
+:::
+
+---
+
+*Bon travail! 🚀*

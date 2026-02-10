@@ -1,0 +1,34 @@
+---
+const {
+  title,
+  src,
+} = Astro.props;
+---
+
+<div class="lesson-video">
+  <iframe
+    src={src}
+    title={title}
+    loading="lazy"
+    allow="accelerometer; autoplay; encrypted-media; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+</div>
+
+<style>
+.lesson-video {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  margin: 1.5rem 0;
+}
+
+.lesson-video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--sl-color-gray-5);
+}
+</style>

@@ -1,0 +1,128 @@
+---
+title: Récapitulatif de la semaine
+description: Référencement, fonctions SI et fonctions conditionnelles appliquées à la gestion comptable et financière
+---
+
+import { Aside } from '@astrojs/starlight/components';
+
+## Objectif de la semaine
+
+Cette semaine, nous avons appris à :
+- modéliser un problème de gestion dans Excel
+- structurer correctement un chiffrier
+- utiliser le **référencement**
+- automatiser des décisions avec les **fonctions conditionnelles**
+
+## 1️⃣ Modélisation de problème
+
+Avant de se lancer dans la construction d’un chiffrier Excel, il est essentiel de suivre une démarche structurée pour s’assurer que le modèle répondra aux besoins de gestion.
+
+### Démarche utilisée
+1. Définir **l’objectif**
+2. Identifier les **données à saisir**
+3. Identifier les **données calculées**
+4. Repérer les **conditions**
+5. Structurer les feuilles et colonnes
+
+### Exemple: Suivi budgétaire d'un département
+
+1. **Objectif:** Vérifier si un département respecte son budget mensuel.
+2. **Données à saisir:**
+   - Département
+   - Budget mensuel
+   - Dépenses mensuelles
+3. **Données calculées:**
+    - Écart (*Budget - Dépenses*)
+    - Statut (*Dépassement* ou *OK*)
+4. **Conditions:**
+   - Si l'écart est négatif, alors le statut indique "Dépassement", sinon "OK"
+5. **Structuration:**
+
+| Département | Budget | Dépenses | Écart | Statut |
+|------------|--------|----------|-------|--------|
+
+
+
+## 6️⃣ Fonctions logiques ET et OU
+
+### ET — toutes les conditions vraies
+
+La fonction `ET` vérifie si toutes les conditions sont vraies. Elle est souvent utilisée à l'intérieur d'une fonction SI pour tester plusieurs critères.
+
+### Syntaxe:
+
+```text
+=ET(condition1; condition2; ...)
+```
+
+### Exemple: Vérifier si une vente est à la fois supérieure à 10,000 $ et réalisée par "Desjardins"
+
+Ici on souhaite identifier les ventes importantes qui sont à la fois supérieures à 10,000 $ et réalisées par "Desjardins".
+
+```text
+=SI(ET(A2>10000; B2="Desjardins"); "Vente importante"; "Autre")
+```
+
+### OU — au moins une condition vraie
+
+La fonction `OU` vérifie si au moins une des conditions est vraie. Elle est également utilisée à l'intérieur d'une fonction SI pour tester plusieurs critères.
+
+### Syntaxe:
+
+```text
+=OU(condition1; condition2; ...)
+```
+
+### Exemple: Vérifier si une vente est soit supérieure à 10,000 $ ou réalisée par "Desjardins"
+
+Ici on souhaite identifier les ventes importantes qui sont soit supérieures à 10,000 $ ou réalisées par "Desjardins".
+
+```text
+=SI(OU(A2>10000; B2="Desjardins"); "Vente importante"; "Autre")
+```
+
+## 7️⃣ Fonctions utilitaires importantes à connaître
+
+### CONCAT
+
+La fonction `CONCAT` permet de concaténer (combiner) plusieurs chaînes de texte en une seule.
+Elle est très utile pour créer des étiquettes, des messages personnalisés ou pour combiner des données provenant de différentes cellules.
+
+#### Syntaxe:
+
+```text
+=CONCAT(texte1; texte2; ...)
+```
+
+#### Exemple: Combiner le prénom et le nom d'un client
+
+Supposons que la colonne A contient les prénoms et la colonne B les noms de famille. Pour créer une colonne C avec le nom complet :
+
+```text
+=CONCAT(A2; " "; B2)
+```
+
+### ARRONDI
+
+La fonction `ARRONDI` permet d'arrondir un nombre à un nombre spécifié de décimales.
+
+#### Syntaxe:
+
+```text
+=ARRONDI(nombre; nombre_de_décimales)
+```
+
+#### Exemple: Arrondir une moyenne à 2 décimales
+
+Supposons que la cellule A2 représente un montant avec taxes ou un total de dépenses, et que tu souhaites l'arrondir à 2 décimales pour une présentation plus propre.
+Pour l'arrondir à 2 décimales :
+
+```text
+=ARRONDI(A2; 2)
+```
+
+# Conclusion
+
+Cette semaine, nous avons couvert des concepts essentiels pour la gestion comptable et financière dans Excel, notamment le référencement et les fonctions conditionnelles. 
+Ces outils sont fondamentaux pour analyser des données, suivre des budgets, valider des dépenses et produire des indicateurs financiers fiables. 
+En maîtrisant ces fonctions, vous serez mieux équipés pour prendre des décisions éclairées basées sur vos données financières.

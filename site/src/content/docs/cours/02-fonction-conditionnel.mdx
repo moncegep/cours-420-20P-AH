@@ -1,0 +1,361 @@
+---
+title: Fonctions conditionnelles (NB.SI, SOMME.SI, MOYENNE.SI)
+description: Apprendre à utiliser les fonctions NB.SI, SOMME.SI et MOYENNE.SI pour analyser des données selon des critères
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import QuizClassification from './../../../components/QuizClassification';
+
+## Pourquoi utiliser ces fonctions ?
+
+Les fonctions **NB.SI**, **SOMME.SI** et **MOYENNE.SI** permettent d'analyser des ensembles de données en appliquant des calculs uniquement sur les cellules qui répondent à un critère spécifique. 
+
+Ces fonctions sont essentielles pour :
+- Compter combien d'éléments répondent à une condition
+- Calculer des totaux conditionnels
+- Obtenir des moyennes pour des sous-groupes de données
+
+## Rappel des opérateurs de comparaison
+
+Voici les principaux opérateurs de comparaison disponibles dans Excel :
+
+| Opérateur   | Description               | Exemple        |
+|-------------|---------------------------|----------------|
+| `=`         | Égal à                    | `"=10"`        |
+| `<>`        | Différent de              | `"<>10"`       |
+| `>`         | Supérieur à               | `">10"`        |
+| `<`         | Inférieur à               | `"<10"`        |
+| `>=`        | Supérieur ou égal à       | `">=10"`       |
+| `<=`        | Inférieur ou égal à       | `"<=10"`       |
+
+<Aside type="tip" title="Important">
+Dans les fonctions conditionnelles, les critères avec opérateurs doivent être **entre guillemets**.  
+Exemple : `">=60"` au lieu de `>=60`
+</Aside>
+
+## La fonction NB.SI
+
+La fonction **NB.SI** compte le nombre de cellules dans une plage qui répondent à un critère donné.
+
+### Syntaxe
+```text
+=NB.SI(plage; critère)
+```
+
+**Arguments :**
+- `plage` : la plage de cellules à analyser
+- `critère` : la condition que les cellules doivent satisfaire
+
+### Exemples
+
+#### Exemple 1 : Compter les notes supérieures ou égales à 60
+```text
+=NB.SI(B2:B20;">=60")
+```
+Cette formule compte combien d'étudiants ont une note de 60 ou plus dans la plage B2:B20.
+
+#### Exemple 2 : Compter les ventes d'une région spécifique
+```text
+=NB.SI(A2:A50;"Montréal")
+```
+Cette formule compte combien de transactions proviennent de Montréal.
+
+#### Exemple 3 : Compter avec référence à une cellule
+```text
+=NB.SI(C2:C100;">="&E1)
+```
+Cette formule compte les valeurs supérieures ou égales à la valeur dans E1. L'opérateur `&` permet de concaténer le critère avec la référence de cellule.
+
+<Aside type="caution" title="Attention : Critères textuels">
+Pour les critères textuels exacts, utilisez simplement le texte entre guillemets : `"Montréal"`.  
+Pour les critères avec opérateurs, ajoutez l'opérateur dans les guillemets : `">=60"`.
+</Aside>
+
+## La fonction SOMME.SI
+
+La fonction **SOMME.SI** additionne les valeurs d'une plage qui répondent à un critère donné.
+
+### Syntaxe
+```text
+=SOMME.SI(plage; critère; [somme_plage])
+```
+
+**Arguments :**
+- `plage` : la plage de cellules à évaluer selon le critère
+- `critère` : la condition que les cellules doivent satisfaire
+- `somme_plage` : (optionnel) la plage des cellules à additionner. Si omis, additionne les cellules de la `plage`.
+
+### Exemples
+
+#### Exemple 1 : Total des ventes supérieures à 1000$
+```text
+=SOMME.SI(C2:C50;">1000")
+```
+Cette formule additionne toutes les ventes supérieures à 1000$ dans la colonne C.
+
+#### Exemple 2 : Total des ventes pour Montréal
+```text
+=SOMME.SI(A2:A50;"Montréal";C2:C50)
+```
+Cette formule :
+1. Vérifie la colonne A (région) pour trouver "Montréal"
+2. Additionne les valeurs correspondantes dans la colonne C (montants)
+
+#### Exemple 3 : Total des commissions pour les ventes ≥ 5000$
+```text
+=SOMME.SI(B2:B100;">=5000";D2:D100)
+```
+Cette formule additionne les commissions (colonne D) uniquement pour les ventes de 5000$ et plus (colonne B).
+
+## La fonction MOYENNE.SI
+
+La fonction **MOYENNE.SI** calcule la moyenne des valeurs d'une plage qui répondent à un critère donné.
+
+### Syntaxe
+```text
+=MOYENNE.SI(plage; critère; [moyenne_plage])
+```
+
+**Arguments :**
+- `plage` : la plage de cellules à évaluer selon le critère
+- `critère` : la condition que les cellules doivent satisfaire
+- `moyenne_plage` : (optionnel) la plage des cellules dont on calcule la moyenne. Si omis, calcule la moyenne des cellules de la `plage`.
+
+### Exemples
+
+#### Exemple 1 : Moyenne des notes supérieures à 70
+```text
+=MOYENNE.SI(B2:B30;">70")
+```
+Cette formule calcule la moyenne uniquement des notes supérieures à 70.
+
+#### Exemple 2 : Moyenne des ventes pour Québec
+```text
+=MOYENNE.SI(A2:A50;"Québec";C2:C50)
+```
+Cette formule calcule la moyenne des ventes (colonne C) pour les transactions de Québec (colonne A).
+
+#### Exemple 3 : Moyenne d'âge des employés à temps plein
+```text
+=MOYENNE.SI(C2:C100;"Temps plein";D2:D100)
+```
+Cette formule calcule l'âge moyen (colonne D) des employés ayant le statut "Temps plein" (colonne C).
+
+## Tableau comparatif
+
+| Fonction     | Objectif                              | Résultat                |
+|--------------|---------------------------------------|-------------------------|
+| **NB.SI**    | Compter les cellules                  | Nombre (entier)         |
+| **SOMME.SI** | Additionner les valeurs               | Somme (nombre)          |
+| **MOYENNE.SI** | Calculer la moyenne des valeurs     | Moyenne (nombre)        |
+
+## Exemple pratique complet
+
+Imaginons un tableau de ventes avec les colonnes suivantes :
+- Colonne A : Région (Montréal, Québec, Laval)
+- Colonne B : Montant de vente
+- Colonne C : Type de client (Entreprise, Particulier)
+
+**Questions d'analyse :**
+
+1. Combien de ventes à Montréal ?  
+   `=NB.SI(A2:A100;"Montréal")`
+
+2. Total des ventes pour les entreprises ?  
+   `=SOMME.SI(C2:C100;"Entreprise";B2:B100)`
+
+3. Montant moyen des ventes à Québec ?  
+   `=MOYENNE.SI(A2:A100;"Québec";B2:B100)`
+
+4. Combien de ventes supérieures à 5000$ ?  
+   `=NB.SI(B2:B100;">5000")`
+
+5. Total des ventes supérieures à 2000$ ?  
+   `=SOMME.SI(B2:B100;">2000")`
+
+## Quiz rapide
+
+export const quizData = [
+  {
+    id: 'q1',
+    question: 'Quelle formule compte les notes supérieures ou égales à 60 dans B2:B50 ?',
+    options: [
+      `=NB.SI(B2:B50;>=60)`,
+      `=NB.SI(B2:B50;">=60")`,
+      `=COMPTE.SI(B2:B50;">=60")`,
+      `=SOMME.SI(B2:B50;">=60")`
+    ],
+    correct: `=NB.SI(B2:B50;">=60")`,
+    explanation: `- La fonction correcte est **NB.SI** (pas \`COMPTE.SI\` ou \`SOMME.SI\`).
+- Le critère avec opérateur doit être **entre guillemets** : \`">=60"\`.`
+  },
+  {
+    id: 'q2',
+    question: 'Quelle formule additionne les ventes (colonne C) pour Montréal (colonne A) ?',
+    options: [
+      `=SOMME.SI(A2:A100;"Montréal")`,
+      `=SOMME.SI(C2:C100;"Montréal";A2:A100)`,
+      `=SOMME.SI(A2:A100;"Montréal";C2:C100)`,
+      `=SOMME(SI(A2:A100="Montréal";C2:C100))`
+    ],
+    correct: `=SOMME.SI(A2:A100;"Montréal";C2:C100)`,
+    explanation: `**Structure correcte de SOMME.SI :**
+1. **Plage de critère** : A2:A100 (où chercher "Montréal")
+2. **Critère** : "Montréal"
+3. **Plage à additionner** : C2:C100 (les ventes)
+
+L'option A oublierait d'additionner les ventes. L'option B inverse les plages.`
+  },
+  {
+    id: 'q3',
+    question: 'Que calcule cette formule ? `=MOYENNE.SI(B2:B50;">70")`',
+    options: [
+      'La moyenne de toutes les valeurs dans B2:B50',
+      'La moyenne des valeurs supérieures à 70 dans B2:B50',
+      'Le nombre de valeurs supérieures à 70',
+      'La somme des valeurs supérieures à 70'
+    ],
+    correct: 'La moyenne des valeurs supérieures à 70 dans B2:B50',
+    explanation: `**MOYENNE.SI** calcule la moyenne uniquement des cellules qui satisfont le critère.
+
+Ici : moyenne des cellules > 70 dans la plage B2:B50.
+
+Si B2:B50 contient : 50, 75, 80, 60, 90  
+Seules 75, 80, 90 sont retenues → moyenne = (75+80+90)/3 = 81,67`
+  },
+  {
+    id: 'q4',
+    question: 'Quelle est la différence entre ces deux formules ?\nA: `=SOMME.SI(B2:B50;">1000")`\nB: `=SOMME.SI(A2:A50;">1000";B2:B50)`',
+    options: [
+      'Aucune différence, elles sont équivalentes',
+      'A additionne les cellules de B2:B50 qui sont >1000, B additionne B2:B50 quand A2:A50 >1000',
+      'A compte, B additionne',
+      'B contient une erreur de syntaxe'
+    ],
+    correct: 'A additionne les cellules de B2:B50 qui sont >1000, B additionne B2:B50 quand A2:A50 >1000',
+    explanation: `**Formule A** : Plage de critère = Plage d'addition (B2:B50)  
+→ Additionne les valeurs de B2:B50 qui sont >1000
+
+**Formule B** : Plage de critère ≠ Plage d'addition  
+→ Vérifie A2:A50 pour >1000, puis additionne les B correspondants
+
+**Exemple :**
+| A  | B   |
+|----|-----|
+| 500| 100 |
+| 1500| 200 |
+| 2000| 300 |
+
+Formule A = 0 (aucune valeur B >1000)  
+Formule B = 500 (additionne B où A >1000)`
+  },
+  {
+    id: 'q5',
+    question: 'Combien de ventes ≥ 500$ ont été réalisées par des particuliers si on a :\n- Colonne A : Type client\n- Colonne B : Montant',
+    options: [
+      `=NB.SI(A:A;"Particulier";B:B;">=500")`,
+      `=NB.SI.ENS(B:B;">=500";A:A;"Particulier")`,
+      `=NB.SI(B:B;">500")+NB.SI(A:A;"Particulier")`,
+      `=SOMME.SI(A:A;"Particulier";B:B;">500")`
+    ],
+    correct: `=NB.SI.ENS(B:B;">=500";A:A;"Particulier")`,
+    explanation: `**NB.SI** ne peut gérer qu'un seul critère. Pour plusieurs critères, utilisez **NB.SI.ENS**.
+
+**Syntaxe NB.SI.ENS :**
+\`=NB.SI.ENS(plage_critère1; critère1; plage_critère2; critère2; ...)\`
+
+**Notre formule :**
+- Critère 1 : Montant ≥ 500 dans colonne B
+- Critère 2 : Type = "Particulier" dans colonne A
+
+**Note :** L'option A n'existe pas (NB.SI n'accepte que 2 arguments).  
+L'option C additionne deux comptages séparés (incorrect).`
+  },
+  {
+    id: 'q6',
+    question: 'Si une plage contient 5, 10, 15, 20, 25, que retourne `=MOYENNE.SI(A1:A5;">=15")` ?',
+    options: [
+      '15',
+      '17,5',
+      '20',
+      '22,5'
+    ],
+    correct: '20',
+    explanation: `**Étape 1 :** Identifier les valeurs ≥ 15  
+→ 15, 20, 25 (trois valeurs)
+
+**Étape 2 :** Calculer la moyenne  
+→ (15 + 20 + 25) / 3 = 60 / 3 = **20**
+
+**Erreur fréquente :** Confondre avec la médiane (17,5) ou prendre uniquement la moyenne des extrêmes.`
+  }
+];
+
+<QuizClassification client:visible questions={quizData} title="Quiz: Fonctions conditionnelles" />
+
+## Fonctions avec critères multiples
+
+Pour analyser des données avec **plusieurs critères simultanés**, Excel propose des versions avancées :
+
+<CardGrid>
+  <Card title="NB.SI.ENS" icon="puzzle">
+    Compte les cellules répondant à **plusieurs critères**.
+```text
+    =NB.SI.ENS(plage1; critère1; plage2; critère2)
+```
+  </Card>
+  
+  <Card title="SOMME.SI.ENS" icon="puzzle">
+    Additionne selon **plusieurs critères**.
+```text
+    =SOMME.SI.ENS(somme_plage; plage1; critère1; plage2; critère2)
+```
+  </Card>
+  
+  <Card title="MOYENNE.SI.ENS" icon="puzzle">
+    Calcule la moyenne selon **plusieurs critères**.
+```text
+    =MOYENNE.SI.ENS(moyenne_plage; plage1; critère1; plage2; critère2)
+```
+  </Card>
+</CardGrid>
+
+**Exemple :** Total des ventes à Montréal pour les entreprises  
+```text
+=SOMME.SI.ENS(C2:C100; A2:A100; "Montréal"; B2:B100; "Entreprise")
+```
+
+## Astuces pratiques
+
+1. **Critères avec cellules :** Utilisez `&` pour concaténer  
+```text
+   =NB.SI(A2:A50;">="&E1)
+```
+
+2. **Critères avec astérisques :** Pour recherche partielle  
+```text
+   =NB.SI(A2:A50;"Mont*")  // Trouve Montréal, Montmagny, etc.
+```
+
+3. **Compter les cellules non vides :**  
+```text
+   =NB.SI(A2:A50;"<>")
+```
+
+4. **Compter les cellules vides :**  
+```text
+   =NB.SI(A2:A50;"")
+```
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : NB.SI](https://support.microsoft.com/fr-fr/office/nb-si-nb-si-fonction-e0de10c6-f885-4e71-abb4-1f464816df34)
+- [Documentation Microsoft : SOMME.SI](https://support.microsoft.com/fr-fr/office/somme-si-somme-si-fonction-169b8c99-c05c-4483-a712-1697a653039b)
+- [Documentation Microsoft : MOYENNE.SI](https://support.microsoft.com/fr-fr/office/moyenne-si-moyenne-si-fonction-faec8e2e-0dec-4308-af69-f5576d8ac642)
+- [Documentation Microsoft : Fonctions SI.ENS](https://support.microsoft.com/fr-fr/office/nb-si-ens-fonction-dda3dc6e-f74e-4aee-88bc-aa8c2a866842)
+
+---
+
+{/* **Prochaine étape** : Combiner ces fonctions avec des tableaux croisés dynamiques pour des analyses encore plus puissantes. */}

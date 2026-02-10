@@ -1,0 +1,535 @@
+---
+title: La mise en forme conditionnelle
+description: Apprendre à utiliser la mise en forme conditionnelle dans Excel pour visualiser automatiquement les données selon des critères
+sidebar:
+  label: Mise en forme conditionnelle
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import { Steps } from '@astrojs/starlight/components';
+import QuizClassification from '../../../components/QuizClassification';
+
+## Qu'est-ce que la mise en forme conditionnelle ?
+
+La mise en forme conditionnelle permet de **modifier automatiquement l'apparence** d'une cellule (couleur, police, bordure, icône) en fonction de sa valeur ou d'une condition. C'est un outil essentiel pour **repérer rapidement** les tendances, les anomalies et les informations importantes dans un tableau de données.
+
+**Pourquoi l'utiliser ?**
+- Identifier visuellement les ventes qui dépassent un objectif
+- Mettre en évidence les retards de paiement
+- Repérer les notes d'étudiants en échec
+- Comparer rapidement des performances entre employés ou succursales
+
+<Aside type="tip" title="Mise en forme ≠ formule">
+La mise en forme conditionnelle ne modifie **que l'apparence** de la cellule, jamais sa valeur. Les données restent intactes ; c'est uniquement le visuel qui change selon les conditions définies.
+</Aside>
+
+## Accéder à la mise en forme conditionnelle
+
+La mise en forme conditionnelle se trouve dans l'onglet **Accueil** du ruban Excel, dans le groupe **Styles**.
+
+<Steps>
+1. **Sélectionner** la plage de cellules à formater
+2. Cliquer sur **Accueil** → **Mise en forme conditionnelle**
+3. Choisir le type de règle souhaité dans le menu déroulant
+</Steps>
+
+<Aside type="caution" title="Sélection d'abord !">
+Vous devez **toujours sélectionner les cellules** avant d'appliquer une mise en forme conditionnelle. Si vous oubliez, la règle ne s'appliquera qu'à la cellule active.
+</Aside>
+
+## Les règles de mise en surbrillance
+
+Les règles de mise en surbrillance sont les plus simples et les plus utilisées. Elles permettent de formater les cellules selon une **comparaison directe** avec une valeur.
+
+### Règles disponibles
+
+| Règle | Description | Exemple d'usage |
+|-------|-------------|-----------------|
+| **Supérieur à...** | Cellules dont la valeur dépasse un seuil | Ventes > 10 000 $ |
+| **Inférieur à...** | Cellules dont la valeur est sous un seuil | Stock < 5 unités |
+| **Entre...** | Cellules dans une plage de valeurs | Notes entre 60 et 75 |
+| **Égal à...** | Cellules contenant une valeur précise | Statut = "En retard" |
+| **Texte qui contient...** | Cellules contenant un mot ou texte | Ville contient "Montréal" |
+| **Date...** | Cellules selon une période | Dates de la semaine dernière |
+| **Valeurs en double** | Repérer les doublons ou valeurs uniques | Numéros de facture en double |
+
+### Exemple : Mettre en évidence les ventes élevées
+
+Supposons un tableau de ventes mensuelles par succursale. On veut colorier en vert les montants supérieurs à 50 000 $.
+
+<Steps>
+1. Sélectionner la plage des montants de ventes (ex. `B2:B20`)
+2. **Accueil** → **Mise en forme conditionnelle** → **Règles de mise en surbrillance** → **Supérieur à...**
+3. Entrer la valeur `50000`
+4. Choisir le format souhaité (ex. « Remplissage vert avec texte vert foncé »)
+5. Cliquer **OK**
+</Steps>
+
+### Exemple : Identifier les doublons
+
+Pour repérer les numéros de facture en double dans une liste :
+
+<Steps>
+1. Sélectionner la colonne des numéros de facture
+2. **Accueil** → **Mise en forme conditionnelle** → **Règles de mise en surbrillance** → **Valeurs en double...**
+3. Choisir « En double » et le format de mise en évidence
+4. Cliquer **OK**
+</Steps>
+
+<Aside type="tip" title="Astuce pratique">
+La détection des doublons est particulièrement utile lors de l'importation de données pour vérifier qu'il n'y a pas d'entrées en double dans une base de clients ou un inventaire.
+</Aside>
+
+## Les règles des valeurs plus/moins élevées
+
+Ces règles permettent de formater les cellules en fonction de leur **position relative** dans la plage sélectionnée, sans spécifier de valeur fixe.
+
+### Règles disponibles
+
+| Règle | Description | Exemple d'usage |
+|-------|-------------|-----------------|
+| **10 valeurs les plus élevées** | Les N plus grandes valeurs | Top 10 des meilleurs vendeurs |
+| **10 % les plus élevées** | Le N % supérieur | Le 10 % supérieur des salaires |
+| **10 valeurs les moins élevées** | Les N plus petites valeurs | 5 produits les moins vendus |
+| **10 % les moins élevées** | Le N % inférieur | Le 20 % inférieur des notes |
+| **Supérieur à la moyenne** | Au-dessus de la moyenne | Ventes au-dessus de la moyenne |
+| **Inférieur à la moyenne** | En-dessous de la moyenne | Temps de réponse sous la moyenne |
+
+<Aside type="note" title="Le nombre est ajustable">
+Malgré le nom « 10 valeurs les plus élevées », vous pouvez ajuster ce nombre. Par exemple, vous pouvez demander les **3** valeurs les plus élevées ou les **5** valeurs les moins élevées.
+</Aside>
+
+### Exemple : Top 3 des meilleures ventes
+
+<Steps>
+1. Sélectionner la plage des montants de ventes
+2. **Accueil** → **Mise en forme conditionnelle** → **Règles des valeurs plus/moins élevées** → **10 valeurs les plus élevées...**
+3. Changer le nombre de 10 à `3`
+4. Choisir un format de mise en évidence
+5. Cliquer **OK**
+</Steps>
+
+### Exemple : Notes sous la moyenne
+
+Pour repérer les étudiants ayant une note inférieure à la moyenne du groupe :
+
+<Steps>
+1. Sélectionner la plage des notes
+2. **Accueil** → **Mise en forme conditionnelle** → **Règles des valeurs plus/moins élevées** → **Inférieur à la moyenne...**
+3. Choisir un format (ex. remplissage rouge clair)
+4. Cliquer **OK**
+</Steps>
+
+## Les barres de données
+
+Les barres de données ajoutent une **barre horizontale** dans chaque cellule, dont la longueur est proportionnelle à la valeur. C'est une manière rapide de créer un **mini-graphique** directement dans les cellules.
+
+### Types de barres
+
+<Tabs>
+  <TabItem label="Remplissage dégradé">
+    La barre a un dégradé de couleur du foncé (gauche) au clair (droite). C'est le style par défaut.
+    
+    **Idéal pour :** une visualisation élégante et lisible des valeurs.
+  </TabItem>
+  <TabItem label="Remplissage uni">
+    La barre est d'une couleur uniforme sur toute sa longueur.
+    
+    **Idéal pour :** un contraste maximal, plus facile à comparer visuellement.
+  </TabItem>
+</Tabs>
+
+### Exemple : Visualiser les ventes par succursale
+
+<Steps>
+1. Sélectionner la plage des montants de ventes
+2. **Accueil** → **Mise en forme conditionnelle** → **Barres de données**
+3. Choisir un style (dégradé ou uni, couleur au choix)
+</Steps>
+
+La cellule avec la valeur la plus élevée aura une barre occupant toute la largeur ; les autres seront proportionnelles.
+
+<Aside type="tip" title="Masquer les valeurs">
+Pour afficher **uniquement les barres** sans les nombres, faites un clic droit sur la sélection → **Format de cellule** → onglet **Nombre** → Catégorie **Personnalisée** → tapez `;;;` (trois points-virgules). Les valeurs restent présentes mais invisibles.
+</Aside>
+
+## Les nuances de couleurs
+
+Les nuances de couleurs (ou « échelles de couleurs ») appliquent un **dégradé de couleur** à toute la plage. Chaque cellule reçoit une couleur qui varie selon sa valeur par rapport aux autres.
+
+### Types courants
+
+| Type | Couleurs | Usage typique |
+|------|----------|---------------|
+| **2 couleurs** | Ex. blanc → bleu | Intensité simple |
+| **3 couleurs** | Ex. rouge → jaune → vert | Performance (mauvais → moyen → bon) |
+
+### Exemple : Carte de chaleur des notes
+
+Pour visualiser les résultats d'un groupe d'étudiants sous forme de carte de chaleur :
+
+<Steps>
+1. Sélectionner toutes les notes du tableau
+2. **Accueil** → **Mise en forme conditionnelle** → **Nuances de couleurs**
+3. Choisir l'échelle **Rouge – Jaune – Vert** (rouge = faible, vert = élevé)
+</Steps>
+
+Les notes faibles apparaîtront en rouge, les notes moyennes en jaune et les notes élevées en vert, avec toutes les nuances intermédiaires.
+
+<Aside type="caution" title="Attention aux daltoniens">
+L'échelle rouge-vert est problématique pour les personnes daltoniennes. En contexte professionnel, préférez des combinaisons comme **rouge – blanc – bleu** ou **orange – blanc – violet** pour une meilleure accessibilité.
+</Aside>
+
+## Les jeux d'icônes
+
+Les jeux d'icônes ajoutent une **petite icône** dans chaque cellule (flèche, feu de circulation, drapeau, étoile, etc.) selon la position de la valeur dans la plage.
+
+### Types populaires
+
+<CardGrid>
+  <Card title="Flèches directionnelles" icon="up-caret">
+    ↑ ↗ → ↘ ↓
+
+    **Idéal pour :** tendances et variations (hausse, stable, baisse).
+  </Card>
+  <Card title="Feux de circulation" icon="approve-check">
+    🔴 🟡 🟢
+
+    **Idéal pour :** statut de performance (mauvais, acceptable, bon).
+  </Card>
+  <Card title="Drapeaux" icon="warning">
+    🚩
+
+    **Idéal pour :** niveaux d'alerte (critique, attention, OK).
+  </Card>
+  <Card title="Étoiles / barres" icon="star">
+    ⭐
+
+    **Idéal pour :** classements et évaluations (1 à 4 étoiles).
+  </Card>
+</CardGrid>
+
+### Exemple : Feux de circulation pour les KPIs
+
+Pour afficher un feu de circulation selon les ventes trimestrielles :
+
+<Steps>
+1. Sélectionner la plage des résultats
+2. **Accueil** → **Mise en forme conditionnelle** → **Jeux d'icônes** → **3 feux de signalisation**
+3. Par défaut, Excel répartit les icônes en trois tiers (33 % chacun)
+</Steps>
+
+## Créer une règle personnalisée
+
+Les règles prédéfinies ne couvrent pas tous les besoins. La boîte de dialogue **Nouvelle règle** permet de créer des conditions sur mesure.
+
+### Accès
+
+**Accueil** → **Mise en forme conditionnelle** → **Nouvelle règle...**
+
+### Types de règles personnalisées
+
+| Type | Description |
+|------|-------------|
+| Mettre en forme les cellules selon leur valeur | Barres, nuances, icônes avec seuils personnalisés |
+| Mettre en forme uniquement les cellules qui contiennent | Conditions classiques (valeur, texte, date, vide/non-vide) |
+| Mettre en forme les valeurs les plus/moins élevées | Top N, pourcentage, au-dessus/en-dessous de la moyenne |
+| Mettre en forme uniquement les valeurs uniques ou en double | Doublons et valeurs uniques |
+| **Utiliser une formule** | La plus puissante : toute formule retournant VRAI/FAUX |
+
+### Règles avec formules personnalisées
+
+C'est le type le plus flexible. Vous écrivez une formule qui retourne VRAI ou FAUX, et la mise en forme s'applique quand la formule retourne VRAI.
+
+<Steps>
+1. Sélectionner la plage de cellules
+2. **Accueil** → **Mise en forme conditionnelle** → **Nouvelle règle...**
+3. Choisir **« Utiliser une formule pour déterminer pour quelles cellules le format sera appliqué »**
+4. Entrer la formule dans le champ
+5. Cliquer sur **Format...** pour définir l'apparence
+6. Cliquer **OK**
+</Steps>
+
+#### Exemple 1 : Colorer une ligne entière selon une condition
+
+Pour colorer toute la ligne si le statut (colonne D) est « En retard » :
+
+1. Sélectionner tout le tableau (ex. `A2:F20`)
+2. Nouvelle règle → Utiliser une formule
+3. Formule : `=$D2="En retard"`
+4. Format : remplissage rouge clair
+
+<Aside type="caution" title="Référence mixte obligatoire">
+Remarquez le **$** devant la colonne D mais **pas** devant le numéro de ligne : `=$D2`. Le `$D` fixe la colonne (on vérifie toujours la colonne D), mais le `2` sans `$` permet à la formule de s'ajuster pour chaque ligne. C'est la clé pour colorer une **ligne entière** selon la valeur d'une seule colonne.
+</Aside>
+
+#### Exemple 2 : Mettre en forme selon une autre cellule
+
+Pour colorer les montants de la colonne B en rouge si la date de la colonne C est dépassée :
+
+1. Sélectionner la plage `B2:B20`
+2. Nouvelle règle → Utiliser une formule
+3. Formule : `=C2<AUJOURDHUI()`
+4. Format : police rouge, gras
+
+#### Exemple 3 : Alterner les couleurs de lignes
+
+Pour donner un fond gris clair aux lignes paires (pour faciliter la lecture) :
+
+1. Sélectionner tout le tableau
+2. Nouvelle règle → Utiliser une formule
+3. Formule : `=MOD(LIGNE();2)=0`
+4. Format : remplissage gris clair
+
+<Aside type="tip" title="Explication de la formule">
+`LIGNE()` retourne le numéro de la ligne courante. `MOD(LIGNE();2)` calcule le reste de la division par 2. Si le reste est 0, la ligne est paire. C'est une technique très répandue pour améliorer la lisibilité des grands tableaux.
+</Aside>
+
+## Gérer les règles existantes
+
+### Accéder au gestionnaire de règles
+
+**Accueil** → **Mise en forme conditionnelle** → **Gérer les règles...**
+
+Le gestionnaire permet de :
+- Voir toutes les règles appliquées à une feuille ou une sélection
+- Modifier, supprimer ou réorganiser les règles
+- Changer la plage d'application d'une règle
+- Définir l'ordre de priorité des règles
+
+### Ordre de priorité
+
+Quand plusieurs règles s'appliquent aux mêmes cellules, l'ordre compte. La règle **en haut de la liste** a la priorité la plus élevée.
+
+<Aside type="caution" title="Interrompre si Vrai">
+La case **« Interrompre si Vrai »** dans le gestionnaire permet d'empêcher les règles suivantes de s'appliquer si la règle courante est satisfaite. Par défaut, toutes les règles sont évaluées et leurs formats se cumulent.
+</Aside>
+
+### Supprimer des règles
+
+Pour supprimer les règles de mise en forme conditionnelle :
+- **Cellules sélectionnées :** Accueil → Mise en forme conditionnelle → Effacer les règles → Effacer les règles des cellules sélectionnées
+- **Feuille entière :** Accueil → Mise en forme conditionnelle → Effacer les règles → Effacer les règles de la feuille entière
+
+## Bonnes pratiques
+
+<CardGrid>
+  <Card title="Restez simple" icon="approve-check">
+    Limitez-vous à **2-3 règles** par plage de cellules. Trop de couleurs et d'icônes rendent le tableau confus au lieu de le clarifier.
+  </Card>
+  <Card title="Choisissez des couleurs significatives" icon="approve-check">
+    Utilisez des conventions intuitives : **rouge** pour les problèmes, **vert** pour les bons résultats, **jaune** pour les avertissements.
+  </Card>
+  <Card title="Pensez à l'impression" icon="warning">
+    Les nuances de couleurs et barres de données peuvent être difficiles à distinguer en noir et blanc. Testez l'aperçu avant impression.
+  </Card>
+  <Card title="Documentez vos règles" icon="information">
+    Ajoutez un commentaire ou une note dans la feuille pour expliquer les règles en place, surtout si d'autres personnes utiliseront le fichier.
+  </Card>
+</CardGrid>
+
+## Erreurs fréquentes à éviter
+
+1. **Oublier de sélectionner la bonne plage**
+   
+   Si vous appliquez une mise en forme conditionnelle à une seule cellule au lieu de toute la colonne, seule cette cellule sera formatée. Vérifiez toujours votre sélection avant de créer la règle.
+
+2. **Confondre référence absolue et mixte dans les formules**
+   
+   Pour colorer une ligne entière selon une colonne, utilisez `=$D2` (colonne fixe, ligne relative) et non `=D2` ou `=$D$2`. Une mauvaise référence produit des résultats incohérents.
+
+3. **Accumuler trop de règles**
+   
+   Chaque règle ajoutée peut entrer en conflit avec les précédentes. Utilisez le gestionnaire de règles pour vérifier qu'il n'y a pas de règles redondantes ou contradictoires.
+
+4. **Utiliser la mise en forme conditionnelle au lieu d'une formule**
+   
+   La mise en forme conditionnelle est **visuelle uniquement**. Si vous avez besoin d'afficher un texte comme « En retard » ou « OK », utilisez une formule SI dans une cellule. La mise en forme conditionnelle ne remplace pas les calculs.
+
+5. **Ne pas penser à la mise à jour des données**
+   
+   La mise en forme conditionnelle se met à jour automatiquement quand les données changent. Toutefois, si vous insérez des lignes ou colonnes, vérifiez que la plage d'application est toujours correcte dans le gestionnaire de règles.
+
+## Quiz rapide
+
+export const quizData = [
+  {
+    id: 'q1',
+    question: 'Qu\'est-ce que la mise en forme conditionnelle modifie dans une cellule ?',
+    options: [
+      'La valeur de la cellule',
+      'L\'apparence de la cellule (couleur, police, icône)',
+      'La formule de la cellule',
+      'Le type de données de la cellule'
+    ],
+    correct: 'L\'apparence de la cellule (couleur, police, icône)',
+    explanation: `La mise en forme conditionnelle ne modifie **que l'apparence** de la cellule (couleur de fond, couleur de police, bordures, icônes, barres). 
+
+La **valeur** et la **formule** restent intactes. C'est un outil purement **visuel** pour faciliter l'interprétation des données.`
+  },
+  {
+    id: 'q2',
+    question: 'Vous voulez colorer en rouge les cellules avec un montant inférieur à 1000 $. Quelle option choisir ?',
+    options: [
+      'Barres de données',
+      'Nuances de couleurs',
+      'Règles de mise en surbrillance → Inférieur à...',
+      'Jeux d\'icônes'
+    ],
+    correct: 'Règles de mise en surbrillance → Inférieur à...',
+    explanation: `On veut colorer les cellules selon une **comparaison avec une valeur fixe** (1000 $). C'est exactement le rôle des **règles de mise en surbrillance**.
+
+**Pourquoi pas les autres ?**
+- **Barres de données :** ajoutent des barres proportionnelles, pas une couleur de fond
+- **Nuances de couleurs :** appliquent un dégradé relatif à toute la plage
+- **Jeux d'icônes :** ajoutent des icônes, pas un remplissage de couleur`
+  },
+  {
+    id: 'q3',
+    question: 'Quelle mise en forme conditionnelle est la plus adaptée pour visualiser rapidement les proportions dans une colonne de chiffre d\'affaires ?',
+    options: [
+      'Règles de mise en surbrillance',
+      'Barres de données',
+      'Jeux d\'icônes',
+      'Valeurs en double'
+    ],
+    correct: 'Barres de données',
+    explanation: `Les **barres de données** ajoutent une barre horizontale proportionnelle à la valeur dans chaque cellule, ce qui permet de **comparer visuellement les proportions** d'un coup d'œil.
+
+C'est comme un mini-graphique intégré directement dans les cellules.`
+  },
+  {
+    id: 'q4',
+    question: 'Vous voulez colorer toute la ligne en rouge si la colonne E contient "Annulé". Quelle formule utiliser dans la règle ?',
+    options: [
+      '=E2="Annulé"',
+      '=$E2="Annulé"',
+      '=$E$2="Annulé"',
+      '=E$2="Annulé"'
+    ],
+    correct: '=$E2="Annulé"',
+    explanation: `Pour colorer une **ligne entière** selon la valeur d'une colonne, il faut une **référence mixte** : 
+
+**\`=$E2\`** → le **$** fixe la colonne E (on vérifie toujours la colonne E), mais le numéro de ligne **2** sans $ s'ajuste pour chaque ligne.
+
+**Pourquoi pas les autres ?**
+- **\`=E2\`** : sans $, la colonne se décale aussi (F2, G2...) → incorrect
+- **\`=$E$2\`** : la ligne est aussi fixée → toutes les lignes vérifieraient la cellule E2 uniquement
+- **\`=E$2\`** : la colonne se décale ET la ligne est fixe → doublement incorrect`
+  },
+  {
+    id: 'q5',
+    question: 'Quelle est la différence entre les nuances de couleurs à 2 couleurs et à 3 couleurs ?',
+    options: [
+      '2 couleurs est pour les nombres, 3 couleurs est pour le texte',
+      '2 couleurs montre un dégradé simple (min → max), 3 couleurs ajoute un point milieu',
+      '2 couleurs fonctionne sur une colonne, 3 couleurs sur un tableau',
+      'Il n\'y a pas de différence significative'
+    ],
+    correct: '2 couleurs montre un dégradé simple (min → max), 3 couleurs ajoute un point milieu',
+    explanation: `**2 couleurs :** dégradé du minimum au maximum (ex. blanc → bleu).
+
+**3 couleurs :** ajoute un **point milieu** pour distinguer trois zones (ex. rouge → jaune → vert). C'est plus expressif car on voit clairement les valeurs faibles, moyennes et élevées.
+
+**L'échelle 3 couleurs** est particulièrement utile pour les tableaux de performance où on veut distinguer le bon, le moyen et le mauvais.`
+  },
+  {
+    id: 'q6',
+    question: 'Que fait la formule `=MOD(LIGNE();2)=0` utilisée dans une règle de mise en forme conditionnelle ?',
+    options: [
+      'Elle colore les cellules contenant des nombres pairs',
+      'Elle colore les lignes paires du tableau',
+      'Elle colore une ligne sur trois',
+      'Elle colore les cellules divisibles par 2'
+    ],
+    correct: 'Elle colore les lignes paires du tableau',
+    explanation: `**Décomposition :**
+
+1. **\`LIGNE()\`** retourne le numéro de la ligne courante (2, 3, 4, 5...)
+2. **\`MOD(LIGNE();2)\`** calcule le reste de la division du numéro de ligne par 2
+3. **\`=0\`** vérifie si le reste est 0 (donc si la ligne est paire)
+
+**Résultat :** les lignes 2, 4, 6, 8... sont colorées, créant un **effet de bandes alternées** qui améliore la lisibilité des grands tableaux.
+
+**Attention :** cette formule se base sur le numéro de **ligne de la feuille**, pas sur la position dans le tableau.`
+  },
+  {
+    id: 'q7',
+    question: 'Plusieurs règles de mise en forme conditionnelle s\'appliquent aux mêmes cellules. Laquelle a la priorité ?',
+    options: [
+      'La dernière règle créée',
+      'La première règle créée',
+      'La règle en haut de la liste dans le gestionnaire',
+      'Les règles sont appliquées aléatoirement'
+    ],
+    correct: 'La règle en haut de la liste dans le gestionnaire',
+    explanation: `Dans le **gestionnaire de règles**, les règles sont évaluées **de haut en bas**. La règle **en haut de la liste** a la priorité la plus élevée.
+
+Si la case **« Interrompre si Vrai »** est cochée pour une règle, les règles suivantes ne sont pas évaluées lorsque cette règle est satisfaite.
+
+Vous pouvez **réorganiser** les règles dans le gestionnaire en les faisant glisser pour changer leur priorité.`
+  },
+  {
+    id: 'q8',
+    question: 'Vous souhaitez afficher un feu vert/jaune/rouge selon la performance de vos employés. Quel outil utiliser ?',
+    options: [
+      'Barres de données',
+      'Nuances de couleurs 3 couleurs',
+      'Jeux d\'icônes → Feux de signalisation',
+      'Règles de mise en surbrillance → Entre...'
+    ],
+    correct: 'Jeux d\'icônes → Feux de signalisation',
+    explanation: `Les **jeux d'icônes** avec feux de signalisation ajoutent un indicateur visuel 🔴🟡🟢 directement dans chaque cellule.
+
+**Pourquoi pas les autres ?**
+- **Barres de données :** montrent des proportions, pas des catégories
+- **Nuances de couleurs :** appliquent un dégradé sur le fond de cellule, pas des icônes distinctes
+- **Règles de mise en surbrillance :** colorent le fond, mais ne montrent pas d'icône
+
+Les feux de signalisation sont parfaits pour les **tableaux de bord** (dashboards) et les rapports de performance.`
+  }
+];
+
+<QuizClassification client:visible questions={quizData} title="Quiz : La mise en forme conditionnelle" />
+
+## Exemple pratique complet
+
+Imaginons un tableau de suivi des comptes clients d'une entreprise québécoise avec les colonnes suivantes :
+
+**Données :**
+- Colonne A : Nom du client
+- Colonne B : Montant dû ($)
+- Colonne C : Date d'échéance
+- Colonne D : Statut de paiement (Payé, En attente, En retard)
+- Colonne E : Nombre de jours de retard
+
+**Mise en forme conditionnelle à appliquer :**
+
+**Règle 1 — Lignes des clients en retard (formule personnalisée) :**
+- Sélection : `A2:E20`
+- Formule : `=$D2="En retard"`
+- Format : remplissage rouge clair
+
+**Règle 2 — Montants élevés (règle de surbrillance) :**
+- Sélection : `B2:B20`
+- Supérieur à : `10000`
+- Format : police rouge gras
+
+**Règle 3 — Jours de retard (barres de données) :**
+- Sélection : `E2:E20`
+- Barres de données : dégradé rouge
+
+**Règle 4 — Statut avec icônes (jeux d'icônes personnalisé) :**
+- Sélection : `D2:D20`
+- Utiliser une approche avec 3 règles de surbrillance (Égal à) :
+  - `="Payé"` → remplissage vert
+  - `="En attente"` → remplissage jaune
+  - `="En retard"` → remplissage rouge
+
+**Résultat :** Un tableau où l'on repère immédiatement les clients problématiques, les gros montants impayés, l'ampleur des retards et le statut de chaque compte — le tout sans lire une seule valeur en détail.
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : Mise en forme conditionnelle](https://support.microsoft.com/fr-fr/office/utiliser-la-mise-en-forme-conditionnelle-pour-mettre-en-%C3%A9vidence-des-informations-fed60dfa-1d3f-4e13-9ecb-f1951ff89d7f)
