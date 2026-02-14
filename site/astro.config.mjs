@@ -68,6 +68,7 @@ export default defineConfig({
 					label: 'Guides',
 					items: [
 						{ label: 'Modélisation de problèmes', slug: 'guides/modelisation-excel' },
+						{ label: 'Notions mathématiques', badge: "Nouveau", slug: 'guides/notions-mathematiques' },
 					],
 				},
 				// {

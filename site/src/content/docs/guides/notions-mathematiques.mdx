@@ -1,0 +1,826 @@
+---
+title: "Notions mathématiques fondamentales"
+description: "Guide de référence des notions mathématiques essentielles pour la gestion de données en entreprise avec Excel"
+tableOfContents:
+  minHeadingLevel: 2
+  maxHeadingLevel: 2
+sidebar:
+  label: Notions mathématiques
+  badge:
+    text: Guide
+    variant: note
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import FlashCard from "./../../../components/FlashCard.astro";
+
+Les formules Excel reposent sur des concepts mathématiques que vous utilisez parfois sans le savoir. Ce guide présente chaque notion avec sa **définition**, son **utilité concrète** en entreprise et la **façon de l'appliquer dans Excel**.
+
+<Aside type="tip" title="Comment utiliser ce guide">
+Chaque section suit la même structure : **C'est quoi ?** → **Quand l'utiliser ?** → **Comment dans Excel ?** Utilisez-le comme référence tout au long de la session.
+</Aside>
+
+---
+
+## Taux
+
+### C'est quoi ?
+
+Un **taux** exprime une quantité par rapport à une autre, souvent sur une base de temps ou une unité de référence. Il permet de quantifier une relation entre deux grandeurs pour la rendre comparable et interprétable.
+
+> **Formule :** Taux = Quantité ÷ Base de référence
+
+### Quand l'utiliser ?
+
+- Calculer un **taux horaire** (salaire ÷ heures travaillées)
+- Déterminer un **taux de roulement** du personnel (départs ÷ effectif total)
+- Évaluer un **taux de production** (unités produites ÷ heures de travail)
+- Mesurer un **taux de présence** (jours présents ÷ jours ouvrables)
+- Appliquer un **taux de taxation** (TPS, TVQ)
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    Un employé gagne **920 $** pour **40 heures** de travail.
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Salaire** | **Heures** | **Taux horaire** |
+    | **2** | 920 | 40 | `=A2/B2` |
+
+    **Résultat :** 23 $/h
+  </TabItem>
+  <TabItem label="Taxes au Québec">
+    Un produit coûte **49,99 $** avant taxes.
+
+    | | A | B | C | D |
+    |---|---|---|---|---|
+    | **1** | **Prix** | **TPS (5 %)** | **TVQ (9,975 %)** | **Total** |
+    | **2** | 49,99 | `=A2*0,05` | `=A2*0,09975` | `=A2+B2+C2` |
+
+    Le taux de TPS (5 %) et de TVQ (9,975 %) sont des **taux fixes** appliqués au prix de vente.
+  </TabItem>
+</Tabs>
+
+<Aside type="note" title="Taux vs pourcentage">
+Un taux n'est pas toujours un pourcentage. Le taux horaire de 23 $/h est un taux, mais pas un pourcentage. Un pourcentage est un *type particulier* de taux dont la base de référence est 100.
+</Aside>
+
+---
+
+## Pourcentage
+
+### C'est quoi ?
+
+Un **pourcentage** (%) représente une proportion exprimée sur une base de 100. C'est une façon universelle de comparer des quantités de tailles différentes.
+
+> **Formule :** Pourcentage = (Partie ÷ Total) × 100
+
+### Quand l'utiliser ?
+
+- Calculer la **part de marché** d'un produit
+- Déterminer le **taux de réussite** d'un examen
+- Exprimer une **remise** commerciale
+- Comparer des **proportions** entre départements de tailles différentes
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Calcul de base">
+    Une boutique a vendu **35 chandails** sur un stock de **200 articles**.
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Vendus** | **Stock total** | **% vendu** |
+    | **2** | 35 | 200 | `=A2/B2` |
+
+    **Résultat :** 0,175 → Formatez la cellule en **Pourcentage** pour afficher **17,5 %**
+  </TabItem>
+  <TabItem label="Appliquer un %">
+    Un article à **79,99 $** est en solde à **25 % de rabais**.
+
+    | | A | B | C | D |
+    |---|---|---|---|---|
+    | **1** | **Prix** | **Rabais** | **Montant rabais** | **Prix final** |
+    | **2** | 79,99 | 25% | `=A2*B2` | `=A2-C2` |
+
+    **Astuce :** On peut aussi écrire `=A2*(1-B2)` directement pour le prix final.
+  </TabItem>
+</Tabs>
+
+<Aside type="caution" title="Format vs valeur">
+Dans Excel, **17,5 %** et **0,175** sont la même valeur. Le format Pourcentage ne fait que multiplier l'affichage par 100 et ajouter le symbole %. Si vous entrez `17,5` dans une cellule et appliquez le format %, Excel affichera **1 750 %** ! Entrez plutôt `0,175` ou tapez directement `17,5%`.
+</Aside>
+
+---
+
+## Proportion
+
+### C'est quoi ?
+
+Une **proportion** exprime la relation entre une partie et son tout, ou l'égalité entre deux rapports. Elle permet de comparer des quantités et de trouver des valeurs inconnues par produit croisé.
+
+> **Formule :** a / b = c / d → si on connaît trois valeurs, on trouve la quatrième
+
+### Quand l'utiliser ?
+
+- **Répartir un budget** entre départements selon leur taille
+- **Estimer des ventes** futures à partir de données passées
+- **Convertir des unités** (devises, mesures)
+- **Distribuer des primes** proportionnellement au rendement
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Répartition">
+    Un budget de **50 000 $** doit être réparti entre 3 équipes selon leur nombre d'employés.
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Équipe** | **Employés** | **Budget** |
+    | **2** | Ventes | 12 | `=B2/SOMME(B$2:B$4)*50000` |
+    | **3** | Marketing | 8 | `=B3/SOMME(B$2:B$4)*50000` |
+    | **4** | TI | 5 | `=B4/SOMME(B$2:B$4)*50000` |
+
+    Chaque équipe reçoit sa **proportion** du budget total.
+  </TabItem>
+  <TabItem label="Produit croisé">
+    Si **12 unités** coûtent **45 $**, combien coûtent **30 unités** ?
+
+    > 12 / 45 = 30 / x → x = (30 × 45) / 12
+
+    Dans Excel : `=(30*45)/12` → **112,50 $**
+  </TabItem>
+</Tabs>
+
+---
+
+## Ratio
+
+### C'est quoi ?
+
+Un **ratio** compare deux quantités entre elles par une division. Contrairement à la proportion, le ratio ne se rapporte pas nécessairement à un tout ; il met en relation deux éléments distincts.
+
+> **Notation :** A : B  ou  A / B
+
+### Quand l'utiliser ?
+
+- Calculer le **ratio d'endettement** (dettes ÷ actifs)
+- Évaluer le **ratio employés/gestionnaire**
+- Comparer le **ratio revenus/dépenses**
+- Analyser la **liquidité** d'une entreprise (actifs courants ÷ passifs courants)
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Ratio simple">
+    Une entreprise a **15 employés** pour **2 gestionnaires**.
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Employés** | **Gestionnaires** | **Ratio** |
+    | **2** | 15 | 2 | `=A2/B2` |
+
+    **Résultat :** 7,5 → On dit un ratio de **7,5 : 1** (7,5 employés par gestionnaire)
+  </TabItem>
+  <TabItem label="Ratio financier">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Indicateur** | **Montant** | |
+    | **2** | Actifs courants | 180 000 | |
+    | **3** | Passifs courants | 120 000 | |
+    | **4** | **Ratio de liquidité** | `=B2/B3` | |
+
+    **Résultat :** 1,5 → L'entreprise a **1,50 $** d'actifs pour chaque **1 $** de dette à court terme.
+  </TabItem>
+</Tabs>
+
+<Aside type="note" title="Ratio vs proportion">
+Un **ratio** compare deux quantités distinctes (employés *vs* gestionnaires). Une **proportion** rapporte une partie au tout (employés *sur* l'effectif total). Le ratio 15:2 n'est pas le même que la proportion 15/17.
+</Aside>
+
+---
+
+## Taux de variation
+
+### C'est quoi ?
+
+Le **taux de variation** (ou variation en pourcentage) mesure l'évolution d'une valeur entre deux moments. Il indique de combien, en pourcentage, une quantité a augmenté ou diminué.
+
+> **Formule :** Taux de variation = (Nouvelle valeur − Ancienne valeur) ÷ Ancienne valeur
+
+### Quand l'utiliser ?
+
+- Mesurer la **croissance des ventes** d'un trimestre à l'autre
+- Évaluer la **variation du chiffre d'affaires** annuel
+- Suivre l'**évolution des coûts** de production
+- Comparer la **performance** avant et après un changement
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Mois** | **Ventes** | **Variation** |
+    | **2** | Janvier | 12 500 | — |
+    | **3** | Février | 14 200 | `=(B3-B2)/B2` |
+    | **4** | Mars | 13 800 | `=(B4-B3)/B3` |
+
+    - Janvier → Février : **+13,6 %** (hausse)
+    - Février → Mars : **−2,8 %** (baisse)
+
+    Formatez la colonne C en **Pourcentage** pour un affichage clair.
+  </TabItem>
+  <TabItem label="Piège courant">
+    **Attention à la direction du calcul !**
+
+    Si les ventes passent de **100** à **80**, puis de **80** à **100** :
+    - Baisse : (80 − 100) / 100 = **−20 %**
+    - Hausse : (100 − 80) / 80 = **+25 %**
+
+    Une baisse de 20 % suivie d'une hausse de 25 % ramène à la valeur initiale. Les pourcentages de variation ne sont **pas symétriques**.
+  </TabItem>
+</Tabs>
+
+---
+
+## Moyenne pondérée
+
+### C'est quoi ?
+
+Une **moyenne pondérée** est une moyenne où chaque valeur a un **poids** (une importance) différent. Contrairement à la moyenne simple qui traite toutes les valeurs également, la moyenne pondérée accorde plus d'influence aux éléments qui comptent davantage.
+
+> **Formule :** Moyenne pondérée = Σ (Valeur × Poids) ÷ Σ Poids
+
+### Quand l'utiliser ?
+
+- Calculer une **note finale** avec des évaluations de poids différents
+- Déterminer un **coût moyen pondéré** d'inventaire
+- Calculer un **prix moyen** d'achat d'actions achetées à différents prix
+- Évaluer un **score de satisfaction** avec des critères d'importance variable
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Note de cours">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Évaluation** | **Note** | **Pondération** |
+    | **2** | Examen intra | 78 | 30% |
+    | **3** | Travaux pratiques | 85 | 25% |
+    | **4** | Examen final | 72 | 35% |
+    | **5** | Participation | 90 | 10% |
+    | **6** | **Moyenne pondérée** | `=SOMMEPROD(B2:B5;C2:C5)` | |
+
+    **Résultat :** 78,55 — et non 81,25 (moyenne simple). La note finale est tirée vers le bas par l'examen final qui pèse le plus lourd.
+  </TabItem>
+  <TabItem label="SOMMEPROD">
+    La fonction **SOMMEPROD** est l'outil idéal pour la moyenne pondérée :
+
+    ```
+    =SOMMEPROD(valeurs ; poids) / SOMME(poids)
+    ```
+
+    Si les poids totalisent déjà 100 % (comme les pondérations d'un cours), le dénominateur est inutile :
+
+    ```
+    =SOMMEPROD(B2:B5;C2:C5)
+    ```
+
+    Sinon, divisez par la somme des poids :
+
+    ```
+    =SOMMEPROD(B2:B5;C2:C5)/SOMME(C2:C5)
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Moyenne simple = cas particulier">
+La moyenne simple (`=MOYENNE(...)`) est en fait une moyenne pondérée où tous les poids sont égaux. Dès que les éléments n'ont pas la même importance, il faut utiliser **SOMMEPROD**.
+</Aside>
+
+---
+
+## Variance et écart type
+
+### C'est quoi ?
+
+La **variance** et l'**écart type** mesurent la **dispersion** des données, c'est-à-dire à quel point les valeurs sont éloignées de la moyenne.
+
+- **Variance** : moyenne des carrés des écarts à la moyenne (unité au carré)
+- **Écart type** : racine carrée de la variance (même unité que les données)
+
+> **Formule :** Variance = Σ (Valeur − Moyenne)² ÷ n
+>
+> **Écart type** = √Variance
+
+### Quand l'utiliser ?
+
+- Évaluer la **régularité** des ventes (ventes stables vs volatiles)
+- Mesurer le **risque** d'un investissement
+- Comparer la **constance** de deux fournisseurs sur les délais de livraison
+- Détecter les **anomalies** dans un processus de production
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    Deux vendeurs ont la même moyenne de ventes (500 $/jour), mais des profils très différents :
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Jour** | **Vendeur A** | **Vendeur B** |
+    | **2** | Lundi | 480 | 200 |
+    | **3** | Mardi | 510 | 800 |
+    | **4** | Mercredi | 500 | 350 |
+    | **5** | Jeudi | 520 | 700 |
+    | **6** | Vendredi | 490 | 450 |
+    | **7** | **Moyenne** | `=MOYENNE(B2:B6)` | `=MOYENNE(C2:C6)` |
+    | **8** | **Écart type** | `=ECARTYPE(B2:B6)` | `=ECARTYPE(C2:C6)` |
+
+    - Vendeur A : écart type ≈ **15** → ventes très régulières
+    - Vendeur B : écart type ≈ **237** → ventes très imprévisibles
+  </TabItem>
+  <TabItem label="Fonctions Excel">
+    | Fonction | Description |
+    |---|---|
+    | `ECARTYPE(plage)` | Écart type d'un **échantillon** |
+    | `ECARTYPEP(plage)` | Écart type d'une **population** entière |
+    | `VAR(plage)` | Variance d'un **échantillon** |
+    | `VAR.P(plage)` | Variance d'une **population** entière |
+
+    **Quand choisir ?** Si vos données représentent un sous-ensemble (un échantillon de clients, quelques mois de ventes), utilisez `ECARTYPE` / `VAR`. Si vous avez **toutes** les données (tous les employés, toute l'année), utilisez `ECARTYPEP` / `VAR.P`.
+  </TabItem>
+</Tabs>
+
+<Aside type="note" title="Pourquoi le carré ?">
+La variance utilise le carré des écarts pour éviter que les écarts positifs et négatifs ne s'annulent. L'écart type ramène ensuite le résultat dans l'unité d'origine en prenant la racine carrée.
+</Aside>
+
+---
+
+## Distribution de fréquences
+
+### C'est quoi ?
+
+Une **distribution de fréquences** organise les données en **classes** (intervalles) et compte combien de valeurs tombent dans chaque classe. Elle permet de visualiser la forme des données : où se concentrent-elles ? Y a-t-il des extrêmes ?
+
+> On regroupe les données brutes en intervalles et on compte le nombre d'occurrences par intervalle.
+
+### Quand l'utiliser ?
+
+- Classer les **revenus des clients** par tranches
+- Analyser la **répartition des salaires** dans une entreprise
+- Examiner la **distribution des notes** d'un examen
+- Regrouper les **délais de livraison** par catégorie
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    On veut répartir les résultats d'un examen en classes de 10 points.
+
+    **Étape 1 :** Définir les bornes supérieures des classes dans une colonne :
+
+    | | E | F |
+    |---|---|---|
+    | **1** | **Classe (max)** | **Fréquence** |
+    | **2** | 50 | |
+    | **3** | 60 | |
+    | **4** | 70 | |
+    | **5** | 80 | |
+    | **6** | 90 | |
+    | **7** | 100 | |
+
+    **Étape 2 :** Sélectionner F2:F7, entrer la formule, puis valider avec **Ctrl+Maj+Entrée** :
+
+    ```
+    =FREQUENCE(B2:B30;E2:E7)
+    ```
+  </TabItem>
+  <TabItem label="NB.SI alternative">
+    Vous pouvez aussi construire une distribution manuellement avec **NB.SI.ENS** :
+
+    ```
+    =NB.SI.ENS(B:B;">="&E2;B:B;"<"&E3)
+    ```
+
+    Cette méthode est plus flexible pour définir des classes personnalisées (par exemple : 0–59, 60–69, 70–79, 80–89, 90–100).
+  </TabItem>
+</Tabs>
+
+---
+
+## Fréquence relative
+
+### C'est quoi ?
+
+La **fréquence relative** exprime la proportion de données dans chaque classe par rapport au total. C'est la fréquence absolue divisée par le nombre total d'observations.
+
+> **Formule :** Fréquence relative = Fréquence absolue ÷ Total des observations
+
+### Quand l'utiliser ?
+
+- Comparer des distributions de **tailles différentes** (ex. : les ventes de deux succursales)
+- Créer des **graphiques en pourcentage**
+- Estimer des **probabilités** à partir de données historiques
+- Construire un **histogramme** normalisé
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Tranche salariale** | **Nb employés** | **Fréquence relative** |
+    | **2** | Moins de 40 000 $ | 12 | `=B2/SOMME(B$2:B$6)` |
+    | **3** | 40 000 – 54 999 $ | 28 | `=B3/SOMME(B$2:B$6)` |
+    | **4** | 55 000 – 69 999 $ | 35 | `=B4/SOMME(B$2:B$6)` |
+    | **5** | 70 000 – 84 999 $ | 18 | `=B5/SOMME(B$2:B$6)` |
+    | **6** | 85 000 $ et plus | 7 | `=B6/SOMME(B$2:B$6)` |
+    | **7** | **Total** | `=SOMME(B2:B6)` | `=SOMME(C2:C6)` |
+
+    La colonne C doit totaliser **1** (ou 100 % si formatée en pourcentage).
+  </TabItem>
+  <TabItem label="Interprétation">
+    Si la tranche **55 000 – 69 999 $** a une fréquence relative de 0,35 (35 %), cela signifie que **35 % des employés** gagnent entre 55 000 $ et 69 999 $.
+
+    C'est beaucoup plus parlant que de dire « 35 employés » quand on ne connaît pas l'effectif total.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Vérification rapide">
+La somme de toutes les fréquences relatives doit **toujours** égaler 1 (ou 100 %). Si ce n'est pas le cas, vérifiez vos formules !
+</Aside>
+
+---
+
+## Normalisation
+
+### C'est quoi ?
+
+La **normalisation** (ou standardisation) consiste à transformer des données pour les ramener sur une **échelle commune**, ce qui permet de comparer des valeurs qui ne sont pas dans les mêmes unités ou les mêmes ordres de grandeur.
+
+La méthode la plus courante est le **score Z** (ou cote Z) :
+
+> **Formule :** Z = (Valeur − Moyenne) ÷ Écart type
+
+Un score Z de **0** signifie que la valeur est exactement à la moyenne. Un score Z de **+2** signifie que la valeur est à 2 écarts types au-dessus de la moyenne.
+
+### Quand l'utiliser ?
+
+- Comparer un **vendeur** par rapport à son équipe
+- Combiner des **indicateurs** dans des unités différentes (ventes en $, satisfaction sur 10, délais en jours)
+- Détecter les **valeurs aberrantes** (outliers) dans un ensemble de données
+- Créer un **indice composite** à partir de plusieurs critères
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Score Z">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Employé** | **Ventes ($)** | **Score Z** |
+    | **2** | Alice | 45 000 | `=(B2-MOYENNE(B$2:B$6))/ECARTYPE(B$2:B$6)` |
+    | **3** | Bob | 38 000 | `=(B3-MOYENNE(B$2:B$6))/ECARTYPE(B$2:B$6)` |
+    | **4** | Carla | 52 000 | |
+    | **5** | David | 41 000 | |
+    | **6** | Éva | 48 000 | |
+
+    - Score Z **positif** → au-dessus de la moyenne du groupe
+    - Score Z **négatif** → en dessous de la moyenne du groupe
+    - Score Z au-delà de **±2** → valeur potentiellement exceptionnelle
+  </TabItem>
+  <TabItem label="Min-Max (0 à 1)">
+    Une autre méthode courante ramène les valeurs entre **0** et **1** :
+
+    > Normalisé = (Valeur − Min) ÷ (Max − Min)
+
+    ```
+    =(B2-MIN(B$2:B$6))/(MAX(B$2:B$6)-MIN(B$2:B$6))
+    ```
+
+    Utile pour créer des **tableaux de bord** où plusieurs indicateurs doivent être comparés sur la même échelle.
+  </TabItem>
+</Tabs>
+
+---
+
+## Équation du premier degré
+
+### C'est quoi ?
+
+Une **équation du premier degré** est une relation linéaire de la forme **y = mx + b**, où la variable est à la puissance 1. On l'utilise pour modéliser des situations où il y a une **progression constante**.
+
+> **Forme générale :** y = mx + b
+> - **m** = pente (taux de changement)
+> - **b** = ordonnée à l'origine (valeur de départ)
+
+### Quand l'utiliser ?
+
+- Calculer le **coût total** d'un service (frais fixes + coût par unité)
+- Déterminer un **seuil de rentabilité** (point mort)
+- Modéliser une **dépréciation linéaire** d'un bien
+- Trouver le **nombre d'unités** nécessaires pour atteindre un objectif
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Coût de service">
+    Un forfait cellulaire coûte **45 $/mois** (fixe) + **0,10 $ par minute** d'appel.
+
+    > Coût = 0,10 × minutes + 45
+
+    | | A | B |
+    |---|---|---|
+    | **1** | **Minutes** | **Coût total** |
+    | **2** | 100 | `=0,10*A2+45` |
+    | **3** | 200 | `=0,10*A3+45` |
+    | **4** | 500 | `=0,10*A4+45` |
+
+    **Résultats :** 55 $, 65 $, 95 $
+  </TabItem>
+  <TabItem label="Seuil de rentabilité">
+    Une entreprise a des coûts fixes de **10 000 $/mois** et vend chaque unité **25 $** avec un coût variable de **10 $** par unité.
+
+    > Profit = 0 quand Revenus = Coûts
+    >
+    > 25x = 10x + 10 000 → 15x = 10 000 → x = 667 unités
+
+    Dans Excel : `=10000/(25-10)` → il faut vendre **667 unités** pour atteindre le seuil de rentabilité.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Valeur cible">
+Excel offre l'outil **Valeur cible** (menu Données → Analyse de scénarios) qui permet de résoudre automatiquement des équations du premier degré en trouvant la valeur d'une cellule qui produit un résultat souhaité.
+</Aside>
+
+---
+
+## Exposants
+
+### C'est quoi ?
+
+Un **exposant** indique combien de fois un nombre (la base) est multiplié par lui-même. Les exposants permettent de modéliser les phénomènes de **croissance** et de **décroissance** rapides.
+
+> **Notation :** a^n = a × a × a × ... (n fois)
+>
+> - a^0 = 1 (toujours)
+> - a^1 = a
+> - a^(−1) = 1/a
+
+### Quand l'utiliser ?
+
+- Calculer l'**intérêt composé** (capital qui croît exponentiellement)
+- Modéliser une **croissance démographique** ou une expansion de marché
+- Calculer des **surfaces** (m²) et des **volumes** (m³)
+- Appliquer une **dépréciation** accélérée
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Opérateur ^">
+    L'opérateur **^** calcule les puissances dans Excel :
+
+    | Formule | Résultat | Description |
+    |---|---|---|
+    | `=2^3` | 8 | 2 × 2 × 2 |
+    | `=10^2` | 100 | 10 × 10 |
+    | `=5^0` | 1 | Tout nombre à la puissance 0 |
+    | `=9^0,5` | 3 | Racine carrée (exposant ½) |
+    | `=2^(-1)` | 0,5 | Inverse (1/2) |
+  </TabItem>
+  <TabItem label="Fonction PUISSANCE">
+    La fonction `PUISSANCE(base; exposant)` fait la même chose :
+
+    ```
+    =PUISSANCE(2;3)     → 8
+    =PUISSANCE(10;2)    → 100
+    =PUISSANCE(9;1/2)   → 3 (racine carrée)
+    ```
+
+    Les deux notations sont équivalentes. L'opérateur **^** est plus rapide à écrire ; **PUISSANCE** est plus explicite dans les formules complexes.
+  </TabItem>
+</Tabs>
+
+---
+
+## Probabilité simple
+
+### C'est quoi ?
+
+La **probabilité** mesure la chance qu'un événement se produise, exprimée comme un nombre entre **0** (impossible) et **1** (certain).
+
+> **Formule :** P(événement) = Nombre de cas favorables ÷ Nombre de cas possibles
+
+### Quand l'utiliser ?
+
+- Estimer la **probabilité** qu'un produit soit défectueux
+- Évaluer le **risque** qu'un client ne paie pas sa facture
+- Calculer la **chance** de gagner un appel d'offres
+- Analyser la **fiabilité** d'un processus
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    Un contrôle qualité révèle **8 pièces défectueuses** sur un lot de **500 pièces**.
+
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Défectueuses** | **Total** | **Probabilité** |
+    | **2** | 8 | 500 | `=A2/B2` |
+
+    **Résultat :** 0,016 → **1,6 %** de chance qu'une pièce soit défectueuse.
+  </TabItem>
+  <TabItem label="Avec NB.SI">
+    À partir de données brutes, on peut compter les cas favorables automatiquement :
+
+    ```
+    =NB.SI(C2:C500;"Défectueux")/NB(C2:C500)
+    ```
+
+    Cette formule compte le nombre de cellules contenant « Défectueux » et divise par le nombre total d'entrées pour obtenir la probabilité estimée.
+  </TabItem>
+</Tabs>
+
+<Aside type="note" title="Probabilité vs fréquence relative">
+En pratique, la **fréquence relative** observée dans les données sert d'**estimation** de la probabilité réelle. Plus on a de données, plus l'estimation est fiable.
+</Aside>
+
+---
+
+## Intérêt simple
+
+### C'est quoi ?
+
+L'**intérêt simple** est un calcul où les intérêts sont calculés uniquement sur le **capital initial** (montant de départ). Les intérêts ne génèrent pas eux-mêmes d'intérêts.
+
+> **Formule :** I = C × t × n
+> - **I** = intérêts gagnés
+> - **C** = capital initial
+> - **t** = taux d'intérêt (par période)
+> - **n** = nombre de périodes
+>
+> **Montant total** = C + I = C × (1 + t × n)
+
+### Quand l'utiliser ?
+
+- Prêts à **court terme** (moins d'un an)
+- **Escomptes** commerciaux
+- Certains **placements** à taux fixe
+- Calcul de **pénalités** de retard
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    Vous placez **5 000 $** à un taux annuel de **4 %** pendant **3 ans** en intérêt simple.
+
+    | | A | B | C | D | E |
+    |---|---|---|---|---|---|
+    | **1** | **Capital** | **Taux** | **Années** | **Intérêts** | **Total** |
+    | **2** | 5 000 | 4% | 3 | `=A2*B2*C2` | `=A2+D2` |
+
+    - **Intérêts :** 5 000 × 0,04 × 3 = **600 $**
+    - **Total :** 5 000 + 600 = **5 600 $**
+
+    Les intérêts sont les mêmes chaque année : **200 $**.
+  </TabItem>
+  <TabItem label="Tableau année par année">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Année** | **Intérêt annuel** | **Solde** |
+    | **2** | 0 | — | 5 000 |
+    | **3** | 1 | `=$B$2*$C$2` | `=C2+B3` |
+    | **4** | 2 | `=$B$2*$C$2` | `=C3+B4` |
+    | **5** | 3 | `=$B$2*$C$2` | `=C4+B5` |
+
+    Remarquez que l'intérêt annuel est **toujours le même** (200 $), car il est toujours calculé sur le capital initial de 5 000 $.
+  </TabItem>
+</Tabs>
+
+---
+
+## Intérêt composé
+
+### C'est quoi ?
+
+L'**intérêt composé** calcule les intérêts sur le capital initial **et** sur les intérêts déjà accumulés. C'est le principe des « intérêts sur les intérêts » — la base de l'épargne à long terme.
+
+> **Formule :** Montant = C × (1 + t)^n
+> - **C** = capital initial
+> - **t** = taux d'intérêt par période
+> - **n** = nombre de périodes
+
+### Quand l'utiliser ?
+
+- **Épargne** à long terme (REER, CELI)
+- **Prêts** hypothécaires et auto
+- **Investissements** en bourse
+- Toute situation financière dépassant **un an**
+
+### Comment dans Excel ?
+
+<Tabs>
+  <TabItem label="Exemple">
+    Vous placez **5 000 $** à un taux annuel de **4 %** pendant **3 ans** en intérêt composé.
+
+    | | A | B | C | D |
+    |---|---|---|---|---|
+    | **1** | **Capital** | **Taux** | **Années** | **Montant final** |
+    | **2** | 5 000 | 4% | 3 | `=A2*(1+B2)^C2` |
+
+    **Résultat :** 5 000 × (1,04)³ = **5 624,32 $**
+
+    Comparaison : en intérêt simple, on obtenait 5 600 $. La différence de **24,32 $** vient des intérêts sur les intérêts.
+  </TabItem>
+  <TabItem label="Tableau année par année">
+    | | A | B | C |
+    |---|---|---|---|
+    | **1** | **Année** | **Intérêt annuel** | **Solde** |
+    | **2** | 0 | — | 5 000,00 |
+    | **3** | 1 | `=C2*0,04` | `=C2+B3` |
+    | **4** | 2 | `=C3*0,04` | `=C3+B4` |
+    | **5** | 3 | `=C4*0,04` | `=C4+B5` |
+
+    | Année | Intérêt | Solde |
+    |---|---|---|
+    | 1 | 200,00 $ | 5 200,00 $ |
+    | 2 | 208,00 $ | 5 408,00 $ |
+    | 3 | 216,32 $ | 5 624,32 $ |
+
+    L'intérêt **augmente** chaque année car il est calculé sur un solde de plus en plus grand.
+  </TabItem>
+  <TabItem label="Fonction VC">
+    Excel a une fonction dédiée : **VC** (Valeur Capitalisée) :
+
+    ```
+    =VC(taux; nombre_périodes; versement; valeur_actuelle)
+    =VC(0,04; 3; 0; -5000)
+    ```
+
+    **Résultat :** 5 624,32 $
+
+    Le capital initial est **négatif** car c'est un montant que vous « donnez » (investissez). Le résultat positif représente ce que vous « recevez ».
+  </TabItem>
+</Tabs>
+
+<Aside type="caution" title="Simple vs Composé — L'écart grandit avec le temps">
+Sur 3 ans, la différence est modeste (24 $). Mais sur **30 ans** :
+- Intérêt simple : 5 000 + (5 000 × 0,04 × 30) = **11 000 $**
+- Intérêt composé : 5 000 × (1,04)^30 = **16 216,99 $**
+
+C'est pourquoi Albert Einstein aurait qualifié l'intérêt composé de « huitième merveille du monde ».
+</Aside>
+
+---
+
+## Aide-mémoire
+
+<FlashCard
+  title="Aide-mémoire"
+  categories={[
+    {
+      name: "Exprimer des quantités",
+      color: "blue",
+      items: [
+        { term: "Taux", desc: "Quantité par unité de référence", anchor: "taux" },
+        { term: "Pourcentage", desc: "Ramener sur 100 pour comparer", anchor: "pourcentage" },
+        { term: "Proportion", desc: "Partie par rapport au tout", anchor: "proportion" },
+        { term: "Ratio", desc: "Comparer deux quantités entre elles", anchor: "ratio" },
+        { term: "Fréquence relative", desc: "Proportion par classe d'observations", anchor: "fréquence-relative" },
+      ]
+    },
+    {
+      name: "Modéliser des tendances",
+      color: "green",
+      items: [
+        { term: "Taux de variation", desc: "Évolution en pourcentage entre deux moments", anchor: "taux-de-variation" },
+        { term: "Équation du 1er degré", desc: "Progression constante (y = mx + b)", anchor: "équation-du-premier-degré" },
+        { term: "Exposants", desc: "Croissance ou décroissance accélérée", anchor: "exposants" },
+      ]
+    },
+    {
+      name: "Décrire les données",
+      color: "purple",
+      items: [
+        { term: "Moyenne pondérée", desc: "Moyenne tenant compte de l'importance", anchor: "moyenne-pondérée" },
+        { term: "Variance / Écart type", desc: "Régularité et dispersion des données", anchor: "variance-et-écart-type" },
+        { term: "Distribution de fréquences", desc: "Répartition des données en classes", anchor: "distribution-de-fréquences" },
+        { term: "Normalisation", desc: "Ramener sur une échelle commune (score Z)", anchor: "normalisation" },
+      ]
+    },
+    {
+      name: "Projeter et prévoir",
+      color: "orange",
+      items: [
+        { term: "Probabilité simple", desc: "Estimer la chance qu'un événement survienne", anchor: "probabilité-simple" },
+        { term: "Intérêt simple", desc: "Intérêts sur le capital seulement", anchor: "intérêt-simple" },
+        { term: "Intérêt composé", desc: "Intérêts sur les intérêts", anchor: "intérêt-composé" },
+      ]
+    },
+  ]}
+/>

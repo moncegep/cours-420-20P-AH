@@ -1,0 +1,267 @@
+---
+interface Item {
+  term: string;
+  desc: string;
+  anchor?: string;
+}
+
+interface Category {
+  name: string;
+  icon?: string;
+  color: 'blue' | 'green' | 'orange' | 'purple' | 'red' | 'teal';
+  items: Item[];
+}
+
+interface Props {
+  title?: string;
+  categories: Category[];
+}
+
+const { title = 'Aide-mémoire', categories } = Astro.props;
+---
+
+<section class="aide-memoire">
+  <div class="aide-memoire-grid">
+    {categories.map((cat) => (
+      <div class={`aide-card aide-card--${cat.color}`}>
+        <div class="aide-card-header">
+          {cat.icon && (<span class="aide-card-icon">{cat.icon}</span>)}
+          <h3 class="aide-card-title">{cat.name}</h3>
+        </div>
+        <ul class="aide-card-list">
+          {cat.items.map((item) => (
+            <li class="aide-card-item">
+              {item.anchor ? (
+                <a href={`#${item.anchor}`} class="aide-card-link">
+                  <span class="aide-card-term">{item.term}</span>
+                  <span class="aide-card-desc">{item.desc}</span>
+                </a>
+              ) : (
+                <div class="aide-card-content">
+                  <span class="aide-card-term">{item.term}</span>
+                  <span class="aide-card-desc">{item.desc}</span>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+        <div class="aide-card-accent"></div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<style>
+  .aide-memoire {
+    --am-blue: 215, 80%, 50%;
+    --am-green: 152, 55%, 42%;
+    --am-orange: 28, 90%, 52%;
+    --am-purple: 265, 60%, 55%;
+    --am-red: 0, 72%, 55%;
+    --am-teal: 180, 50%, 40%;
+    --am-radius: 12px;
+    --am-gap: 1.25rem;
+
+    margin-block: 3rem;
+  }
+
+  /* ── Grid ── */
+  .aide-memoire-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--am-gap);
+  }
+
+  /* ── Card ── */
+  .aide-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--am-radius);
+    padding: 1.5rem 1.25rem 1.25rem;
+    background: var(--sl-color-gray-6);
+    border: 1px solid var(--sl-color-gray-5);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .aide-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Top accent bar */
+  .aide-card-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+  }
+
+  .aide-card--blue .aide-card-accent  { background: linear-gradient(90deg, hsl(var(--am-blue)), hsl(215, 80%, 65%)); }
+  .aide-card--green .aide-card-accent  { background: linear-gradient(90deg, hsl(var(--am-green)), hsl(152, 55%, 55%)); }
+  .aide-card--orange .aide-card-accent { background: linear-gradient(90deg, hsl(var(--am-orange)), hsl(38, 90%, 58%)); }
+  .aide-card--purple .aide-card-accent { background: linear-gradient(90deg, hsl(var(--am-purple)), hsl(280, 60%, 65%)); }
+  .aide-card--red .aide-card-accent    { background: linear-gradient(90deg, hsl(var(--am-red)), hsl(10, 72%, 62%)); }
+  .aide-card--teal .aide-card-accent   { background: linear-gradient(90deg, hsl(var(--am-teal)), hsl(190, 50%, 52%)); }
+
+  /* ── Card header ── */
+  .aide-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .aide-card-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .aide-card--blue .aide-card-icon  { background: hsla(var(--am-blue), 0.12); }
+  .aide-card--green .aide-card-icon  { background: hsla(var(--am-green), 0.12); }
+  .aide-card--orange .aide-card-icon { background: hsla(var(--am-orange), 0.12); }
+  .aide-card--purple .aide-card-icon { background: hsla(var(--am-purple), 0.12); }
+  .aide-card--red .aide-card-icon    { background: hsla(var(--am-red), 0.12); }
+  .aide-card--teal .aide-card-icon   { background: hsla(var(--am-teal), 0.12); }
+
+  .aide-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .aide-card--blue .aide-card-title  { color: hsl(215, 80%, 65%); }
+  .aide-card--green .aide-card-title  { color: hsl(152, 55%, 55%); }
+  .aide-card--orange .aide-card-title { color: hsl(28, 90%, 62%); }
+  .aide-card--purple .aide-card-title { color: hsl(265, 60%, 68%); }
+  .aide-card--red .aide-card-title    { color: hsl(0, 72%, 65%); }
+  .aide-card--teal .aide-card-title   { color: hsl(180, 50%, 55%); }
+
+  /* ── Items list ── */
+  .aide-card-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .aide-card-item {
+    border-radius: 8px;
+    transition: background 0.15s ease;
+  }
+
+  .aide-card-item:hover {
+    background: hsla(0, 0%, 50%, 0.06);
+  }
+
+  .aide-card-link,
+  .aide-card-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.5rem 0.65rem;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 8px;
+  }
+
+  .aide-card-link:hover {
+    text-decoration: none;
+  }
+
+  .aide-card-term {
+    font-size: 0.88rem;
+    font-weight: 650;
+    color: var(--sl-color-white);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  /* Petit indicateur de lien */
+  .aide-card-link .aide-card-term::after {
+    content: '↗';
+    font-size: 0.7rem;
+    opacity: 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    transform: translateX(-2px);
+  }
+
+  .aide-card-link:hover .aide-card-term::after {
+    opacity: 0.5;
+    transform: translateX(0);
+  }
+
+  .aide-card-desc {
+    font-size: 0.8rem;
+    color: var(--sl-color-gray-3);
+    line-height: 1.4;
+  }
+
+  /* ── Dot separator before desc ── */
+  .aide-card-term::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .aide-card--blue .aide-card-term::before  { background: hsl(var(--am-blue)); }
+  .aide-card--green .aide-card-term::before  { background: hsl(var(--am-green)); }
+  .aide-card--orange .aide-card-term::before { background: hsl(var(--am-orange)); }
+  .aide-card--purple .aide-card-term::before { background: hsl(var(--am-purple)); }
+  .aide-card--red .aide-card-term::before    { background: hsl(var(--am-red)); }
+  .aide-card--teal .aide-card-term::before   { background: hsl(var(--am-teal)); }
+
+  /* ── Responsive ── */
+  @media (max-width: 540px) {
+    .aide-memoire-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ── Light theme overrides ── */
+  :global([data-theme='light']) .aide-card {
+    background: #fff;
+    border-color: hsl(0, 0%, 90%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  }
+
+  :global([data-theme='light']) .aide-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+
+  :global([data-theme='light']) .aide-card-term {
+    color: hsl(0, 0%, 15%);
+  }
+
+  :global([data-theme='light']) .aide-card-desc {
+    color: hsl(0, 0%, 45%);
+  }
+
+  :global([data-theme='light']) .aide-card--blue .aide-card-title  { color: hsl(215, 80%, 42%); }
+  :global([data-theme='light']) .aide-card--green .aide-card-title  { color: hsl(152, 55%, 32%); }
+  :global([data-theme='light']) .aide-card--orange .aide-card-title { color: hsl(28, 90%, 40%); }
+  :global([data-theme='light']) .aide-card--purple .aide-card-title { color: hsl(265, 60%, 45%); }
+  :global([data-theme='light']) .aide-card--red .aide-card-title    { color: hsl(0, 72%, 42%); }
+  :global([data-theme='light']) .aide-card--teal .aide-card-title   { color: hsl(180, 50%, 30%); }
+
+  :global([data-theme='light']) .aide-memoire-title {
+    color: hsl(0, 0%, 12%);
+  }
+
+  :global([data-theme='light']) .aide-memoire-subtitle {
+    color: hsl(0, 0%, 50%);
+  }
+</style>
