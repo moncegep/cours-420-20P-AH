@@ -1,0 +1,404 @@
+---
+title: "Calcul du crédit d'impôt solidarité"
+description: "Développement d'un outil permettant de calculer le crédit d'impôt pour solidarité du Québec."
+sidebar:
+  order: 10
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+import DataTable from "./../../../components/DataTable.astro";
+
+## Mise en contexte
+
+Au Québec, les personnes et familles à faible ou moyen revenu peuvent bénéficier de deux crédits d'impôt remboursables :
+
+- Le **crédit d'impôt pour solidarité** (provincial — Revenu Québec)
+- Le **crédit pour la TPS/TVH** (fédéral — Agence du revenu du Canada)
+
+Si élligible, le montant du crédit est versé au particulier (aussi appelé contribuable) à la suite de la déclaration des revenus.
+
+Dans cet exercice, tu vas construire **progressivement** un outil (avec Excel) qui automatise le calcul du crédit d'impôt pour solidarité.
+
+Cet exercice met en pratique les notions Excel suivantes :
+- Fonctions conditionnelles : **SI**, **ET**, **OU**, **NB.SI**, **SOMME.SI**, **MOYENNE.SI**
+- Autres fonctions : **ARRONDI**, **MIN** et **MAX**
+- **Référencement** de cellules
+- **Mise en forme conditionnelle**
+
+---
+
+## Étape 1 — Personne seule
+
+### 1.1 Le crédit pour solidarité en bref
+
+Le crédit pour solidarité du Québec comporte **deux composantes principales** (excluant la composante « villages nordiques ») :
+
+1. **Composante TVQ** — compense en partie l'impact de la taxe de vente du Québec
+2. **Composante logement** — offre une aide relative aux frais de logement (pour propriétaire, locataire ou sous-locataire d'un logement admissible)
+
+Lorsque le revenu net du particulier dépasse un certain seuil, le crédit est **réduit progressivement**. Le taux de réduction dépend du nombre de composantes auxquelles le particulier a droit.
+
+### 1.2 Paramètres de base
+
+<Aside type="note" title="Période de référence">
+  Les paramètres correspondent à la période de versement de **juillet 2026 à juin 2027**, basée sur l'année d'imposition **2025**.
+</Aside>
+
+Crée une feuille nommée **`Parametres`** avec les données suivantes.
+
+| Paramètre | Montant |
+|---|---|
+| **Composante TVQ** | |
+| Montant de base | 363 $ |
+| Montant personne vivant seule | 172 $ |
+| **Composante logement** | |
+| Personne seule | 746 $ |
+| **Réduction** | |
+| Seuil de réduction | 43 195 $ |
+| Taux — une composante | 3 % |
+| Taux — deux composantes | 6 % |
+
+<Aside type="tip" title="Bonne pratique">
+  Donne un **nom** à chacune de tes cellules de paramètres pour faciliter le référencement et rendre les formules plus lisibles.
+  Par exemple, nomme la cellule contenant la valeur du seuil de réduction `Seuil_Solidarite`. 
+</Aside>
+
+### 1.3 Premiers contribuables
+
+Crée une feuille nommée **`Solidarite`** avec les colonnes et données suivantes :
+
+<DataTable
+  columns={["Nom", "Revenu net", "Logement admissible"]}
+  rows={[
+    ["Amélie Tremblay", "22 000 $", "Oui"],
+    ["David Lavoie", "42 000 $", "Non"],
+    ["Jean-Philippe Roy", "55 000 $", "Oui"],
+    ["Nour Abdallah", "38 500 $", "Oui"],
+    ["Lucas Simard", "60 000 $", "Oui"],
+    ["Maïka Jean-Baptiste", "0 $", "Oui"]
+  ]}
+/>
+
+<Aside type='note' title='Role centrale de cette feuille'>
+La feuille **`Solidarite`** est la feuille opérationnelle de l'Excel. C'est là que sera fait l'ensemble des calculs pour déterminer le montant du crédit à verser à chacun. 
+</Aside>
+
+### 1.4 Calculs à réaliser
+
+Pour chacun des calculs, crée une nouvelle colonne dans la feuille `Solidarite`.  
+Rappelons que le crédit pour solidarité comporte deux composantes principales : la **composante TVQ** et la **composante logement**.
+
+<Steps>
+
+1. **Composante TVQ** (colonne `D`)
+
+   Pour une personne seule, la composante TVQ est toujours :  
+   *Montant de base* + *Montant personne vivant seule* (= 363 $ + 172 $ = **535 $**).
+
+   <Aside type="tip" title="Référencement efficace">
+        Pour faire référence au *Montant de base* et *Montant personne vivant seule*, 
+        utilise des **références absolues** vers la feuille `Parametres` (ex: `Parametres!$B$2`) ou des **références par nom** (ex: `TVQ_Montant_Base`) vers la cellule.
+   </Aside>
+
+2. **Composante logement** (colonne `E`)
+
+   Le montant de logement dépend de la colonne `C`.
+   Si le contribuable habite un logement admissible, il reçoit le montant pour *Personne seule* (746 $).
+   Sinon, il reçoit 0 $.
+
+3. **Total avant réduction** (colonne `F`)
+
+    Somme des deux composantes (TVQ + logement).
+
+4. **Taux de réduction** (colonne `G`)
+
+   Le taux dépend du **nombre de composantes** non nulles.
+
+   - Si les **deux** composantes sont > 0 → taux de 6 %
+   - Sinon → taux de 3 %
+
+   <Aside type="caution" title="Observe le résultat">
+     Pour David Lavoie, qui n'a pas de logement admissible, le taux devrait être de **3 %** puisqu'il n'a droit qu'à la composante TVQ. Pour les autres, ce sera **6 %**.
+   </Aside>
+
+5. **Montant de la réduction** (colonne `H`)
+
+   La réduction s'applique uniquement **si le revenu dépasse** le *Seuil de réduction*.
+
+   <Aside type="tip" title="Astuce — MAX au lieu de SI">
+     La fonction **MAX** peut remplacer le `SI` quand tu veux empêcher un résultat négatif.
+     Exemple : `MAX(0; B2 - Seuil)` retourne la différence si elle est positive, ou 0 sinon.
+   </Aside>
+
+6. **Montant total du crédit** (colonne `I`)
+
+   Déduire la réduction du total avant réduction. Le crédit ne peut jamais être négatif.
+
+7. **Fréquence de versement** (colonne `J`)
+
+   La fréquence dépend du montant total du crédit. Elle varie selon le montant total :
+
+   - **0 $** → `"Aucun"`
+   - **240 $ ou moins** → `"Annuel"` (1 versement en juillet)
+   - **241 $ à 799 $** → `"Trimestriel"` (4 versements : juillet, octobre, janvier, avril)
+   - **800 $ ou plus** → `"Mensuel"` (12 versements de juillet à juin)
+
+8. **Montant par versement** (colonne **`K`**)
+
+   Le montant de chaque versement dépend de la fréquence.
+
+   <Aside type="tip" title="Observe la logique">
+     Si le crédit est de 240 $ ou moins, le versement unique correspond au montant total. Pour les autres cas, on divise par 4 (trimestriel) ou par 12 (mensuel) et on arrondit à 2 décimales avec **ARRONDI**.
+   </Aside>
+
+</Steps>
+
+### 1.5 Vérifie tes résultats
+
+Avant de continuer, assure-toi que tes résultats correspondent à ceux-ci :
+
+| Nom | Montant total | Fréquence | Montant par versement |
+|-----|---------------|-----------|-----------------------|
+| Amélie Tremblay | 1 281,00 $ | Mensuel | 106,75 $ |
+| David Lavoie | 571,15 $ | Trimestriel | 142,79 $ |
+| Jean-Philippe Roy | 573,00 $ | Trimestriel | 143,25 $ |
+| Nour Abdallah | 1 281,00 $ | Mensuel | 106,75 $ |
+| Lucas Simard | 273,00 $ | Trimestriel | 68,25 $ |
+| Maïka Jean-Baptiste | 1 281,00 $ | Mensuel | 106,75 $ |
+
+{/* <Aside type="tip" title="Astuce de vérification">
+  Maïka a un revenu de 0 $, bien en dessous du seuil de réduction. Elle devrait recevoir le **montant maximal** (535 $ + 746 $ = 1 281 $).
+  Son crédit dépasse 800 $, donc la fréquence est **mensuelle**.  
+  David et Jean-Philippe, avec un crédit entre 241 $ et 799 $, reçoivent des versements **trimestriels**. Si ce n'est pas le cas, vérifie tes formules !
+</Aside> */}
+
+---
+
+## Étape 2 — Ajouter les couples et familles monoparentales
+
+### 2.1 Nouveaux paramètres
+
+Retourne dans la feuille **`Parametres`** et ajoute les montants suivants pour chacune des composantes :
+
+| Paramètre | Montant |
+|---|---|
+| **Composante TVQ** | |
+| Montant pour conjoint(e) | 363 $ |
+| **Composante logement** | |
+| Couple | 906 $ |
+| Supplément par enfant | 158 $ |
+| Enfant en garde partagée (50 %) | 79 $ |
+
+### 2.2 Nouvelles colonnes dans `Solidarite`
+
+Modifie la feuille **`Solidarite`** pour y insérer de nouvelles colonnes.
+
+<Aside type='note' title='Conséquence de la nouvelle structure'>
+L'insertion des nouvelles colonnes décalera les colonnes contenant les valeurs calculées à l'étape 1.4.
+Par exemple la composante TVQ qui était à la colonne `D` sera maintenant à la colonne `I`.
+</Aside>
+
+La structure de base de la feuille devrait ressembler à ceci (les nouvelles colonnes sont indiquées par <Badge text="Nouveau" variant="note" />) :
+
+| Colonne | Contenu |
+|---|---|
+| A | Nom du contribuable |
+| B | Situation : `Seul`, `Couple` ou `Monoparentale` <Badge text="Nouveau" variant="note" /> |
+| C | Revenu net du contribuable |
+| D | Revenu net du/de la conjoint(e) (0 si aucun) <Badge text="Nouveau" variant="note" /> |
+| E | Nombre d'enfants à charge  <Badge text="Nouveau" variant="note" /> |
+| F | Nombre d'enfants en garde partagée <Badge text="Nouveau" variant="note" /> |
+| G | Logement admissible (`Oui` / `Non`) |
+
+Maintenant qu'on a ajusté la feuille à la nouvelle structure:
+
+
+<Steps>
+
+1. **Mets à jour les 6 contribuables existants** avec les valeurs suivantes:
+   - Situation: `Seul`
+   - Revenu net conjoint(e): 0,00 $
+   - Enfants: 0
+   - Garde partagée: 0
+
+2. Ajoute ces **nouveaux contribuables** :
+
+    <DataTable
+    columns={["Nom", "Situation", "Revenu net", "Revenu net conjoint(e)", "Enfants", "Garde partagée", "Logement"]}
+    rows={[
+        ["Marc-Antoine Dubois", "Couple", "35 000 $", "12 000 $", "2", "0", "Oui"],
+        ["Fatima Benali", "Monoparentale", "25 000 $", "0 $", "1", "0" , "Oui" ],
+        ["Sofia Chen", "Couple", "20 000 $", "18 000 $", "3", "0" , "Oui" ],
+        ["Camille Gagnon", "Monoparentale", "48 000 $", "0 $", "2", "1" , "Oui"],
+        ["Émile et Nadia Bergeron", "Couple", "60 000 $", "15 000 $", "1", "0", "Oui"],
+    ]}
+    />
+
+</Steps>
+
+
+
+### 2.3 Mise à jour des formules
+
+Tu dois maintenant adapter les formules pour gérer les trois situations familiales (Seul, Couple et Monoparentale).
+
+<Steps>
+
+1. **Revenu familial net** (colonne `H`)
+
+   Somme des revenus net: contribuable + conjoint(e).
+
+2. **Composante TVQ** (colonne `I`)
+
+   La valeur de cette composante dépend de la situation du contribuable :
+
+   - **Couple** : *Montant de base* (363 $) + *Montant pour conjoint(e)* (363 $) = **726 $**
+   - **Seul ou Monoparentale** : *Montant de base* (363 $) + *Montant personne vivant seule* (172 $) = **535 $**
+
+3. **Composante logement** (colonne `J`)
+
+   Si le logement est admissible, le montant est la **somme des trois éléments suivants**:
+     - Le *Montant de base* qui dépend de la situation (couple = 906 $, sinon = 746 $)
+     - Le *Supplément par enfant à charge* (158 $ chacun)
+     - Le *Demi-supplément par enfant en garde partagée* (79 $ chacun)
+
+   Sinon, le montant est nul (0 $).
+
+4. **Total avant réduction** (colonne `K`)
+
+5. **Taux de réduction** (colonne `L`)
+
+   Même logique qu'à l'étape 1.
+
+6. **Montant de la réduction** (colonne `M`)
+
+7. **Montant total du crédit** (colonne `N`)
+
+8. **Fréquence de versement** (colonne `O`)
+
+   Même logique qu'à l'étape 1.
+
+9. **Montant par versement** (colonne `P`)
+
+</Steps>
+
+### 2.4 Vérifie tes résultats
+
+| Nom | Revenu familial | Crédit total | Fréquence | Par versement |
+|---|---|---|---|---|
+| Marc-Antoine Dubois | 47 000 $ | 1 618,00 $ | Mensuel | 134,83 $ |
+| Fatima Benali | 25 000 $ | 1 439,00 $ | Mensuel | 119,92 $ |
+| Sofia Chen | 38 000 $ | 1 948,00 $ | Mensuel | 162,33 $ |
+| Camille Gagnon | 48 000 $ | 1 063,70 $ | Mensuel | 88,64 $ |
+| Émile et Nadia Bergeron | 75 000 $ | 0,00 $ | Aucun | 0,00 $ |
+
+<Aside type="caution" title="Cas intéressant">
+  Le couple Bergeron a un revenu familial de 75 000 $, bien au-dessus du seuil de sortie. Leur crédit est réduit à **zéro**. 
+  Vérifie que ta formule gère bien ce cas !
+</Aside>
+
+---
+
+## Étape 3 — Synthèse et analyse
+
+### 3.1 Tableau récapitulatif
+
+Crée une feuille nommée **`Synthese`** avec les colonnes suivantes. Utilise des références vers la feuille `Solidarite` :
+
+| Colonne | Contenu |
+|---|---|
+| A | Nom |
+| B | Situation familiale |
+| C | Revenu familial net |
+| D | Crédit solidarité (total) |
+| E | Fréquence de versement |
+| F | Montant par versement |
+| G | Recommandation |
+
+### 3.2 Colonne Recommandation
+
+La colonne **Recommandation** (`G`) doit afficher un conseil personnalisé selon la situation du contribuable. 
+
+| Condition | Message à afficher |
+|---|---|
+| Crédit annuel = 0 $ | `"Revenu trop élevé — non admissible"` |
+| Logement non admissible et crédit > 0 | `"Vérifier l'admissibilité du logement pour bonifier le crédit"` |
+| Crédit > 0 et fréquence = `"Annuel"` | `"Petit montant — versement unique en juillet"` |
+| Crédit ≥ 800 $ | `"Crédit important — versements mensuels"` |
+| Tous les autres cas | `"Crédit modéré — versements trimestriels"` |
+
+<Aside type="caution" title="Attention à l'ordre">
+  L'ordre des conditions est important dans un `SI` imbriqué ! Excel évalue les conditions **de gauche à droite** (ou de haut en bas dans ta logique). Place les cas les plus spécifiques **en premier**.
+</Aside>
+
+<Aside type="tip" title="Indice">
+  Ta formule aura environ **4 niveaux de SI imbriqués**. Pour la rendre lisible, pense à l'écrire sur plusieurs lignes dans la barre de formule (avec `Alt+Entrée`).
+</Aside>
+
+### 3.3 Métriques
+
+Sous ton tableau récapitulatif (par exemple à partir de la ligne 20), crée une zone **Métriques** qui calcule les statistiques suivantes :
+
+#### Nombre de contribuables par fréquence de versement
+
+- Nombre de contribuables avec versement **mensuel**
+- Nombre de contribuables avec versement **trimestriel**
+- Nombre de contribuables avec versement **annuel**
+- Nombre de contribuables **sans** versement
+
+#### Crédit moyen et total par situation familiale
+
+- Crédit moyen — personnes seules
+- Crédit moyen — couples
+- Crédit moyen — familles monoparentales
+- Total des crédits versés — personnes seules
+- Total des crédits versés — couples
+- Total des crédits versés — familles monoparentales
+
+#### Analyse du logement
+
+- Nombre de contribuables avec logement admissible
+- Crédit moyen — avec logement admissible
+- Crédit moyen — sans logement admissible
+
+### 3.4 Mise en forme conditionnelle
+
+Applique une mise en forme conditionnelle sur la **colonne D** (crédit total) pour visualiser rapidement le niveau de soutien de chaque contribuable.
+
+**Règles à créer :**
+
+| Règle | Condition | Couleur de remplissage |
+|---|---|---|
+| 1 | Valeur **égale à 0** | Rouge | 
+| 2 | Valeur **inférieure ou égale à 240** | Orange |
+| 3 | Valeur **entre 241 et 799** | Jaune | 
+| 4 | Valeur **supérieure ou égale à 800** | Vert |
+
+<Aside type='tip' title="Vérifie l'ordre de priorité des règles">
+Excel applique les règles de haut en bas et s'arrête à la première qui correspond. Place les règles les plus restrictives en premier (ex. : « égale à 0 » avant « inférieure ou égale à 240 »).
+</Aside>
+
+Applique également une mise en forme conditionnelle sur la **colonne G** (recommandation) :
+
+| Règle | Condition (le texte contient…) | Couleur de remplissage |
+|---|---|---|
+| 1 | `"non admissible"` | Rouge clair |
+| 2 | `"Vérifier"` | Orange clair |
+| 3 | `"Petit montant"` | Jaune clair |
+| 4 | `"important"` | Vert clair |
+
+### 3.5 Graphique
+
+Crée un **graphique à barres horizontales** qui affiche le crédit annuel de chaque contribuable, trié du plus élevé au plus faible.
+
+- Axe vertical : noms des contribuables
+- Axe horizontal : montant du crédit annuel ($)
+- Ajoute un titre : *Crédit d'impôt pour solidarité par contribuable*
+
+---
+
+## Ressources
+
+- [Crédit d'impôt pour solidarité — Revenu Québec](https://www.revenuquebec.ca/fr/citoyens/credits-dimpot/credit-dimpot-pour-solidarite/)
+- [Calcul du crédit — Revenu Québec](https://www.revenuquebec.ca/fr/citoyens/credits-dimpot/credit-dimpot-pour-solidarite/calcul-du-credit-dimpot-pour-solidarite/)

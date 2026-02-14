@@ -31,6 +31,7 @@ export default defineConfig({
 						},
 						{
 							label: 'Semaine 2',
+							collapsed: true,
 							items: [
 								{ label: "Modélisation: Suivi d'une classe", slug: 'cours/02-conditions' },
 								{ label: 'Fonction SI', slug: 'cours/02-fonction-si' },
@@ -44,12 +45,20 @@ export default defineConfig({
 						},
 						{
 							label: 'Semaine 3',
-							badge: 'Nouveau',
 							items: [
 								{ label: 'Fonction ET, OU', slug: 'cours/03-fonction-etou' },
 								{ label: 'Mise en forme conditionnelle', slug: 'cours/03-mise-en-forme' },
 								{ label: "Exercices", items: [
 									{ label: 'Exercices', slug: 'exercices/03-exercices' },
+								]}
+							]
+						},
+						{
+							label: 'Semaine 4',
+							badge: 'Nouveau',
+							items: [
+								{ label: "Problèmes", items: [
+									{ label: "Crédit d'impôt solidarité", slug: 'exercices/04-problemes' },
 								]}
 							]
 						},

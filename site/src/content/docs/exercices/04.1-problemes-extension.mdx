@@ -1,0 +1,564 @@
+---
+title: "Extension: Calcul du crédit d'impôt pour la TPS/TVH"
+description: "Développement d'un outil permettant de calculer le crédit d'impôt pour solidarité du Québec."
+sidebar:
+  order: 10
+  badge:
+    text: Problème
+    variant: tip
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+Au Québec, les personnes et familles à faible ou moyen revenu peuvent bénéficier de deux crédits d'impôt remboursables :
+
+- Le **crédit d'impôt pour solidarité** (provincial — Revenu Québec)
+- Le **crédit pour la TPS/TVH** (fédéral — Agence du revenu du Canada)
+
+Un crédit **remboursable** signifie que même si tu ne paies aucun impôt, tu reçois quand même le montant du crédit sous forme de versement. C'est un outil de redistribution important.
+
+Dans cet exercice, tu vas construire **progressivement** un outil (avec Excel) qui automatise le calcul du crédit d'impôt pour solidarité.
+
+Cet exercice met en pratique les notions Excel suivantes:
+- Fonction **SI**, **ET**, **OU**
+- Fonction **ARRONDI**, **MIN** et **MAX**
+- **Référencement**
+
+---
+
+## Étape 1 — Personne seule, crédit pour solidarité uniquement
+
+### 1.1 Le crédit pour solidarité en bref
+
+Le crédit pour solidarité du Québec comporte **deux composantes principales** (on exclut la composante « villages nordiques » dans cet exercice) :
+
+1. **Composante TVQ** — compense l'impact de la taxe de vente du Québec
+2. **Composante logement** — aide aux frais de logement (si tu es propriétaire ou locataire d'un logement admissible)
+
+Lorsque ton revenu net dépasse un certain seuil, le crédit est **réduit progressivement**. Le taux de réduction dépend du nombre de composantes auxquelles tu as droit.
+
+### 1.2 Paramètres de base
+
+<Aside type="note" title="Période de référence">
+  Les paramètres correspondent à la période de versement de **juillet 2026 à juin 2027**, basée sur l'année d'imposition **2025**.
+</Aside>
+
+Crée une feuille nommée **`Paramètres`** et saisis les données suivantes.
+
+| Paramètre | Montant |
+|---|---|
+| **Composante TVQ** | |
+| Montant de base | 363 $ |
+| Montant personne vivant seule | 172 $ |
+| **Composante logement** | |
+| Personne seule | 746 $ |
+| **Réduction** | |
+| Seuil de réduction | 43 195 $ |
+| Taux — une composante | 3 % |
+| Taux — deux composantes | 6 % |
+
+<Aside type="tip" title="Bonne pratique">
+  Donne un **nom** à chacune de tes cellules de paramètres pour faciliter le référencement.  
+  Par exemple, nomme la cellule du seuil `Seuil_Solidarité`. Tes formules seront beaucoup plus lisibles !
+</Aside>
+
+### 1.3 Premiers contribuables
+
+Crée une feuille nommée **`Solidarité`**. Pour l'instant, on ne considère que des **personnes seules sans enfant**. Saisis les colonnes et données suivantes :
+
+| Nom (A) | Revenu net (B) | Logement admissible (C) |
+|---|---|---|
+| Amélie Tremblay | 22 000 $ | Oui |
+| David Lavoie | 42 000 $ | Non |
+| Jean-Philippe Roy | 55 000 $ | Oui |
+| Nour Abdallah | 38 500 $ | Oui |
+| Lucas Simard | 60 000 $ | Oui |
+| Maïka Jean-Baptiste | 0 $ | Oui |
+
+### 1.4 Calculs à réaliser
+
+<Steps>
+
+1. **Composante TVQ** (colonne D)
+
+   Pour une personne seule, la composante TVQ est toujours : 
+   `montant de base + montant personne vivant seule`= 363 $ + 172 $ = **535 $**.
+
+   Pour l'instant, c'est une simple addition. Utilise des **références absolues** vers ta feuille `Paramètres`.
+
+2. **Composante logement** (colonne E)
+
+   Le montant de logement dépend de la colonne C. 
+   Si le contribuable habite un logement admissible, il reçoit le montant pour pesonne seule (746 $). 
+   Sinon, il reçoit 0 $.
+
+3. **Total avant réduction** (colonne F)
+
+   ```
+   =D2+E2
+   ```
+
+4. **Taux de réduction** (colonne G)
+
+   Le taux dépend du **nombre de composantes** non nulles. Utilise la fonction **ET** pour vérifier si les deux composantes sont positives :
+
+   ```
+   =SI(ET(D2>0; E2>0); Paramètres!$B$8; Paramètres!$B$7)
+   ```
+
+   - Si les **deux** composantes sont > 0 → taux de 6 %
+   - Sinon → taux de 3 %
+
+   <Aside type="caution" title="Observe le résultat">
+     Pour David Lavoie, qui n'a pas de logement admissible, le taux devrait être de **3 %** puisqu'il n'a droit qu'à la composante TVQ. Pour les autres, ce sera **6 %**.
+   </Aside>
+
+5. **Montant de la réduction** (colonne H)
+
+   La réduction s'applique uniquement si le revenu dépasse le seuil. Utilise **SI** :
+
+   ```
+   =SI(B2 > Paramètres!$B$6;
+       (B2 - Paramètres!$B$6) * G2;
+       0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX au lieu de SI">
+     La fonction **MAX** peut remplacer le `SI` quand tu veux empêcher un résultat négatif. La formule suivante donne exactement le même résultat :
+
+     ```
+     =MAX(0; B2 - Paramètres!$B$6) * G2
+     ```
+
+     `MAX(0; B2 - Seuil)` retourne la différence si elle est positive, ou 0 sinon. Plus besoin de `SI` !
+   </Aside>
+
+6. **Crédit annuel** (colonne I)
+
+   Le crédit ne peut jamais être négatif. Utilise **SI** pour t'en assurer :
+
+   ```
+   =SI(F2 - H2 > 0; F2 - H2; 0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX au lieu de SI">
+     Même principe qu'à l'étape précédente. « Ne jamais descendre sous zéro » se traduit naturellement par :
+
+     ```
+     =MAX(0; F2 - H2)
+     ```
+
+     C'est le patron classique du **plancher à zéro** : tu le retrouveras souvent en fiscalité.
+   </Aside>
+
+7. **Fréquence de versement** (colonne J)
+
+   La fréquence dépend du montant annuel du crédit. Utilise des **SI** imbriqués :
+
+   ```
+   =SI(I2=0; "Aucun";
+       SI(I2<=240; "Annuel";
+           SI(I2<=799; "Trimestriel";
+               "Mensuel")))
+   ```
+
+   - **0 $** → Aucun versement
+   - **240 $ ou moins** → 1 versement par année (juillet)
+   - **241 $ à 799 $** → 4 versements par année (juillet, octobre, janvier, avril)
+   - **800 $ ou plus** → 12 versements mensuels (juillet à juin)
+
+8. **Montant par versement** (colonne K)
+
+   Le montant de chaque versement dépend de la fréquence. Utilise **SI** et **ARRONDI** :
+
+   ```
+   =SI(I2=0; 0;
+       SI(I2<=240; I2;
+           SI(I2<=799; ARRONDI(I2/4; 2);
+               ARRONDI(I2/12; 2))))
+   ```
+
+   <Aside type="tip" title="Observe la logique">
+     Si le crédit est de 240 $ ou moins, le versement unique correspond au montant total. Pour les autres cas, on divise par 4 (trimestriel) ou par 12 (mensuel) et on arrondit à 2 décimales avec **ARRONDI**.
+   </Aside>
+
+</Steps>
+
+### 1.5 Vérifie tes résultats
+
+Avant de continuer, assure-toi que tes résultats correspondent à ceux-ci :
+
+| Nom | Crédit annuel | Fréquence | Montant par versement |
+|---|---|---|---|
+| Amélie Tremblay | 1 281,00 $ | Mensuel | 106,75 $ |
+| David Lavoie | 571,15 $ | Trimestriel | 142,79 $ |
+| Jean-Philippe Roy | 573,00 $ | Trimestriel | 143,25 $ |
+| Nour Abdallah | 1 281,00 $ | Mensuel | 106,75 $ |
+| Lucas Simard | 273,00 $ | Trimestriel | 68,25 $ |
+| Maïka Jean-Baptiste | 1 281,00 $ | Mensuel | 106,75 $ |
+
+<Aside type="tip" title="Astuce de vérification">
+  Maïka a un revenu de 0 $, bien en dessous du seuil de réduction. Elle devrait recevoir le **montant maximal** (535 $ + 746 $ = 1 281 $). Son crédit dépasse 800 $, donc la fréquence est **mensuelle**. David et Jean-Philippe, avec un crédit entre 241 $ et 799 $, reçoivent des versements **trimestriels**. Si ce n'est pas le cas, vérifie tes formules !
+</Aside>
+
+---
+
+## Étape 2 — Ajouter les couples et familles monoparentales
+
+### 2.1 Nouveaux paramètres
+
+Retourne dans ta feuille **`Paramètres`** et ajoute les montants suivants :
+
+| Paramètre | Montant |
+|---|---|
+| **Composante TVQ (ajouts)** | |
+| Montant pour conjoint(e) | 363 $ |
+| **Composante logement (ajouts)** | |
+| Couple | 906 $ |
+| Supplément par enfant | 158 $ |
+| Enfant en garde partagée (50 %) | 79 $ |
+
+### 2.2 Nouvelles colonnes
+
+Modifie ta feuille **`Solidarité`** pour y insérer de nouvelles colonnes. Ta structure devrait maintenant ressembler à ceci :
+
+| Colonne | Contenu |
+|---|---|
+| A | Nom du contribuable |
+| B | Situation : `Seul`, `Couple` ou `Monoparentale` |
+| C | Revenu net du contribuable |
+| D | Revenu net du/de la conjoint(e) (0 si aucun) |
+| E | Nombre d'enfants à charge |
+| F | Nombre d'enfants en garde partagée |
+| G | Logement admissible (`Oui` / `Non`) |
+
+Mets à jour les 6 contribuables existants (ils sont tous `Seul`, avec 0 partout pour conjoint, enfants et garde partagée), puis ajoute ces **nouveaux contribuables** :
+
+| Nom | Situation | Revenu | Revenu conjoint(e) | Enfants | Garde partagée | Logement |
+|---|---|---|---|---|---|---|
+| Marc-Antoine Dubois | Couple | 35 000 $ | 12 000 $ | 2 | 0 | Oui |
+| Fatima Benali | Monoparentale | 25 000 $ | 0 $ | 1 | 0 | Oui |
+| Sofia Chen | Couple | 20 000 $ | 18 000 $ | 3 | 0 | Oui |
+| Camille Gagnon | Monoparentale | 48 000 $ | 0 $ | 2 | 1 | Oui |
+| Émile et Nadia Bergeron | Couple | 60 000 $ | 15 000 $ | 1 | 0 | Oui |
+
+### 2.3 Mise à jour des formules
+
+Tu dois maintenant adapter tes formules pour gérer les trois situations familiales.
+
+<Steps>
+
+1. **Revenu familial net** (colonne H)
+
+   ```
+   =C2+D2
+   ```
+
+2. **Composante TVQ** (colonne I)
+
+   Utilise **SI** combiné avec **OU** pour distinguer les cas :
+
+   ```
+   =SI(B2="Couple";
+       363 + 363;
+       SI(OU(B2="Seul"; B2="Monoparentale");
+           363 + 172;
+           0))
+   ```
+
+   - **Couple** : montant de base (363 $) + montant conjoint(e) (363 $) = **726 $**
+   - **Seul ou Monoparentale** : montant de base (363 $) + personne vivant seule (172 $) = **535 $**
+
+   <Aside type="tip" title="Fonction OU">
+     La fonction `OU` retourne VRAI si **au moins une** des conditions est vraie. Ici, `OU(B2="Seul"; B2="Monoparentale")` couvre les deux cas en une seule vérification.
+   </Aside>
+
+3. **Composante logement** (colonne J)
+
+   Cette formule est plus complexe. Tu dois combiner **SI** et vérifier plusieurs conditions :
+
+   ```
+   =SI(G2="Oui";
+       SI(B2="Couple"; 906; 746)
+       + E2 * 158
+       + F2 * 79;
+       0)
+   ```
+
+   Décomposons la logique :
+   - D'abord, on vérifie si le logement est admissible
+   - Le montant de base dépend de la situation (couple = 906 $, sinon = 746 $)
+   - On ajoute le supplément par enfant à charge (158 $ chacun)
+   - On ajoute le demi-supplément par enfant en garde partagée (79 $ chacun)
+
+4. **Total avant réduction** (colonne K)
+
+   ```
+   =I2+J2
+   ```
+
+5. **Taux de réduction** (colonne L)
+
+   Même logique qu'à l'étape 1, avec **ET** :
+
+   ```
+   =SI(ET(I2>0; J2>0); 6%; 3%)
+   ```
+
+6. **Montant de la réduction** (colonne M)
+
+   ```
+   =SI(H2 > 43195; (H2 - 43195) * L2; 0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX">
+     Comme à l'étape 1, tu peux simplifier avec : `=MAX(0; H2 - 43195) * L2`
+   </Aside>
+
+7. **Crédit annuel** (colonne N)
+
+   ```
+   =SI(K2 - M2 > 0; K2 - M2; 0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX">
+     Plancher à zéro : `=MAX(0; K2 - M2)`
+   </Aside>
+
+8. **Fréquence de versement** (colonne O)
+
+   Même logique qu'à l'étape 1 :
+
+   ```
+   =SI(N2=0; "Aucun";
+       SI(N2<=240; "Annuel";
+           SI(N2<=799; "Trimestriel";
+               "Mensuel")))
+   ```
+
+9. **Montant par versement** (colonne P)
+
+   ```
+   =SI(N2=0; 0;
+       SI(N2<=240; N2;
+           SI(N2<=799; ARRONDI(N2/4; 2);
+               ARRONDI(N2/12; 2))))
+   ```
+
+</Steps>
+
+### 2.4 Vérifie tes résultats
+
+| Nom | Revenu familial | Crédit annuel | Fréquence | Par versement |
+|---|---|---|---|---|
+| Marc-Antoine Dubois | 47 000 $ | 1 618,00 $ | Mensuel | 134,83 $ |
+| Fatima Benali | 25 000 $ | 1 439,00 $ | Mensuel | 119,92 $ |
+| Sofia Chen | 38 000 $ | 1 948,00 $ | Mensuel | 162,33 $ |
+| Camille Gagnon | 48 000 $ | 1 063,70 $ | Mensuel | 88,64 $ |
+| Émile et Nadia Bergeron | 75 000 $ | 0,00 $ | Aucun | 0,00 $ |
+
+<Aside type="caution" title="Cas intéressant">
+  Le couple Bergeron a un revenu familial de 75 000 $, bien au-dessus du seuil de sortie. Leur crédit est réduit à **zéro**. Vérifie que ta formule gère bien ce cas sans donner de montant négatif !
+</Aside>
+
+---
+
+## Étape 3 — Le crédit pour la TPS/TVH
+
+### 3.1 Comprendre le crédit fédéral
+
+Le crédit pour la TPS/TVH fonctionne différemment du crédit pour solidarité :
+
+- Il est versé **trimestriellement** (4 fois par an) plutôt que mensuellement
+- Il comporte un **supplément pour célibataire** qui augmente progressivement avec le revenu
+- Les familles monoparentales ont un traitement spécial : le premier enfant donne droit au montant de 349 $ (comme un conjoint) plutôt que 184 $
+
+### 3.2 Paramètres
+
+Ajoute ces paramètres dans ta feuille **`Paramètres`** (crée une section distincte plus bas) :
+
+| Paramètre | Montant |
+|---|---|
+| **Crédit de base TPS/TVH** | |
+| Montant de base | 349 $ |
+| Montant pour conjoint(e) | 349 $ |
+| Montant par enfant admissible | 184 $ |
+| **Supplément célibataire** | |
+| Maximum du supplément | 184 $ |
+| Seuil du supplément | 11 337 $ |
+| Taux d'accumulation | 2 % |
+| **Réduction TPS/TVH** | |
+| Seuil de réduction | 45 521 $ |
+| Taux de réduction | 5 % |
+
+### 3.3 Calculs
+
+Crée une nouvelle feuille nommée **`TPS_TVH`**. Recopie les colonnes A à H de la feuille `Solidarité` (nom, situation, revenus, enfants, revenu familial) ou fais-y référence avec des formules.
+
+<Steps>
+
+1. **Crédit de base** (colonne I)
+
+   Le calcul varie selon la situation. Utilise des **SI** imbriqués :
+
+   ```
+   =SI(B2="Couple";
+       349 + 349 + E2 * 184;
+       SI(B2="Monoparentale";
+           349 + 349 + (E2 - 1) * 184;
+           349 + E2 * 184))
+   ```
+
+   - **Couple** : 349 $ (base) + 349 $ (conjoint) + 184 $ × nombre d'enfants
+   - **Monoparentale** : 349 $ (base) + 349 $ (1er enfant remplace le conjoint) + 184 $ × (enfants − 1)
+   - **Seul** : 349 $ (base) + 184 $ × nombre d'enfants
+
+   <Aside type="caution" title="Famille monoparentale">
+     Pour une famille monoparentale, le **premier enfant** donne droit au montant de 349 $ au lieu de 184 $. C'est une reconnaissance du fait qu'un parent seul assume seul les responsabilités du ménage.
+   </Aside>
+
+2. **Supplément pour célibataire** (colonne J)
+
+   Ce supplément s'applique si tu es **seul** (pas en couple). Pour les familles monoparentales, le montant complet de 184 $ est accordé automatiquement.
+
+   Pour les personnes seules, le supplément est **progressif** : il augmente de 2 % par dollar au-dessus de 11 337 $, jusqu'à un maximum de 184 $. Combine **SI** et **ARRONDI** :
+
+   ```
+   =SI(B2="Seul";
+       ARRONDI(
+         SI(H2 > 11337;
+             SI((H2 - 11337) * 2% > 184; 184; (H2 - 11337) * 2%);
+             0)
+       ; 2);
+       SI(B2="Monoparentale"; 184; 0))
+   ```
+
+   <Aside type="tip" title="Astuce — MIN et MAX combinés">
+     C'est ici que **MIN** et **MAX** brillent le plus. Les deux `SI` imbriqués pour les personnes seules peuvent être remplacés par une seule expression :
+
+     ```
+     =SI(B2="Seul";
+         ARRONDI(MIN(184; MAX(0; (H2 - 11337) * 2%)); 2);
+         SI(B2="Monoparentale"; 184; 0))
+     ```
+
+     Décortiquons `MIN(184; MAX(0; (H2 - 11337) * 2%))` :
+     - `MAX(0; …)` → si le revenu est sous 11 337 $, le résultat est 0 (plancher)
+     - `MIN(184; …)` → si le calcul dépasse 184 $, on retient 184 $ (plafond)
+
+     On obtient donc une valeur toujours comprise **entre 0 $ et 184 $**, sans aucun `SI` imbriqué. C'est le patron classique **plancher + plafond** !
+   </Aside>
+
+   <Aside type="note" title="Logique du supplément">
+     Le supplément encourage la participation au marché du travail. À un revenu de 0 $, il vaut 0 $. Il atteint son maximum de 184 $ à un revenu de 20 537 $.
+   </Aside>
+
+3. **Total avant réduction** (colonne K)
+
+   ```
+   =I2+J2
+   ```
+
+4. **Réduction** (colonne L)
+
+   Même principe que pour le crédit solidarité, mais avec le seuil et le taux fédéraux :
+
+   ```
+   =SI(H2 > 45521;
+       (H2 - 45521) * 5%;
+       0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX">
+     `=MAX(0; H2 - 45521) * 5%`
+   </Aside>
+
+5. **Crédit TPS/TVH annuel** (colonne M)
+
+   ```
+   =SI(K2 - L2 > 0; K2 - L2; 0)
+   ```
+
+   <Aside type="tip" title="Astuce — MAX">
+     `=MAX(0; K2 - L2)`
+   </Aside>
+
+6. **Montant trimestriel** (colonne N)
+
+   ```
+   =ARRONDI(M2 / 4; 2)
+   ```
+
+</Steps>
+
+### 3.4 Vérifie tes résultats
+
+| Nom | Crédit TPS/TVH annuel | Trimestriel |
+|---|---|---|
+| Amélie Tremblay | 533,00 $ | 133,25 $ |
+| David Lavoie | 356,95 $ | 89,24 $ |
+| Jean-Philippe Roy | 59,05 $ | 14,76 $ |
+| Marc-Antoine Dubois | 1 066,00 $ | 266,50 $ |
+| Fatima Benali | 901,00 $ | 225,25 $ |
+| Sofia Chen | 1 250,00 $ | 312,50 $ |
+| Émile et Nadia Bergeron | 0,00 $ | 0,00 $ |
+
+---
+
+## Étape 4 — Synthèse et analyse
+
+### 4.1 Tableau récapitulatif
+
+Crée une feuille nommée **`Synthèse`** avec les colonnes suivantes. Utilise des références vers les feuilles `Solidarité` et `TPS_TVH` :
+
+| Colonne | Contenu |
+|---|---|
+| A | Nom |
+| B | Situation familiale |
+| C | Revenu familial net |
+| D | Crédit solidarité (annuel) |
+| E | Crédit solidarité (fréquence) |
+| F | Crédit solidarité (par versement) |
+| G | Crédit TPS/TVH (annuel) |
+| H | Crédit TPS/TVH (trimestriel) |
+| I | **Total annuel combiné** |
+
+### 4.2 Mise en forme conditionnelle
+
+Applique une mise en forme conditionnelle sur la colonne **I** (total annuel combiné). Utilise trois règles :
+
+1. 🟢 Vert (soutien important):  Total **supérieur à 1 500 $**.
+2. 🟡 Jaune (soutien modéré): Total **entre 500 $ et 1 500 $**
+3. 🔴 Rouge (soutien limité ou nul): Total **inférieur à 500 $**
+
+---
+
+## Étape 5 — Questions de réflexion
+
+<Aside type="danger" title="À remettre">
+  Réponds à ces questions dans une feuille nommée **`Réponses`** de ton classeur Excel.
+</Aside>
+
+**Question 1 — Fonction OU**
+David Lavoie n'a pas de logement admissible. Son taux de réduction est de 3 % au lieu de 6 %. Écris une formule utilisant la fonction **OU** qui affiche `"Soutien partiel"` si le contribuable n'a droit qu'à **une seule** des deux composantes (TVQ ou logement), et `"Soutien complet"` s'il a droit aux deux.
+
+**Question 2 — Comparaison des seuils**
+Le seuil de réduction du crédit solidarité est de 43 195 $ et celui du crédit TPS/TVH est de 45 521 $. Nour Abdallah a un revenu de 38 500 $. Explique pourquoi ses deux crédits ne sont pas encore réduits. Calcule ensuite à la main le revenu à partir duquel **chacun** de ses crédits commencerait à diminuer.
+
+**Question 3 — Cas extrême**
+Maïka Jean-Baptiste a un revenu de 0 $ et un logement admissible. Quel est le montant **total combiné** qu'elle recevrait sur une année complète (solidarité + TPS/TVH) ? Pourquoi ce résultat illustre-t-il bien le concept de crédit « remboursable » ?
+
+**Question 4 — Scénario**
+Si Camille Gagnon (monoparentale, 2 enfants dont 1 en garde partagée, revenu de 48 000 $) obtenait une augmentation portant son revenu à 55 000 $, calcule ses nouveaux montants pour **chacun** des deux crédits. Montre tes calculs étape par étape.
+
+**Question 5 — Famille monoparentale**
+En comparant les formules du crédit solidarité et du crédit TPS/TVH, identifie **une différence** dans la manière dont les familles monoparentales sont traitées par chacun des deux programmes. Pourquoi penses-tu que le programme fédéral accorde un traitement particulier au premier enfant d'un parent seul ?
+
+---
+
+## Ressources
+
+- [Crédit d'impôt pour solidarité — Revenu Québec](https://www.revenuquebec.ca/fr/citoyens/credits-dimpot/credit-dimpot-pour-solidarite/)
+- [Crédit pour la TPS/TVH — Agence du revenu du Canada](https://www.canada.ca/fr/agence-revenu/services/prestations-enfants-familles/credit-taxe-produits-services-taxe-vente-harmonisee-tps-tvh.html)

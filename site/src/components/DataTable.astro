@@ -1,0 +1,81 @@
+---
+interface Props {
+  columns: string[];
+  rows: (string | number)[][];
+}
+
+const { columns, rows } = Astro.props;
+
+// Génère A, B, C, ... Z (simple)
+const letters = columns.map((_, i) =>
+  String.fromCharCode(65 + i)
+);
+---
+
+<table class="data-table">
+  <thead>
+    <tr>
+      {columns.map((_, i) => (
+        <th class="letter" scope="col">
+          {letters[i]}
+        </th>
+      ))}
+    </tr>
+    <tr>
+      {columns.map((col) => (
+        <th class="label" scope="col">
+          {col}
+        </th>
+      ))}
+    </tr>
+  </thead>
+
+  <tbody>
+    {rows.map((row) => (
+      <tr>
+        {columns.map((_, i) => (
+          <td>{row[i] ?? ""}</td>
+        ))}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<style>
+.data-table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.data-table th {
+  text-align: center;
+  background-color: #f5f5f5;
+  word-wrap: normal;
+}
+
+/* Ligne A, B, C */
+th.letter {
+  font-family: Consolas, 'Courier New', Courier, monospace;
+  font-size: 1.1em;
+  padding: 0;
+  color: #555;
+  background: #e5e4e2;
+  font-weight: 600;
+}
+
+/* Ligne des entêtes */
+th.label {
+  font-weight: 600;
+}
+
+.data-table td {
+  font-size: 0.85em;
+}
+</style>
