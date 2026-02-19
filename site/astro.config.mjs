@@ -58,7 +58,7 @@ export default defineConfig({
 							badge: 'Nouveau',
 							items: [
 								{ label: 'Fonctions dates', slug: 'cours/04-fonctions-dates' },
-								{ label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
+								// { label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
 								{ label: "Exercices", items: [
 									{ label: 'Exercices', slug: 'exercices/04-exercices-dates' },
 								]},
