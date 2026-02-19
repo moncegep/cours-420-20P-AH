@@ -1,0 +1,302 @@
+---
+title: "Fonctions de textes"
+description: "Maîtriser les fonctions de dates et de manipulation de texte dans Excel pour la gestion de données en entreprise"
+draft: true
+sidebar:
+  label: Dates et textes
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import QuizClassification from '../../../components/QuizClassification';
+
+Les données d'entreprise ne sont pas uniquement numériques. Les **dates** (embauche, échéances, congés) et le **texte** (noms, codes, adresses) sont omniprésents dans la gestion quotidienne. Excel offre des fonctions spécialisées pour manipuler ces types de données efficacement.
+
+---
+
+## Pourquoi manipuler du texte dans Excel ?
+
+Les données importées de systèmes externes arrivent souvent dans un format inutilisable tel quel : noms en majuscules, espaces superflus, codes à découper, formats incohérents. Les fonctions de texte permettent de **nettoyer**, **standardiser** et **extraire** de l'information textuelle sans intervention manuelle.
+
+---
+
+## Changer la casse
+
+| Fonction | Description | Exemple | Résultat |
+|---|---|---|---|
+| `MAJUSCULE(texte)` | Tout en majuscules | `=MAJUSCULE("sophie tremblay")` | SOPHIE TREMBLAY |
+| `MINUSCULE(texte)` | Tout en minuscules | `=MINUSCULE("SOPHIE TREMBLAY")` | sophie tremblay |
+| `NOMPROPRE(texte)` | Première lettre de chaque mot en majuscule | `=NOMPROPRE("sophie tremblay")` | Sophie Tremblay |
+
+<Aside type="tip" title="Usage courant">
+  `NOMPROPRE` est parfait pour standardiser des noms importés d'un système qui stocke tout en majuscules. Cependant, attention aux exceptions comme « de », « du », « van » qui seront aussi capitalisés.
+</Aside>
+
+---
+
+## Extraire des portions de texte
+
+| Fonction | Description | Syntaxe |
+|---|---|---|
+| `GAUCHE` | Premiers caractères | `=GAUCHE(texte; nb_caractères)` |
+| `DROITE` | Derniers caractères | `=DROITE(texte; nb_caractères)` |
+| `STXT` | Caractères à partir d'une position | `=STXT(texte; position_départ; nb_caractères)` |
+
+**Exemples avec le code produit `BOR-IPA-355-12` :**
+
+```
+=GAUCHE("BOR-IPA-355-12"; 3)       → "BOR"        (catégorie)
+=STXT("BOR-IPA-355-12"; 5; 3)      → "IPA"        (type)
+=STXT("BOR-IPA-355-12"; 9; 3)      → "355"        (format ml)
+=DROITE("BOR-IPA-355-12"; 2)       → "12"         (quantité)
+```
+
+<Aside type="note" title="Position des caractères">
+  Dans Excel, les positions de caractères commencent à **1** (et non à 0 comme dans la plupart des langages de programmation).
+</Aside>
+
+---
+
+## NBCAR(texte)
+
+Retourne le **nombre de caractères** dans une chaîne, y compris les espaces.
+
+```
+=NBCAR("Bonjour")          → 7
+=NBCAR("Bonjour le monde") → 16
+=NBCAR(A2)                 → Nombre de caractères de la cellule A2
+```
+
+**Usage courant :** Valider la longueur d'un code postal, d'un NAS, d'un numéro de téléphone.
+
+```
+=SI(NBCAR(A2) <> 7; "Code postal invalide"; "OK")
+```
+
+---
+
+## CHERCHE() et TROUVE()
+
+Ces fonctions retournent la **position** d'un caractère ou d'un texte dans une chaîne.
+
+| Fonction | Sensible à la casse ? | Syntaxe |
+|---|---|---|
+| `CHERCHE` | Non | `=CHERCHE(texte_cherché; texte; [position_départ])` |
+| `TROUVE` | Oui | `=TROUVE(texte_cherché; texte; [position_départ])` |
+
+```
+=CHERCHE("-"; "BOR-IPA-355")     → 4  (position du premier tiret)
+=CHERCHE("-"; "BOR-IPA-355"; 5)  → 8  (position du 2e tiret, en cherchant à partir de la position 5)
+```
+
+**Utilisation typique — Extraire le prénom d'un nom complet « Prénom Nom » :**
+
+```
+=GAUCHE(A2; CHERCHE(" "; A2) - 1)
+```
+→ Extrait tout ce qui se trouve avant le premier espace.
+
+**Extraire le nom de famille :**
+
+```
+=DROITE(A2; NBCAR(A2) - CHERCHE(" "; A2))
+```
+→ Extrait tout ce qui se trouve après le premier espace.
+
+---
+
+## CONCAT() et l'opérateur &
+
+Ces deux méthodes **assemblent** des textes ensemble.
+
+```
+=CONCAT(A2; " "; B2)        → "Sophie Tremblay"
+=A2 & " " & B2                  → "Sophie Tremblay"  (syntaxe plus simple)
+```
+
+---
+
+## SUBSTITUE() et REMPLACER()
+
+| Fonction | Action | Syntaxe |
+|---|---|---|
+| `SUBSTITUE` | Remplace un texte par un autre | `=SUBSTITUE(texte; ancien; nouveau; [occurrence])` |
+| `REMPLACER` | Remplace par position | `=REMPLACER(texte; position; nb_car; nouveau_texte)` |
+
+```
+=SUBSTITUE("514-555-1234"; "-"; ".")    → "514.555.1234"
+=SUBSTITUE("A-B-A-B"; "A"; "X"; 1)     → "X-B-A-B"  (remplace seulement la 1re occurrence)
+=REMPLACER("BOR-IPA"; 1; 3; "MIC")     → "MIC-IPA"
+```
+
+---
+
+{/* ## SUPPRESPACE() et EPURAGE()
+
+| Fonction | Description |
+|---|---|
+| `SUPPRESPACE(texte)` | Supprime les espaces en trop (conserve un seul espace entre les mots) |
+| `EPURAGE(texte)` | Supprime les caractères non imprimables (retours de ligne, tabulations) |
+
+```
+=SUPPRESPACE("  Sophie   Tremblay  ")   → "Sophie Tremblay"
+```
+
+<Aside type="caution" title="Données importées">
+  Quand vous importez des données d'un fichier CSV ou d'une base de données, utilisez **toujours** `SUPPRESPACE` et `EPURAGE` pour nettoyer les données. Les espaces invisibles sont la cause numéro 1 des `RECHERCHEV` qui ne trouvent rien !
+</Aside> */}
+
+---
+
+{/* ## TEXTE(valeur; format)
+
+Convertit une valeur en texte formaté. Essentiel pour **construire des phrases** contenant des nombres ou des dates.
+
+```
+=TEXTE(45000; "# ##0,00 $")              → "45 000,00 $"
+=TEXTE(AUJOURDHUI(); "jj MMMM aaaa")     → "15 février 2026"
+=TEXTE(0,1575; "0,00 %")                 → "15,75 %"
+```
+
+**Exemple — Message automatique :**
+
+```
+="Rapport généré le " & TEXTE(AUJOURDHUI(); "jj MMMM aaaa") & " à " & TEXTE(MAINTENANT(); "hh:mm")
+```
+→ "Rapport généré le 15 février 2026 à 14:30"
+
+--- */}
+
+## Exercice pratique 2 — Textes
+
+**Contexte :** Vous recevez un export CSV du système de paie de l'entreprise *Transport Lacroix* de Rouyn-Noranda. Les données sont mal formatées et doivent être nettoyées.
+
+Créez un classeur avec une feuille `Import` contenant les données brutes suivantes :
+
+| A (NomComplet) | B (CodeEmployé) | C (Téléphone) | D (CodePostal) |
+|---|---|---|---|
+| `  TREMBLAY, SOPHIE  ` | `TRN-ADM-001` | `819-555-1234` | `j9x 5b2` |
+| `  GAGNON,    MARC  ` | `TRN-ENT-002` | `819-555-5678` | `J9X5B3` |
+| `  BOUCHARD, ÉMILIE  ` | `TRN-ADM-003` | `819.555.9012` | `j9x  5b4` |
+| `ROY,CATHERINE` | `TRN-LOG-004` | `(819) 555-3456` | `J9X5 B5` |
+| `  côté, alexandre  ` | `TRN-ENT-005` | `819 555 7890` | `j 9x5b6` |
+
+Créez une feuille `Nettoyé` avec les colonnes suivantes :
+
+<Steps>
+1. **Colonne A — Nom de famille** : Extraire le nom de famille (partie avant la virgule), en format `Nompropre`, sans espaces superflus.
+
+2. **Colonne B — Prénom** : Extraire le prénom (partie après la virgule), en format `Nompropre`, sans espaces superflus.
+
+3. **Colonne C — Nom complet** : Combiner prénom et nom au format `Prénom Nom`.
+
+4. **Colonne D — Département** : Extraire le département du code employé (les 3 lettres du milieu : ADM, ENT, LOG).
+
+5. **Colonne E — Numéro séquentiel** : Extraire le numéro à la fin du code employé (les 3 derniers caractères), converti en nombre avec `CNUM`.
+
+6. **Colonne F — Téléphone standardisé** : Reformater tous les numéros au format `(819) 555-1234`. Utilisez `SUBSTITUE` imbriqués pour retirer les caractères non voulus, puis reconstruisez avec `CONCAT` ou `&`.
+
+7. **Colonne G — Code postal** : Reformater en `J9X 5B2` (majuscules, un espace au milieu). Utilisez `SUBSTITUE` pour retirer les espaces, `MAJUSCULE`, puis `GAUCHE`, `DROITE` et `&` pour reconstruire.
+
+8. **Colonne H — Courriel généré** : Créez automatiquement un courriel au format `prénom.nom@transportlacroix.ca` (tout en minuscules, sans accents — pour les accents, utilisez des `SUBSTITUE` imbriqués pour é→e, è→e, etc.).
+</Steps>
+
+<Tabs>
+  <TabItem label="Indice — Nom de famille">
+    ```
+    =NOMPROPRE(SUPPRESPACE(GAUCHE(A2; CHERCHE(","; A2) - 1)))
+    ```
+  </TabItem>
+  <TabItem label="Indice — Prénom">
+    ```
+    =NOMPROPRE(SUPPRESPACE(DROITE(A2; NBCAR(A2) - CHERCHE(","; A2))))
+    ```
+  </TabItem>
+  <TabItem label="Indice — Département">
+    ```
+    =STXT(Import!B2; 5; 3)
+    ```
+  </TabItem>
+  <TabItem label="Indice — Code postal">
+    ```
+    =MAJUSCULE(GAUCHE(SUBSTITUE(Import!D2; " "; ""); 3)) & " " & MAJUSCULE(DROITE(SUBSTITUE(Import!D2; " "; ""); 3))
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+
+## Quiz de révision
+
+export const quizDates = [
+  {
+    id: 'q1',
+    question: 'Quelle fonction permet d\'extraire 3 caractères à partir de la 5e position dans un texte ?',
+    options: ['=GAUCHE(texte; 5; 3)', '=STXT(texte; 5; 3)', '=DROITE(texte; 5; 3)', '=CHERCHE(texte; 5; 3)'],
+    correct: '=STXT(texte; 5; 3)',
+    explanation: 'STXT(texte; position_départ; nb_caractères) extrait un nombre donné de caractères à partir d\'une position précise. GAUCHE et DROITE extraient depuis le début ou la fin uniquement.'
+  },
+  {
+    id: 'q2',
+    question: 'Comment extraire le prénom de la cellule A2 contenant "Tremblay, Sophie" ?',
+    options: [
+      '=DROITE(A2; NBCAR(A2) - CHERCHE(" "; A2))',
+      '=SUPPRESPACE(DROITE(A2; NBCAR(A2) - CHERCHE(","; A2)))',
+      '=GAUCHE(A2; CHERCHE(","; A2) - 1)',
+      '=STXT(A2; CHERCHE(","; A2); 10)'
+    ],
+    correct: '=SUPPRESPACE(DROITE(A2; NBCAR(A2) - CHERCHE(","; A2)))',
+    explanation: 'On utilise CHERCHE pour trouver la virgule, DROITE pour extraire ce qui suit, et SUPPRESPACE pour retirer l\'espace entre la virgule et le prénom. GAUCHE(...CHERCHE(",")...) extrairait plutôt le nom de famille.'
+  },
+  {
+    id: 'q3',
+    question: 'Pourquoi les RECHERCHEV échouent-elles souvent avec des données importées ?',
+    options: [
+      'Les données importées sont en lecture seule',
+      'Les espaces invisibles et caractères non imprimables empêchent la correspondance exacte',
+      'RECHERCHEV ne fonctionne pas avec du texte',
+      'Les données importées sont toujours en anglais'
+    ],
+    correct: 'Les espaces invisibles et caractères non imprimables empêchent la correspondance exacte',
+    explanation: 'Les espaces superflus et caractères non imprimables (retours de ligne, tabulations) sont la cause #1 des RECHERCHEV qui ne trouvent rien. Utilisez SUPPRESPACE et EPURAGE pour nettoyer vos données avant toute recherche.'
+  },
+  {
+    id: 'q4',
+    question: 'Que retourne =DATE(2026; 3; 0) ?',
+    options: ['Une erreur #VALEUR!', '2026-03-01', '2026-02-28', '2026-03-00'],
+    correct: '2026-02-28',
+    explanation: 'Le jour 0 d\'un mois correspond au dernier jour du mois précédent. DATE(2026; 3; 0) signifie donc "le jour avant le 1er mars 2026", soit le 28 février 2026. C\'est une astuce pratique pour trouver le dernier jour d\'un mois.'
+  },
+  {
+    id: 'q5',
+    question: 'Quelle formule génère le texte "Rapport du 15 février 2026" dynamiquement ?',
+    options: [
+      '="Rapport du " & AUJOURDHUI()',
+      '="Rapport du " & TEXTE(AUJOURDHUI(); "jj MMMM aaaa")',
+      '=CONCAT("Rapport du "; AUJOURDHUI())',
+      '=TEXTE("Rapport du " & AUJOURDHUI())'
+    ],
+    correct: '="Rapport du " & TEXTE(AUJOURDHUI(); "jj MMMM aaaa")',
+    explanation: 'Sans TEXTE, la concaténation afficherait le numéro de série de la date (ex. "Rapport du 46068"). TEXTE(date; "jj MMMM aaaa") convertit la date en texte lisible avant de la concaténer.'
+  }
+];
+
+<QuizClassification client:visible questions={quizDates} />
+
+---
+
+## Résumé des fonctions
+
+| Fonction | Description rapide |
+|---|---|
+| `MAJUSCULE(t)` | Convertit en majuscules |
+| `MINUSCULE(t)` | Convertit en minuscules |
+| `NOMPROPRE(t)` | Première lettre majuscule |
+| `GAUCHE(t; n)` | N premiers caractères |
+| `DROITE(t; n)` | N derniers caractères |
+| `STXT(t; pos; n)` | Extraction par position |
+| `NBCAR(t)` | Nombre de caractères |
+| `CHERCHE(c; t)` | Position d'un caractère (insensible à la casse) |
+| `TROUVE(c; t)` | Position d'un caractère (sensible à la casse) |
+| `CONCAT(t1; t2)` | Assemblage de textes |
+| `SUBSTITUE(t; a; n)` | Remplacement de texte |

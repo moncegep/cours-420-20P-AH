@@ -57,6 +57,11 @@ export default defineConfig({
 							label: 'Semaine 4',
 							badge: 'Nouveau',
 							items: [
+								{ label: 'Fonctions dates', slug: 'cours/04-fonctions-dates' },
+								{ label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
+								{ label: "Exercices", items: [
+									{ label: 'Exercices', slug: 'exercices/04-exercices-dates' },
+								]},
 								{ label: "Problèmes", items: [
 									{ label: "Crédit d'impôt solidarité", slug: 'exercices/04-problemes' },
 								]}

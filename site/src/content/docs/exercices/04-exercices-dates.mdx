@@ -1,0 +1,268 @@
+---
+title: "Exercices — Fonctions de dates"
+description: "Exercices progressifs sur les fonctions de dates Excel : AUJOURDHUI, DATE, ANNEE, MOIS, JOUR, JOURSEM, FIN.MOIS et l'arithmétique de dates."
+sidebar:
+  order: 6
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+
+Ces exercices s'enchaînent du plus simple au plus complexe. Chaque niveau introduit une ou deux nouvelles fonctions dans un contexte concret.
+
+## Niveau 1 — Arithmétique de base avec les dates
+
+**Contexte :** Vous travaillez à la réception de la quincaillerie *Outils du Nord* à Rouyn-Noranda. Vous gérez un tableau de commandes clients.
+
+<Aside type="note" title="Rappel fondamental">
+  Excel stocke les dates comme des **numéros de série** (ex. : le 1er janvier 2026 = 45 658). Cela signifie qu'additionner 30 à une date avance réellement de 30 jours. Formatez vos cellules en *Date courte* pour afficher un résultat lisible.
+</Aside>
+
+### Données de départ
+
+Créez une nouvelle feuille et saisissez le tableau suivant à partir de la cellule A1 :
+
+| A — N° commande | B — Date commande | C — Délai promis (jours) |
+|---|---|---|
+| CMD-001 | 2026-01-10 | 30 |
+| CMD-002 | 2026-02-03 | 45 |
+| CMD-003 | 2026-02-12 | 15 |
+
+### Calculs à effectuer
+
+Ajoutez les colonnes suivantes à partir de D2 :
+
+| Colonne | Formule à saisir | Description |
+|---|---|---|
+| D — Date limite | `=B2 + C2` | Additionner des jours à une date |
+| E — Jours écoulés | `=AUJOURDHUI() - B2` | Jours depuis la commande |
+| F — Jours restants | `=D2 - AUJOURDHUI()` | Peut être négatif si en retard |
+| G — Statut | `=SI(F2 < 0; "En retard"; "En cours")` | Indicateur visuel |
+
+
+<Aside type="caution" title="Formatage indispensable">
+  Si la colonne E ou F affiche une date au lieu d'un nombre, sélectionnez la colonne et choisissez le format **Nombre** dans l'onglet *Accueil*. Excel a automatiquement appliqué le format Date puisqu'il détecte une opération sur des dates.
+</Aside>
+
+---
+
+## Niveau 2 — Calculer des durées
+
+**Contexte :** Vous gérez la liste des abonnements d'une salle de sport à Drummondville. Vous devez identifier les abonnements actifs et calculer leur durée.
+
+### Données de départ
+
+| A — Client | B — Début abonnement | C — Fin abonnement |
+|---|---|---|
+| Marois, Julie | 2023-03-15 | 2026-03-14 |
+| Plante, Kevin | 2024-09-01 | 2026-08-31 |
+| Boisvert, Nadia | 2022-01-10 | 2025-12-09 |
+
+### Calculs à effectuer
+
+| Colonne | Résultat attendu (Julie Marois) | Description |
+|---|---|---|
+| D — Durée totale en jours | 1 095 | `=C2 - B2` |
+| E — Durée en années | "3 an(s)" | Utiliser `ANNEE` et `CONCATENER` |
+| F — Abonnement actif ? | Actif ou Expiré | Comparer C2 à `AUJOURDHUI()` |
+| G — Jours avant expiration | Variable | Seulement si l'abonnement est actif |
+
+{/* <Tabs>
+  <TabItem label="Indice — Colonne E">
+    Pour obtenir la durée en années lisibles, combinez `ANNEE` et `&` :
+    ```
+    =ANNEE(C2) - ANNEE(B2) & " an(s)"
+    ```
+    *(Cette approche est simplifiée : elle ne tient pas compte des mois. Pour une durée exacte, on utiliserait `DATEDIF`.)*
+  </TabItem>
+  <TabItem label="Indice — Colonne F">
+    Comparez la date de fin à la date du jour :
+    ```
+    =SI(C2 >= AUJOURDHUI(); "Actif"; "Expiré")
+    ```
+  </TabItem>
+  <TabItem label="Indice — Colonne G">
+    N'affichez les jours restants que si l'abonnement est encore actif :
+    ```
+    =SI(C2 >= AUJOURDHUI(); C2 - AUJOURDHUI(); "—")
+    ```
+    Formatez cette colonne en **Nombre** pour éviter qu'Excel affiche une date.
+  </TabItem>
+</Tabs> */}
+
+---
+
+## Niveau 3 — Jours de la semaine et analyse des ventes
+
+**Contexte :** La boutique *Cadeaux Boréal* à Baie-Comeau veut analyser ses ventes selon le jour de la semaine afin d'optimiser la dotation du personnel.
+
+### Données de départ
+
+| A — Date vente | B — Montant ($) |
+|---|---|
+| 2026-01-05 | 234,50 |
+| 2026-01-06 | 189,00 |
+| 2026-01-07 | 312,75 |
+| 2026-01-08 | 95,25 |
+| 2026-01-09 | 278,00 |
+| 2026-01-10 | 445,50 |
+| 2026-01-11 | 521,00 |
+
+### Partie A — Caractériser chaque journée
+
+Ajoutez les colonnes suivantes :
+
+| Colonne | Description | Indice |
+|---|---|---|
+| C — Numéro du jour | 1 = lundi … 7 = dimanche | `JOURSEM(A2; 2)` |
+| D — Nom du jour | "lundi", "mardi"… | `SI` imbriqués ou `CHOISIR` |
+| E — Type de jour | "Fin de semaine" ou "Semaine" | Tester si C2 >= 6 |
+| F — Abréviation | "lun.", "mar."… | `GAUCHE(D2; 3) & "."` |
+
+<Aside type="note" title="Le paramètre type de JOURSEM">
+  `JOURSEM(date; 2)` retourne **1 pour lundi** et **7 pour dimanche**, ce qui correspond à la convention québécoise et européenne. Sans ce paramètre (ou avec `type = 1`), le 1 correspond au dimanche — ce qui peut créer de la confusion.
+</Aside>
+
+{/* <Tabs>
+  <TabItem label="Indice — Colonne D (nom du jour)">
+    Utilisez `CHOISIR` avec le numéro de jour en C2 :
+    ```
+    =CHOISIR(C2; "lundi"; "mardi"; "mercredi"; "jeudi"; "vendredi"; "samedi"; "dimanche")
+    ```
+  </TabItem>
+  <TabItem label="Indice — Colonne E (type de jour)">
+    Les jours 6 (samedi) et 7 (dimanche) sont la fin de semaine :
+    ```
+    =SI(C2 >= 6; "Fin de semaine"; "Semaine")
+    ```
+  </TabItem>
+</Tabs> */}
+
+### Partie B — Analyse avec SOMME.SI
+
+Sous votre tableau (à partir de la ligne 10), ajoutez un récapitulatif des ventes par jour :
+- Total lundi
+- Total samedi
+- Total fin de semaine
+
+
+**Question bonus :** En utilisant `MOYENNE.SI`, identifiez le jour qui génère la meilleure vente moyenne. Écrivez la formule pour chaque jour.
+
+---
+
+## Niveau 4 — Décomposer et reconstruire des dates
+
+**Contexte :** Le service RH de *Coopérative Agro-Laurentides* à Saint-Jérôme reçoit des données d'employés dont les dates de naissance sont saisies dans différents formats. Vous devez les standardiser et calculer les âges.
+
+### Données de départ
+
+Certaines dates sont mal formatées et saisies comme du texte. Recréez les dates avec `DATE` :
+
+| A — Année | B — Mois | C — Jour | D — Date reconstituée |
+|---|---|---|---|
+| 1988 | 7 | 23 | *(à calculer)* |
+| 1995 | 11 | 5 | *(à calculer)* |
+| 2001 | 3 | 14 | *(à calculer)* |
+
+### Calculs à effectuer
+
+<Steps>
+1. **Colonne D — Reconstituer la date** .
+
+2. **Colonne E — Âge en années** : Calculez l'âge à partir de la date reconstituée
+   {/* ```
+   =ANNEE(AUJOURDHUI()) - ANNEE(D2)
+   ```
+   *(Note : cette formule peut être décalée d'un an si l'anniversaire n'est pas encore passé cette année.)* */}
+
+3. **Colonne F — A-t-il eu son anniversaire cette année ?** : Vérifiez si le mois et le jour de naissance sont déjà passés
+   {/* ```
+   =SI(DATE(ANNEE(AUJOURDHUI()); MOIS(D2); JOUR(D2)) <= AUJOURDHUI(); "Oui"; "Non")
+   ``` */}
+
+4. **Colonne G — Âge exact** : Combinez les résultats des colonnes E et F pour obtenir l'âge précis
+   {/* ```
+   =SI(F2="Non"; E2 - 1; E2)
+   ``` */}
+</Steps>
+
+<Aside type="tip" title="Pourquoi utiliser DATE() ?">
+  Quand des données viennent d'un autre logiciel ou d'une importation CSV, les dates peuvent être fragmentées en colonnes séparées (année, mois, jour) ou stockées comme texte. La fonction `DATE(a; m; j)` permet de **reconstruire une vraie date Excel** à partir de ces composantes, rendant les calculs ultérieurs possibles.
+</Aside>
+
+---
+{/* 
+## Niveau 5 — Synthèse : calendrier d'échéances
+
+**Contexte :** Vous êtes coordonnateur aux comptes clients chez un grossiste alimentaire à Laval. Vous devez gérer les échéances de paiement selon les conditions de chaque client.
+
+### Données de départ
+
+| A — Client | B — Date facture | C — Conditions |
+|---|---|---|
+| Épicerie Bellerive | 2026-02-03 | Net 30 |
+| Resto Le Nordique | 2026-02-10 | Fin de mois +30 |
+| Traiteur Saveurs | 2026-01-28 | Net 45 |
+| Marché Côté | 2026-02-14 | Fin de mois |
+
+### Référence : conditions de paiement courantes au Québec
+
+| Condition | Signification | Formule (date en B2) |
+|---|---|---|
+| Net 30 | 30 jours après la facture | `=B2 + 30` |
+| Net 45 | 45 jours après la facture | `=B2 + 45` |
+| Fin de mois | Dernier jour du mois de facturation | `=FIN.MOIS(B2; 0)` |
+| Fin de mois +30 | Dernier jour du mois suivant | `=FIN.MOIS(B2; 1)` |
+
+### Calculs à effectuer
+
+<Steps>
+1. **Colonne D — Date d'échéance** : Utilisez des `SI` imbriqués pour appliquer la bonne formule selon la valeur en C2 :
+   ```
+   =SI(C2="Net 30"; B2+30;
+     SI(C2="Net 45"; B2+45;
+       SI(C2="Fin de mois"; FIN.MOIS(B2;0);
+         SI(C2="Fin de mois +30"; FIN.MOIS(B2;1);
+           "Condition inconnue"))))
+   ```
+
+2. **Colonne E — Statut** : Indiquez si la facture est *À venir*, *Due aujourd'hui* ou *En retard* selon la date du jour.
+
+3. **Colonne F — Jours de retard** : Si en retard, affichez le nombre de jours. Sinon, affichez 0.
+
+4. **Colonne G — Prochain rappel** : Calculez la date à laquelle envoyer un rappel, soit 5 jours avant l'échéance, si celle-ci n'est pas encore passée.
+</Steps>
+
+<Tabs>
+  <TabItem label="Indice — Colonne E (statut)">
+    ```
+    =SI(AUJOURDHUI() < D2; "À venir";
+      SI(AUJOURDHUI() = D2; "Due aujourd'hui";
+        "En retard"))
+    ```
+    *(La condition "Payée" nécessiterait une colonne supplémentaire pour consigner le paiement reçu.)*
+  </TabItem>
+  <TabItem label="Indice — Colonne F (jours de retard)">
+    ```
+    =SI(AUJOURDHUI() > D2; AUJOURDHUI() - D2; 0)
+    ```
+    Formatez cette colonne en **Nombre** pour ne pas obtenir une date.
+  </TabItem>
+  <TabItem label="Indice — Colonne G (rappel)">
+    ```
+    =SI(D2 - 5 >= AUJOURDHUI(); D2 - 5; "Rappel dépassé")
+    ```
+    Formatez en **Date courte** si la cellule affiche un nombre.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Mise en forme conditionnelle recommandée">
+  Une fois les formules en place, appliquez une mise en forme conditionnelle sur la colonne E pour colorer automatiquement les lignes :
+  - 🔴 Rouge → "En retard"
+  - 🟡 Jaune → "Due aujourd'hui"
+  - 🟢 Vert → "À venir"
+
+  Sélectionnez la plage E2:E5, puis *Mise en forme conditionnelle → Règle basée sur une formule*.
+</Aside> */}
+
+---

@@ -1,0 +1,238 @@
+---
+title: Exercices - Fonctions dates et textes
+description: Exercice de synthèse couvrant les fonctions de manipulation de date et de texte
+---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+
+
+## Gestion des heures et congés des employés — Menuiserie Abitibi
+
+**Contexte :** Vous êtes responsable de la gestion des ressources humaines chez *Menuiserie Abitibi*, une PME d'Amos spécialisée dans la fabrication de meubles sur mesure. L'entreprise emploie 10 personnes et vous devez créer un classeur Excel complet pour gérer les heures travaillées, les jours de congé et produire des fiches rapport individuelles.
+
+<Aside type="note" title="Structure du classeur">
+  Ce classeur contiendra **5 feuilles** qui interagissent entre elles par des références entre feuilles et des références nommées.
+</Aside>
+
+---
+
+### Feuille 1 — `Paramètres`
+
+Cette feuille centralise les règles de l'entreprise. Définissez des **noms** pour chaque cellule de paramètre afin de les référencer clairement dans vos formules.
+
+| Paramètre | Valeur | Nom suggéré |
+|---|---|---|
+| Taux horaire régulier de base | 24,50 $ | `TauxBase` |
+| Seuil d'heures régulières par semaine | 40 | `SeuilRegulier` |
+| Majoration temps supplémentaire | 1,5 | `MajorationSup` |
+| Jours de vacances annuels de base | 10 | `VacancesBase` |
+| Jours de vacances bonus par 5 ans d'ancienneté | 5 | `VacancesBonus5Ans` |
+| Jours de maladie annuels | 5 | `JoursMaladie` |
+| Jours personnels annuels | 3 | `JoursPersonnels` |
+| Date de début de l'année de référence | 2026-01-01 | `DebutAnnee` |
+| Date de fin de l'année de référence | 2026-12-31 | `FinAnnee` |
+
+---
+
+### Feuille 2 — `Fériés`
+
+Listez les jours fériés du Québec pour l'année 2026 :
+
+| Date | Nom du férié |
+|---|---|
+| 2026-01-01 | Jour de l'An |
+| 2026-01-02 | Lendemain du Jour de l'An |
+| 2026-04-03 | Vendredi saint |
+| 2026-05-18 | Journée nationale des patriotes |
+| 2026-06-24 | Fête nationale du Québec |
+| 2026-07-01 | Fête du Canada |
+| 2026-09-07 | Fête du Travail |
+| 2026-10-12 | Action de grâce |
+| 2026-12-25 | Noël |
+| 2026-12-26 | Lendemain de Noël |
+
+Nommez la plage des dates `ListeFériés`.
+
+<Aside type="tip" title="Vérification">
+  Vérifiez les dates exactes des fériés variables (patriotes, travail, action de grâce) — ces fériés tombent toujours un lundi spécifique.
+</Aside>
+
+---
+
+### Feuille 3 — `Employés`
+
+Créez un tableau avec les informations suivantes :
+
+| Colonne | En-tête | Description |
+|---|---|---|
+| A | No | Numéro séquentiel (1 à 10) |
+| B | Nom | Nom de famille |
+| C | Prénom | Prénom |
+| D | Date de naissance | Date de naissance |
+| E | Date d'embauche | Date d'embauche |
+| F | Poste | Poste occupé |
+| G | Taux horaire | Taux horaire (certains ont un taux différent du taux de base) |
+
+**Données :**
+
+| No | Nom | Prénom | Naissance | Embauche | Poste | Taux |
+|---|---|---|---|---|---|---|
+| 1 | Tremblay | Martin | 1978-03-15 | 2008-06-01 | Contremaître | 32,00 $ |
+| 2 | Gagnon | Julie | 1985-09-22 | 2015-04-10 | Ébéniste | 28,50 $ |
+| 3 | Bouchard | Luc | 1990-12-01 | 2019-08-15 | Ébéniste | 27,00 $ |
+| 4 | Lavoie | Marie-Ève | 1988-07-14 | 2012-01-20 | Finition | 26,00 $ |
+| 5 | Roy | Philippe | 1995-05-30 | 2022-03-01 | Apprenti | 22,00 $ |
+| 6 | Côté | Nathalie | 1982-11-08 | 2005-09-15 | Administration | 29,00 $ |
+| 7 | Bélanger | François | 1992-04-25 | 2020-11-01 | Ébéniste | 26,50 $ |
+| 8 | Fortin | Stéphanie | 1987-01-19 | 2017-06-12 | Vernissage | 25,50 $ |
+| 9 | Morin | André | 1975-08-03 | 2002-02-28 | Ébéniste sénior | 30,00 $ |
+| 10 | Simard | Karine | 2000-10-12 | 2024-01-15 | Réceptionniste | 21,50 $ |
+
+**Ajoutez les colonnes calculées :**
+
+| Colonne | En-tête | Formule attendue |
+|---|---|---|
+| H | Âge | Années complètes (`DATEDIF`) |
+| I | Ancienneté (années) | Années complètes d'ancienneté |
+| J | Ancienneté (texte) | Format `X an(s) et Y mois` |
+| K | Courriel | `prénom.nom@menuiserie-abitibi.ca` (minuscules, accents retirés) |
+| L | Jours de vacances | `VacancesBase` + `VacancesBonus5Ans` pour chaque tranche de 5 ans d'ancienneté. Utilisez `PLANCHER` ou `ENT` pour calculer le nombre de tranches. |
+| M | Total jours de congé | Vacances + `JoursMaladie` + `JoursPersonnels` |
+| N | Jours ouvrables dans l'année | `NB.JOURS.OUVRES` entre `DebutAnnee` et `FinAnnee` en excluant `ListeFériés` |
+| O | Jours ouvrables travaillés prévus | Colonne N − Colonne M |
+
+<Aside type="tip" title="Retirer les accents">
+  Pour retirer les accents dans le courriel, imbriquez des `SUBSTITUE` :
+  `=SUBSTITUE(SUBSTITUE(SUBSTITUE(texte; "é"; "e"); "è"; "e"); "ê"; "e")`
+  Pensez à couvrir : é, è, ê, ë, à, â, ù, û, ô, î, ï, ç.
+</Aside>
+
+---
+
+### Feuille 4 — `Heures_Février`
+
+Créez une feuille de suivi des heures pour le mois de **février 2026**. La structure utilise les dates comme en-têtes de colonnes.
+
+**En-tête :**
+- Colonne A : `No employé`
+- Colonne B : `Nom complet`
+- Colonnes C à Z (et au-delà si nécessaire) : une colonne par **jour ouvrable** du mois de février 2026
+
+<Steps>
+1. **Générer les dates** : En cellule C1, entrez la date du premier jour ouvrable de février 2026. Utilisez `SERIE.JOUR.OUVRE` pour générer les dates suivantes dans les cellules D1, E1, etc. Formatez ces cellules pour afficher le jour et la date (ex. : `jjj jj` → "lun. 02").
+
+2. **Ajouter une ligne « Jour de la semaine »** : En ligne 2, utilisez `TEXTE(C1; "jjjj")` pour afficher le nom complet du jour.
+
+3. **Saisir les heures** : Pour chaque employé (lignes 3 à 12), saisissez des heures travaillées variées (entre 0 et 12 heures par jour). Incluez quelques journées à 0 (congés pris) et quelques journées de temps supplémentaire (plus de 8 heures).
+
+4. **Colonne de total hebdomadaire** : Après chaque vendredi, insérez une colonne « Total sem. » qui additionne les heures de la semaine.
+
+5. **Total mensuel** : À la fin, ajoutez des colonnes pour :
+   - **Total heures** : somme de toutes les heures du mois.
+   - **Heures régulières** : minimum entre le total et (`SeuilRegulier` × nombre de semaines).
+   - **Heures supplémentaires** : heures dépassant le seuil régulier.
+   - **Jours travaillés** : `NB.SI` pour compter les jours où les heures sont > 0.
+   - **Jours d'absence** : nombre de jours ouvrables du mois − jours travaillés.
+</Steps>
+
+<Aside type="caution" title="Mise en forme conditionnelle">
+  Appliquez une mise en forme conditionnelle pour :
+  - Colorer en **rouge clair** les cellules avec 0 heure (absences).
+  - Colorer en **bleu clair** les cellules avec plus de 8 heures (temps supplémentaire).
+  - Colorer en **gris** les colonnes des jours fériés (si applicable en février).
+</Aside>
+
+---
+
+### Feuille 5 — `Fiche_Rapport`
+
+Cette feuille génère une **fiche rapport individuelle** pour un employé sélectionné. L'utilisateur choisit le numéro d'employé dans une cellule de sélection et toutes les informations se mettent à jour automatiquement.
+
+**Cellule de sélection :** En B1, créez une liste de validation de données (1 à 10) pour choisir l'employé.
+
+**Structure de la fiche :**
+
+```
+╔══════════════════════════════════════════════════════════════════╗
+║                     MENUISERIE ABITIBI                          ║
+║               FICHE RAPPORT DE L'EMPLOYÉ                        ║
+║            Mois de février 2026                                  ║
+╠══════════════════════════════════════════════════════════════════╣
+║                                                                  ║
+║  Employé no :   [RECHERCHEV / INDEX-EQUIV]                       ║
+║  Nom :          [Prénom Nom]                                     ║
+║  Courriel :     [courriel généré]                                ║
+║  Poste :        [poste]                                          ║
+║  Date naissance : [date formatée avec TEXTE]                     ║
+║  Date embauche :  [date formatée]                                ║
+║  Âge :          [X ans]                                          ║
+║  Ancienneté :   [X an(s) et Y mois]                              ║
+║                                                                  ║
+╠═══════════════════ BILAN DU MOIS ═══════════════════════════════╣
+║                                                                  ║
+║  Jours ouvrables en février :    [NB.JOURS.OUVRES]              ║
+║  Jours travaillés :              [depuis Heures_Février]         ║
+║  Jours d'absence :               [calculé]                       ║
+║  Total heures travaillées :      [depuis Heures_Février]         ║
+║  Heures régulières :             [calculé]                       ║
+║  Heures supplémentaires :        [calculé]                       ║
+║                                                                  ║
+╠═══════════════════ RÉMUNÉRATION ════════════════════════════════╣
+║                                                                  ║
+║  Taux horaire :                  [depuis Employés]               ║
+║  Salaire régulier :              [heures rég. × taux]            ║
+║  Salaire supplémentaire :        [heures sup. × taux × 1,5]     ║
+║  Salaire brut total :            [somme]                         ║
+║                                                                  ║
+╠═══════════════════ BANQUE DE CONGÉS ════════════════════════════╣
+║                                                                  ║
+║  Jours de vacances (droit) :     [depuis Employés]               ║
+║  Jours de maladie (droit) :      [paramètre]                    ║
+║  Jours personnels (droit) :      [paramètre]                    ║
+║  Total congés alloués :          [somme]                         ║
+║  Congés utilisés (cumul) :       [somme des absences à date]     ║
+║  Solde de congés restants :      [alloués − utilisés]            ║
+║                                                                  ║
+╠═══════════════════ INFORMATIONS ════════════════════════════════╣
+║                                                                  ║
+║  Rapport généré le :   [AUJOURDHUI formaté]                      ║
+║  Prochain férié :      [recherche dans Fériés]                   ║
+║  Prochaine date anniversaire d'embauche : [calculé]              ║
+║                                                                  ║
+╚══════════════════════════════════════════════════════════════════╝
+```
+
+<Steps>
+1. **Informations de l'employé** : Utilisez `INDEX` et `EQUIV` (ou `RECHERCHEV`) pour récupérer les données de la feuille `Employés` en fonction du numéro sélectionné en B1. Formatez les dates avec `TEXTE(date; "jj MMMM aaaa")`.
+
+2. **Bilan du mois** : Récupérez les totaux depuis la feuille `Heures_Février` en utilisant `INDEX` et `EQUIV` pour trouver la bonne ligne d'employé.
+
+3. **Rémunération** : Calculez le salaire régulier et le salaire supplémentaire en utilisant le taux horaire de l'employé et la majoration des paramètres. Formatez en dollars avec `TEXTE` ou le format de cellule.
+
+4. **Banque de congés** : Récupérez les droits depuis `Employés` et `Paramètres`. Pour les congés utilisés, comptez les jours d'absence dans `Heures_Février` pour cet employé.
+
+5. **Prochain férié** : Utilisez une formule combinant `INDEX`, `EQUIV` et `MIN` pour trouver le prochain jour férié à partir d'aujourd'hui dans la liste `Fériés`.
+
+6. **Mise en forme** : Appliquez des bordures, des couleurs d'en-tête et un format professionnel. Le rapport doit être prêt à imprimer sur une seule page.
+</Steps>
+
+<Tabs>
+  <TabItem label="Indice — Récupérer le nom">
+    ```
+    =INDEX(Employés!C:C; EQUIV(B1; Employés!A:A; 0)) & " " & INDEX(Employés!B:B; EQUIV(B1; Employés!A:A; 0))
+    ```
+  </TabItem>
+  <TabItem label="Indice — Prochain férié">
+    ```
+    =INDEX(Fériés!B:B; EQUIV(MIN(SI(Fériés!A$2:A$15 >= AUJOURDHUI(); Fériés!A$2:A$15)); Fériés!A$2:A$15; 0))
+    ```
+    *(formule matricielle — valider avec Ctrl+Maj+Entrée si nécessaire)*
+  </TabItem>
+  <TabItem label="Indice — Salaire supplémentaire">
+    ```
+    =HeuresSupp * INDEX(Employés!G:G; EQUIV(B1; Employés!A:A; 0)) * MajorationSup
+    ```
+  </TabItem>
+</Tabs>

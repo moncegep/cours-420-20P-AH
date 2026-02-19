@@ -1,0 +1,236 @@
+---
+title: "Fonctions de dates"
+description: "Maîtriser les fonctions de dates et de manipulation de texte dans Excel pour la gestion de données en entreprise"
+sidebar:
+  label: Dates et textes
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import QuizClassification from '../../../components/QuizClassification';
+import Hint from '../../../components/HintEnhanced';
+
+Les dates sont au cœur de la gestion d'entreprise, facilitant le suivi, le controle et la planification des activités de l'entreprise.
+Excel est lourdement équipés pour répondre à toutes questions en lien avec les dates et offrenet des **fonctions de dates spécialisées**
+que nous allons découvrir dans ce module.
+
+## Comment Excel gère les dates
+
+Avant d'utiliser les fonctions, il faut comprendre un principe fondamental : Excel stocke chaque 
+date sous forme d'un **numéro de série**. 
+Le 1er janvier 1900 correspond au numéro 1, le 2 janvier 
+1900 au numéro 2, et ainsi de suite. Chaque jour qui passe incrémente ce compteur de 1.
+
+| Date affichée | Numéro stocké par Excel |
+|---|---|
+| 1900-01-01 | 1 |
+| 2000-01-01 | 36 526 |
+| 2025-01-01 | 45 658 |
+| 2026-02-15 | 46 068 |
+
+<Aside type="note" title="Pourquoi c'est important ?">
+  Puisque les dates sont des nombres, on peut effectuer des **opérations arithmétiques** :  
+  - Soustraire deux dates pour obtenir un nombre de jours : `=B2 - A2`
+  - Additionner un nombre à une date pour obtenir une date future : `=A1 + 30` (30 jours plus tard)
+  - Comparer des dates avec `<`, `>`, `=` comme des nombres ordinaires
+</Aside>
+
+Pour voir le numéro de série d'une date: <Hint type="shortcut" client:visible label="changez le format de la cellule en **Nombre**">🖱️clic droit → Format de cellule → Nombre</Hint>.
+
+## AUJOURDHUI() et MAINTENANT()
+
+Ces fonctions retournent la date ou l'heure actuelle et se **mettent à jour automatiquement** à chaque ouverture du classeur.
+
+| Fonction | Résultat | Description |
+|---|---|---|
+| `=AUJOURDHUI()` | 2026-02-15 | Date du jour (sans l'heure) |
+| `=MAINTENANT()` | 2026-02-15 14:30 | Date et heure actuelles |
+
+<Aside type="caution" title="Valeurs volatiles">
+  Ces fonctions changent à chaque recalcul. Si vous avez besoin d'une date **fixe** (par exemple, la date d'enregistrement d'une commande), tapez la date manuellement ou <Hint client:visible type="shortcut" label="collez-la en **valeur**"><code style={{background:"none"}}>Ctrl+Shift+V</code></Hint>.
+</Aside>
+
+#### Exemples d'utilisation courante :
+
+##### Nombre de jours écoulés depuis la date en A2 (utile pour les retards de paiement)
+
+```
+=AUJOURDHUI() - A2
+```
+ 
+##### Date dans 90 jours (utile pour une échéance à 3 mois)
+```
+=AUJOURDHUI() + 90
+```
+
+## DATE(année; mois; jour)
+
+La fonction `DATE` **construit une date** à partir de trois valeurs numériques séparées. 
+C'est essentiel quand l'année, le mois et le jour se trouvent dans des cellules distinctes.
+
+```
+=DATE(2026; 3; 15)       → 2026-03-15
+=DATE(A2; B2; C2)        → Construit la date à partir des cellules
+=DATE(2026; 13; 1)       → 2027-01-01  (Excel ajuste automatiquement!)
+=DATE(2026; 1; 0)        → 2025-12-31  (le jour 0 = dernier jour du mois précédent)
+```
+
+<Aside type="tip" title="Astuce — Dernier jour du mois">
+  Pour obtenir le dernier jour d'un mois donné, utilisez le jour 0 du mois suivant :
+  `=DATE(2026; 3; 0)` → 2026-02-28 (dernier jour de février 2026).
+  Cela fonctionne même pour les années bissextiles !
+</Aside>
+
+
+## ANNEE(), MOIS(), JOUR()
+
+Ces fonctions font l'**inverse** de `DATE` : elles extraient une composante d'une date existante.
+
+| Formule | Résultat | Description |
+|---|---|---|
+| `=ANNEE("2026-09-15")` | 2026 | Extrait l'année |
+| `=MOIS("2026-09-15")` | 9 | Extrait le mois (1 à 12) |
+| `=JOUR("2026-09-15")` | 15 | Extrait le jour (1 à 31) |
+
+**Exemple pratique — Regrouper des ventes par trimestre :**
+
+```
+=ARRONDI.SUP(MOIS(A2) / 3; 0)
+```
+→ Retourne 1, 2, 3 ou 4 selon le trimestre de la date en A2.
+
+## JOURSEM(date; type_retour)
+
+`JOURSEM` retourne un **numéro correspondant au jour de la semaine** d'une date donnée.
+
+Le deuxième argument contrôle la numérotation :
+
+| type_retour | Dimanche | Lundi | Mardi | ... | Samedi |
+|---|---|---|---|---|---|
+| 1 (défaut) | 1 | 2 | 3 | ... | 7 |
+| 2 | 7 | 1 | 2 | ... | 6 |
+| 3 | 6 | 0 | 1 | ... | 5 |
+
+<Aside type="tip" title="Conseil pratique">
+  Utilisez `type_retour = 2` pour que **lundi = 1** et **dimanche = 7**, ce qui correspond à la convention utilisée dans la plupart des entreprises québécoises.
+</Aside>
+
+**Exemple — Identifier les fins de semaine :**
+
+```
+=SI(JOURSEM(A2; 2) > 5; "Fin de semaine"; "Jour ouvrable")
+```
+
+**Exemple — Obtenir le nom du jour :**
+
+```
+=CHOISIR(JOURSEM(A2; 2); "Lundi"; "Mardi"; "Mercredi"; "Jeudi"; "Vendredi"; "Samedi"; "Dimanche")
+```
+
+On peut aussi utiliser la fonction `TEXTE` pour obtenir le nom du jour :
+
+```
+=TEXTE(A2; "jjjj")     → "dimanche"
+=TEXTE(A2; "jjj")      → "dim."
+```
+
+
+## FIN.MOIS(date_début; nb_mois)
+
+Retourne le **dernier jour du mois** situé un nombre de mois avant ou après une date donnée.
+
+```
+=FIN.MOIS("2026-01-15"; 0)     → 2026-01-31  (fin du mois actuel)
+=FIN.MOIS("2026-01-15"; 1)     → 2026-02-28  (fin du mois suivant)
+=FIN.MOIS("2026-01-15"; -1)    → 2025-12-31  (fin du mois précédent)
+=FIN.MOIS("2026-01-15"; 3)     → 2026-04-30  (fin du mois dans 3 mois)
+```
+
+**Exemple — Date limite de paiement à 30 jours fin de mois :**
+
+```
+=FIN.MOIS(A2; 1)
+```
+→ Fin du mois suivant la date de facturation (convention courante au Québec).
+
+
+## Quiz de révision
+
+export const quizDates = [
+  {
+    id: 'q1',
+    question: "Quelle fonction retourne la date du jour sans l'heure ?",
+    options: ['MAINTENANT()', 'AUJOURDHUI()', 'DATE()', 'TEMPS()'],
+    correct: 'AUJOURDHUI()',
+    explanation:
+      "AUJOURDHUI() retourne uniquement la date du jour. MAINTENANT() retourne la date ET l'heure. DATE() sert à construire une date à partir de trois valeurs numériques."
+  },
+  {
+    id: 'q2',
+    question: 'Comment Excel stocke-t-il les dates en interne ?',
+    options: [
+      'En texte au format ISO (AAAA-MM-JJ)',
+      'En numéro de série (nombre de jours depuis le 1er janvier 1900)',
+      'En millisecondes depuis le 1er janvier 1970',
+      'En format binaire spécial'
+    ],
+    correct: 'En numéro de série (nombre de jours depuis le 1er janvier 1900)',
+    explanation:
+      "Excel stocke chaque date comme un entier représentant le nombre de jours écoulés depuis le 1er janvier 1900. C'est ce qui permet de faire des calculs arithmétiques avec les dates, comme soustraire deux dates pour obtenir un nombre de jours."
+  },
+  {
+    id: 'q3',
+    question:
+      "Quelle formule calcule l'ancienneté en années complètes entre la date en A2 et aujourd'hui ?",
+    options: [
+      "=ANNEE(AUJOURDHUI()) - ANNEE(A2)",
+      '=DATEDIF(A2; AUJOURDHUI(); "Y")',
+      '=(AUJOURDHUI() - A2) / 365',
+      '=NB.JOURS.OUVRES(A2; AUJOURDHUI())'
+    ],
+    correct: '=DATEDIF(A2; AUJOURDHUI(); "Y")',
+    explanation:
+      'DATEDIF avec "Y" donne les années complètes exactes, peu importe le jour ou le mois. Soustraire les années ignore le mois et le jour (une personne embauchée le 31 décembre compterait une année de plus dès le 1er janvier). Diviser par 365 est approximatif (années bissextiles). NB.JOURS.OUVRES compte des jours, pas des années.'
+  },
+  {
+    id: 'q4',
+    question: 'Avec =JOURSEM(A2; 2), que retourne la valeur 1 ?',
+    options: ['Dimanche', 'Lundi', 'Samedi', 'Le premier jour du mois'],
+    correct: 'Lundi',
+    explanation:
+      "Avec le type_retour 2, la numérotation commence au lundi (1) jusqu'au dimanche (7). C'est la convention la plus utilisée en contexte d'affaires au Québec. Avec le type_retour 1 (défaut), c'est le dimanche qui vaut 1."
+  },
+  {
+    id: 'q5',
+    question:
+      "Quelle formule retourne le dernier jour du mois de février 2026 ?",
+    options: [
+      "=DATE(2026; 2; 31)",
+      "=DATE(2026; 3; 0)",
+      "=FIN.MOIS(\"2026-02-01\"; 0)",
+      "Les deux réponses b) et c) sont correctes"
+    ],
+    correct: "Les deux réponses b) et c) sont correctes",
+    explanation:
+      "=DATE(2026; 3; 0) utilise l'astuce du jour 0 (dernier jour du mois précédent). =FIN.MOIS(\"2026-02-01\"; 0) retourne directement le dernier jour du mois de la date fournie. Les deux retournent 2026-02-28. DATE(2026; 2; 31) ne génère PAS une erreur — Excel l'ajuste automatiquement en 2026-03-03 !"
+  }
+];
+
+<QuizClassification client:visible questions={quizDates} />
+
+
+## Résumé des fonctions
+
+
+| Fonction | Description rapide |
+|---|---|
+| `AUJOURDHUI()` | Date du jour |
+| `MAINTENANT()` | Date et heure actuelles |
+| `DATE(a; m; j)` | Construit une date |
+| `ANNEE(date)` | Extrait l'année |
+| `MOIS(date)` | Extrait le mois |
+| `JOUR(date)` | Extrait le jour |
+| `DATEDIF(d1; d2; u)` | Différence entre deux dates |
+| `JOURSEM(date; type)` | Jour de la semaine (numéro) |
+| `NB.JOURS.OUVRES(d1; d2; [f])` | Compte les jours ouvrables |
+| `SERIE.JOUR.OUVRE(d; n; [f])` | Date après N jours ouvrables |
+| `FIN.MOIS(date; n)` | Dernier jour du mois |
