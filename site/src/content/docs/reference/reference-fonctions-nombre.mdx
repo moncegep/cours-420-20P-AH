@@ -1,0 +1,324 @@
+---
+title: "Référence: Fonctions sur les nombres"
+description: "Référence rapide des fonctions mathématiques et statistiques Excel : arrondi, opérations de base et statistiques descriptives."
+sidebar:
+  label: Fonctions sur les nombres
+  badge:
+    text: Nouveau
+    variant: tip
+---
+
+import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+
+<Aside type="note" title="Version Excel ciblée">
+  Cette page cible la **version française** d'Excel de **Microsoft 365** ou **Office 2024**.  
+  Les noms de fonctions (`SOMME` plutôt que `SUM`), les séparateurs d'arguments (`;` au lieu de `,`) et les formats d'affichage correspondent à la locale française du Québec.
+</Aside>
+
+Excel offre un large éventail de fonctions pour manipuler des valeurs numériques : arrondir des montants, effectuer des calculs mathématiques courants et produire des statistiques descriptives. Cette page regroupe les fonctions essentielles à connaître pour la gestion de données en entreprise.
+
+---
+
+## Fonctions d'arrondi
+
+L'arrondi est crucial en contexte d'affaires : les taxes, les prix et les salaires ne peuvent pas comporter un nombre infini de décimales. Excel propose plusieurs façons d'arrondir selon les besoins.
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `ARRONDI` | `ARRONDI(nombre; nb_chiffres)` | Arrondit au nombre de décimales indiqué (règle standard) |
+| `ARRONDI.SUP` | `ARRONDI.SUP(nombre; nb_chiffres)` | Arrondit **toujours vers le haut** (en s'éloignant de zéro) |
+| `ARRONDI.INF` | `ARRONDI.INF(nombre; nb_chiffres)` | Arrondit **toujours vers le bas** (en se rapprochant de zéro) |
+| `PLAFOND` | `PLAFOND(nombre; précision)` | Arrondit vers le haut au multiple de précision le plus proche |
+| `PLANCHER` | `PLANCHER(nombre; précision)` | Arrondit vers le bas au multiple de précision le plus proche |
+| `ENT` | `ENT(nombre)` | Retourne la partie entière (arrondit vers le bas) |
+| `TRONQUE` | `TRONQUE(nombre; [nb_chiffres])` | Supprime les décimales sans arrondir |
+
+<Aside type="caution" title="TRONQUE ≠ ENT pour les négatifs">
+  Pour les nombres positifs, `ENT` et `TRONQUE` donnent le même résultat. Pour les négatifs, ils diffèrent :
+
+  - `ENT(-4,7)` → **-5** (arrondit *vers le bas*, donc s'éloigne de zéro)
+  - `TRONQUE(-4,7)` → **-4** (supprime simplement la décimale)
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="ARRONDI">
+    Arrondi standard — suit la règle du 0,5 (≥ 0,5 → vers le haut, < 0,5 → vers le bas).
+
+    ```js
+    =ARRONDI(14,756; 2)     → 14,76   (arrondi à 2 décimales)
+    =ARRONDI(14,754; 2)     → 14,75
+    =ARRONDI(14,756; 0)     → 15      (arrondi à l'entier)
+    =ARRONDI(1456; -2)      → 1500    (arrondi à la centaine)
+    ```
+
+    **Cas d'usage :** Calcul de la TPS et TVQ sur une facture.
+    ```js
+    =ARRONDI(B2 * 0,05; 2)   {* TPS à 5 % *}
+    =ARRONDI(B2 * 0,09975; 2) {* TVQ à 9,975 % *}
+    ```
+  </TabItem>
+  <TabItem label="ARRONDI.SUP / INF">
+    Force l'arrondi dans une direction, indépendamment de la valeur de la décimale.
+
+    ```js
+    =ARRONDI.SUP(14,001; 0)  → 15    (toujours vers le haut)
+    =ARRONDI.INF(14,999; 0)  → 14    (toujours vers le bas)
+    =ARRONDI.SUP(14,001; 2)  → 14,01
+    ```
+
+    **Cas d'usage :** Nombre de boîtes nécessaires pour emballer 157 articles par lots de 12.
+    ```js
+    =ARRONDI.SUP(157/12; 0)  → 14    (on ne peut pas avoir une demi-boîte)
+    ```
+  </TabItem>
+  <TabItem label="PLAFOND / PLANCHER">
+    Arrondit à un **multiple précis** — utile pour les prix, les paliers ou les unités de mesure.
+
+    ```js
+    =PLAFOND(7,30; 0,25)    → 7,50   (prochain multiple de 0,25)
+    =PLANCHER(7,30; 0,25)   → 7,25   (multiple de 0,25 précédent)
+    =PLAFOND(47; 5)         → 50     (prochain multiple de 5)
+    =PLANCHER(47; 5)        → 45     (multiple de 5 précédent)
+    ```
+
+    **Cas d'usage :** Prix arrondis aux 5 cents (tarification au détail).
+    ```js
+    =PLAFOND(B2 * 1,15; 0,05)  {* Prix avec marge, arrondi au 5¢ supérieur *}
+    ```
+  </TabItem>
+  <TabItem label="ENT / TRONQUE">
+    Deux façons de supprimer les décimales.
+
+    ```js
+    =ENT(14,9)          → 14     (entier inférieur)
+    =ENT(-4,7)          → -5     (entier inférieur, vers le bas)
+    =TRONQUE(14,9)      → 14     (supprime la décimale)
+    =TRONQUE(-4,7)      → -4     (supprime la décimale, sans changer le signe)
+    =TRONQUE(14,756; 1) → 14,7  (garde 1 décimale, sans arrondir)
+    ```
+
+    **Cas d'usage :** Extraire le nombre d'heures complètes d'une durée en heures décimales.
+    ```js
+    =ENT(B2)          {* Ex. : 7,75 h → 7 heures *}
+    =(B2-ENT(B2))*60  {* Minutes restantes : 0,75 × 60 = 45 min *}
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Fonctions mathématiques de base
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `SOMME` | `SOMME(val1; [val2; …])` | Additionne des nombres, cellules ou plages |
+| `ABS` | `ABS(nombre)` | Valeur absolue (supprime le signe négatif) |
+| `MOD` | `MOD(nombre; diviseur)` | Reste de la division entière (modulo) |
+| `QUOTIENT` | `QUOTIENT(numérateur; dénominateur)` | Partie entière de la division |
+| `PUISSANCE` | `PUISSANCE(nombre; exposant)` | Élève un nombre à la puissance indiquée |
+| `RACINE` | `RACINE(nombre)` | Racine carrée |
+| `NB` | `NB(val1; [val2; …])` | Compte les cellules ou valeurs numériques |
+| `NBVAL` | `NBVAL(val1; [val2; …])` | Compte les cellules ou valeurs non vides |
+| `NB.VIDE` | `NB.VIDE(plage)` | Compte les cellules vides (une seule plage) |
+
+<Aside type="tip" title="Valeurs mixtes acceptées">
+  Les fonctions marquées `val1; [val2; …]` acceptent dans chaque argument : une **plage** (`A1:A10`), une **référence de cellule** (`A1`), ou une **constante** (`42`). On peut les combiner librement :
+  ```js
+  =SOMME(B2:B10; D5; 100)
+  =NB(A1:A8; C1:C8; 3)
+  ```
+  `NB.VIDE` fait exception : elle n'accepte qu'**une seule plage** par appel.
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="ABS">
+    Retourne la valeur absolue — utile pour calculer des écarts sans signe.
+
+    ```js
+    =ABS(-250)         → 250
+    =ABS(B2 - C2)      → Écart entre deux valeurs, toujours positif
+    ```
+
+    **Cas d'usage :** Écart entre budget prévu et dépenses réelles, peu importe le sens de l'écart.
+    ```js
+    =ABS(C2 - B2)   {* Écart absolu entre réel et prévu *}
+    ```
+  </TabItem>
+  <TabItem label="MOD / QUOTIENT">
+    `MOD` retourne le **reste** de la division; `QUOTIENT` retourne la **partie entière**.
+
+    ```js
+    =MOD(17; 5)        → 2     (17 = 5 × 3 + 2)
+    =QUOTIENT(17; 5)   → 3     (17 ÷ 5 = 3 reste 2)
+    =MOD(120; 60)      → 0     (120 minutes = 2 heures exactement)
+    ```
+
+    **Cas d'usage :** Convertir 197 minutes en heures et minutes.
+    ```js
+    =QUOTIENT(197; 60)   → 3 heures
+    =MOD(197; 60)        → 17 minutes
+    ```
+
+    **Cas d'usage :** Identifier les numéros de commande pairs ou impairs.
+    ```js
+    =SI(MOD(A2; 2) = 0; "Pair"; "Impair")
+    ```
+  </TabItem>
+  <TabItem label="PUISSANCE / RACINE">
+    Calculs d'exposants et de racines.
+
+    ```js
+    =PUISSANCE(2; 10)    → 1024
+    =PUISSANCE(1,05; 3)  → 1,157625   (facteur de croissance à 5 % sur 3 ans)
+    =RACINE(144)         → 12
+    =RACINE(B2)          → Racine carrée du contenu de B2
+    ```
+
+    **Cas d'usage :** Calculer un montant avec intérêts composés.
+    ```js
+    =B2 * PUISSANCE(1 + C2; D2)
+    {* B2 = capital, C2 = taux annuel, D2 = nombre d'années *}
+    ```
+  </TabItem>
+  <TabItem label="NB / NBVAL / NB.VIDE">
+    Fonctions de comptage — indispensables pour valider l'intégrité des données.
+
+    ```text
+    =NB(A2:A100)      → Compte les cellules avec un nombre (ignore texte et vides)
+    =NBVAL(A2:A100)   → Compte toutes les cellules non vides (nombres + texte)
+    =NB.VIDE(A2:A100) → Compte les cellules vides
+    ```
+
+    **Cas d'usage :** Vérifier si tous les employés ont une valeur de salaire saisie.
+    ```js
+    =NB.VIDE(C2:C50)  {* → 0 si tous les salaires sont saisis *}
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Fonctions statistiques
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `MIN` | `MIN(val1; [val2; …])` | Valeur minimale |
+| `MAX` | `MAX(val1; [val2; …])` | Valeur maximale |
+| `MOYENNE` | `MOYENNE(val1; [val2; …])` | Moyenne arithmétique |
+| `MEDIANE` | `MEDIANE(val1; [val2; …])` | Valeur médiane (milieu de la distribution) |
+| `MODE` | `MODE(val1; [val2; …])` | Valeur la plus fréquente |
+| `ECARTYPE` | `ECARTYPE(val1; [val2; …])` | Écart type sur un **échantillon** |
+| `VAR` | `VAR(val1; [val2; …])` | Variance sur un échantillon |
+| `GRANDE.VALEUR` | `GRANDE.VALEUR(plage; k)` | k-ième plus grande valeur |
+| `PETITE.VALEUR` | `PETITE.VALEUR(plage; k)` | k-ième plus petite valeur |
+| `RANG` | `RANG(nombre; plage; [ordre])` | Rang d'une valeur dans une liste |
+
+
+
+<Aside type="note" title="Moyenne vs médiane : laquelle choisir ?">
+  - **Moyenne** : appropriée quand les données sont symétriques et sans valeurs extrêmes.
+  - **Médiane** : préférable quand des valeurs extrêmes faussent la moyenne (ex. : salaires dans une entreprise où quelques dirigeants ont des salaires très élevés).
+
+  **Exemple :** Dans un groupe de 5 salaires (32 k$, 35 k$, 37 k$, 40 k$, 210 k$) :
+  - Moyenne = **70 800 $** — peu représentative
+  - Médiane = **37 000 $** — beaucoup plus représentative de la réalité
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="MIN / MAX">
+    Retournent la valeur minimale ou maximale d'une plage.
+
+    ```js
+    =MIN(B2:B50)    → Plus petit montant de vente
+    =MAX(B2:B50)    → Plus grand montant de vente
+    =MAX(B2:B50) - MIN(B2:B50)  → Étendue (plage) des valeurs
+    ```
+
+    **Cas d'usage :** Identifier l'employé avec le plus grand nombre de ventes.
+    ```js
+    =MAX(C2:C20)    {* Meilleur résultat de l'équipe *}
+    ```
+  </TabItem>
+  <TabItem label="MOYENNE / MEDIANE">
+    Mesures de tendance centrale.
+
+    ```js
+    =MOYENNE(B2:B50)    → Moyenne des ventes
+    =MEDIANE(B2:B50)    → Valeur du milieu
+    ```
+
+    **Cas d'usage :** Comparer la rémunération typique des employés à temps partiel vs temps plein.
+    ```js
+    =MOYENNE.SI(D2:D50; "Temps plein"; C2:C50)
+    =MOYENNE.SI(D2:D50; "Temps partiel"; C2:C50)
+    ```
+  </TabItem>
+  <TabItem label="ECARTYPE">
+    Mesure la dispersion des données autour de la moyenne — plus l'écart type est élevé, plus les valeurs sont dispersées.
+
+    ```js
+    =ECARTYPE(B2:B50)   → Écart type des ventes mensuelles
+    ```
+
+    **Cas d'usage :** Évaluer la régularité des livraisons d'un fournisseur (en jours).
+    ```js
+    =ECARTYPE(C2:C30)
+    {* Faible → fournisseur fiable ; Élevé → livraisons imprévisibles *}
+    ```
+
+    **Interpréter avec la moyenne :**
+    ```js
+    =MOYENNE(C2:C30)          {* Délai moyen *}
+    =ECARTYPE(C2:C30)         {* Variabilité *}
+    =MOYENNE(C2:C30) + ECARTYPE(C2:C30) * 2  {* Seuil d'alerte (règle des 2σ) *}
+    ```
+  </TabItem>
+  <TabItem label="GRANDE.VALEUR / RANG">
+    Identifier des valeurs classées sans trier le tableau.
+
+    ```js
+    =GRANDE.VALEUR(B2:B50; 1)   → 1er (maximum)
+    =GRANDE.VALEUR(B2:B50; 3)   → 3e plus grande valeur
+    =PETITE.VALEUR(B2:B50; 2)   → 2e plus petite valeur
+
+    =RANG(B2; $B$2:$B$50; 0)    → Rang de B2 (ordre décroissant)
+    =RANG(B2; $B$2:$B$50; 1)    → Rang de B2 (ordre croissant)
+    ```
+
+    **Cas d'usage :** Afficher le classement de chaque vendeur dans une colonne.
+    ```js
+    =RANG(C2; $C$2:$C$20; 0)    {* À copier pour chaque ligne *}
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Synthèse
+
+| Besoin | Fonction recommandée |
+|---|---|
+| Arrondir un prix à 2 décimales | `ARRONDI(prix; 2)` |
+| Nombre de boîtes (jamais de fraction) | `ARRONDI.SUP(qté/capacité; 0)` |
+| Prix arrondis au 0,05 $ supérieur | `PLAFOND(prix; 0,05)` |
+| Extraire les heures d'une durée décimale | `ENT(durée)` |
+| Reste d'une division (ex. minutes) | `MOD(minutes; 60)` |
+| Croissance avec intérêts composés | `PUISSANCE(1+taux; années)` |
+| Vérifier si des données manquent | `NB.VIDE(plage)` |
+| Valeur représentative (sans extrêmes) | `MEDIANE(plage)` |
+| Mesurer la variabilité | `ECARTYPE(plage)` |
+| Classement sans trier | `RANG(valeur; plage; 0)` |
+| 3e meilleur résultat | `GRANDE.VALEUR(plage; 3)` |

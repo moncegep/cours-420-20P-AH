@@ -7,7 +7,7 @@ import react from '@astrojs/react';
 export default defineConfig({
 	integrations: [
 		starlight({
-			title: 'Cours 420-20P-AH',
+			title: 'Excel avancé',
 			defaultLocale: 'root',
 			locales: {
 				root: {
@@ -55,10 +55,9 @@ export default defineConfig({
 						},
 						{
 							label: 'Semaine 4',
-							badge: 'Nouveau',
 							items: [
 								{ label: 'Fonctions dates', slug: 'cours/04-fonctions-dates' },
-								// { label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
+								{ label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
 								{ label: "Exercices", items: [
 									{ label: 'Exercices', slug: 'exercices/04-exercices-dates' },
 								]},
@@ -67,19 +66,26 @@ export default defineConfig({
 								]}
 							]
 						},
+						{
+							label: 'Semaine 5',
+							items: [
+								{ label: 'Révision', slug: 'cours/04-fonctions-dates' },
+								// { label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
+							]
+						},
 					],
 				},
 				{
 					label: 'Guides',
 					items: [
-						{ label: 'Modélisation de problèmes', slug: 'guides/modelisation-excel' },
-						{ label: 'Notions mathématiques', badge: "Nouveau", slug: 'guides/notions-mathematiques' },
+						{ label: 'Modélisation de problèmes', slug: 'guides/guide-modelisation-excel' },
+						{ label: 'Notions mathématiques', slug: 'guides/guide-notions-mathematiques' },
 					],
 				},
-				// {
-				// 	label: 'Référence',
-				// 	autogenerate: { directory: 'reference' },
-				// },
+				{
+					label: 'Référence',
+					autogenerate: { directory: 'reference' },
+				},
 			],
 		}),
 		react(),

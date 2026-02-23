@@ -1,0 +1,383 @@
+---
+title: "Référence: Fonctions sur du texte"
+description: "Référence rapide des fonctions de manipulation de texte dans Excel : casse, extraction, recherche, concaténation, nettoyage et conversion."
+sidebar:
+  label: Fonctions sur le texte
+  badge:
+    text: Nouveau
+    variant: tip
+---
+
+import { Tabs, TabItem, Aside, Card, CardGrid } from '@astrojs/starlight/components';
+
+<Aside type="note" title="Version Excel ciblée">
+  Cette page cible la **version française** d'Excel de **Microsoft 365** ou **Office 2024**.  
+  Les noms de fonctions (`SOMME` plutôt que `SUM`), les séparateurs d'arguments (`;` au lieu de `,`) et les formats d'affichage correspondent à la locale française du Québec.
+</Aside>
+
+Les données importées de systèmes externes arrivent souvent dans des formats inutilisables : noms tout en majuscules, espaces superflus, codes à découper, champs à assembler. Les fonctions de texte permettent de **nettoyer**, **standardiser**, **extraire** et **assembler** du contenu textuel de façon automatique, sans intervention manuelle.
+
+---
+
+## Changer la casse
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `MAJUSCULE` | `MAJUSCULE(texte)` | Convertit tous les caractères en majuscules |
+| `MINUSCULE` | `MINUSCULE(texte)` | Convertit tous les caractères en minuscules |
+| `NOMPROPRE` | `NOMPROPRE(texte)` | Met la première lettre de chaque mot en majuscule |
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="MAJUSCULE / MINUSCULE">
+    ```js
+    =MAJUSCULE("sophie tremblay")   → SOPHIE TREMBLAY
+    =MAJUSCULE(A2)                  → Contenu de A2 tout en majuscules
+    =MINUSCULE("SOPHIE TREMBLAY")   → sophie tremblay
+    ```
+
+    **Cas d'usage :** Standardiser des codes produits avant une recherche ou une comparaison.  
+    Ici on compare deux valeurs (`A1` et `B1`) sans tenir compte de la casse (en les mettant en majuscules).
+    ```js
+    =SI(MAJUSCULE(A2) = MAJUSCULE(B2); "Identique"; "Différent")
+    ```
+  </TabItem>
+  <TabItem label="NOMPROPRE">
+    ```js
+    =NOMPROPRE("sophie tremblay")   → Sophie Tremblay
+    =NOMPROPRE("MARIE-ÈVE ROY")     → Marie-Ève Roy
+    ```
+
+    <Aside type="caution" title="Limitation de NOMPROPRE">
+      `NOMPROPRE` capitalise **chaque mot**, y compris les particules. Le résultat `De La Salle` est incorrect si on attend `de la Salle`. Pour ces cas, une correction manuelle ou une formule personnalisée est nécessaire.
+    </Aside>
+
+    **Cas d'usage :** Nettoyer une liste de noms importée d'un système qui stockait tout en majuscules.
+  </TabItem>
+</Tabs>
+
+---
+
+## Mesurer et extraire
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `NBCAR` | `NBCAR(texte)` | Nombre total de caractères (espaces inclus) |
+| `GAUCHE` | `GAUCHE(texte; nb_car)` | Extrait les `nb_car` premiers caractères |
+| `DROITE` | `DROITE(texte; nb_car)` | Extrait les `nb_car` derniers caractères |
+| `STXT` | `STXT(texte; position_départ; nb_car)` | Extrait `nb_car` caractères à partir d'une position |
+
+<Aside type="note" title="Les positions commencent à 1">
+  Contrairement à la plupart des langages de programmation, Excel numérote les positions de caractères à partir de **1**, pas de 0. Le premier caractère d'une chaîne est donc à la position 1.
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="NBCAR">
+    ```js
+    =NBCAR("Bonjour")            → 7
+    =NBCAR("H2O")                → 3
+    =NBCAR("  texte  ")          → 9   (espaces comptés)
+    =NBCAR(A2)                   → Longueur du contenu de A2
+    ```
+
+    **Cas d'usage :** Valider le format d'un code postal québécois (7 caractères avec espace, ex. G1A 1A1).
+    ```js
+    =SI(NBCAR(A2) = 7; "Format valide"; "Format invalide")
+    ```
+
+    **Cas d'usage :** Détecter les cellules vides ou contenant uniquement des espaces.
+    ```js
+    =SI(NBCAR(SUPPRESPACE(A2)) = 0; "Vide"; "Remplie")
+    ```
+  </TabItem>
+  <TabItem label="GAUCHE / DROITE">
+    ```js
+    =GAUCHE("BOR-IPA-355"; 3)   → BOR   (code catégorie)
+    =DROITE("BOR-IPA-355"; 3)   → 355   (format en ml)
+    =GAUCHE(A2; 2)               → 2 premiers caractères de A2
+    ```
+
+    **Cas d'usage :** Extraire le préfixe régional d'un code de succursale `QC-MTL-042`.
+    ```js
+    =GAUCHE(A2; 2)               → QC
+    ```
+
+    **Cas d'usage :** Extraire l'extension d'un fichier (en supposant 4 caractères : `.xlsx`).
+    ```js
+    =DROITE(A2; 5)               → .xlsx
+    ```
+  </TabItem>
+  <TabItem label="STXT">
+    `STXT` extrait un segment à partir d'une **position précise** — indispensable quand ce qu'on cherche n'est ni au début ni à la fin.
+
+    ```js
+    =STXT("BOR-IPA-355"; 5; 3)   → IPA   (position 5, 3 caractères)
+    =STXT("QC-MTL-042"; 4; 3)    → MTL   (ville, position 4)
+    =STXT(A2; 4; 3)              → 3 caractères à partir de la position 4
+    ```
+
+    **Décomposer un code structuré `QC-MTL-042` :**
+    ```js
+    =GAUCHE(A2; 2)               → QC    (province)
+    =STXT(A2; 4; 3)              → MTL   (ville)
+    =DROITE(A2; 3)               → 042   (numéro de succursale)
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Rechercher dans le texte
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Sensible à la casse | Gère les `*` et `?` |
+|---|---|---|---|
+| `CHERCHE` | `CHERCHE(texte_cherché; texte; [pos_départ])` | Non | Oui |
+| `TROUVE` | `TROUVE(texte_cherché; texte; [pos_départ])` | Oui | Non |
+
+Les deux fonctions retournent la **position** (numéro) du premier caractère trouvé, ou une erreur `#VALEUR!` si le texte n'est pas trouvé.
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="CHERCHE">
+    ```js
+    =CHERCHE("-"; "BOR-IPA-355")        → 4   (position du 1er tiret)
+    =CHERCHE("-"; "BOR-IPA-355"; 5)     → 8   (2e tiret, cherche à partir de la position 5)
+    =CHERCHE("ipa"; "BOR-IPA-355")      → 5   (insensible à la casse)
+    ```
+
+    **Cas d'usage classique — Extraire le prénom d'un nom complet « Prénom Nom » :**
+    ```js
+    =GAUCHE(A2; CHERCHE(" "; A2) - 1)
+    ```
+    > Extrait tout avant le premier espace
+
+    **Extraire le nom de famille :**
+    ```js
+    =DROITE(A2; NBCAR(A2) - CHERCHE(" "; A2))
+    ```
+    > Extrait tout après le premier espace
+  </TabItem>
+  <TabItem label="TROUVE">
+    Identique à `CHERCHE`, mais **sensible à la casse** — utile quand la majuscule a une signification.
+
+    ```js
+    =TROUVE("IPA"; "BOR-IPA-355")       → 5   (trouvé)
+    =TROUVE("ipa"; "BOR-IPA-355")       → #VALEUR!  (pas trouvé, casse différente)
+    ```
+
+    **Cas d'usage :** Vérifier qu'un code commence bien par une majuscule spécifique.
+    ```js
+    =SIERREUR(TROUVE("QC"; A2; 1); 0)
+    ```
+    > Retourne la position si "QC" est présent, sinon 0
+  </TabItem>
+  <TabItem label="Combiner avec SIERREUR">
+    `CHERCHE` et `TROUVE` retournent `#VALEUR!` si rien n'est trouvé. On les combine souvent avec `SIERREUR` pour produire un résultat propre.
+
+    ```js
+    =SIERREUR(CHERCHE("@"; A2); "Pas d'arobase")
+    ```
+    > Vérifie si `A2` contient un `@` (validation de courriel basique)    
+
+    ```js
+    =SIERREUR(CHERCHE("-"; A2) > 0; FAUX)
+    ```
+    > Retourne VRAI si un tiret est présent, FAUX sinon 
+
+    **Cas d'usage :** Identifier les adresses courriel invalides dans une liste.
+    ```js
+    =SI(SIERREUR(CHERCHE("@"; A2); 0) = 0; "Courriel invalide"; "OK")
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Assembler du texte
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `&` | `texte1 & texte2 & …` | Opérateur de concaténation — syntaxe préférée |
+| `CONCAT` | `CONCAT(texte1; texte2; …)` | Assemble plusieurs textes ou plages en un seul |
+| `JOINDRE.TEXTE` | `JOINDRE.TEXTE(délimiteur; ignorer_vides; texte1; …)` | Assemble avec un séparateur, ignore les vides optionnellement |
+
+<Aside type="tip" title="Lequel utiliser?">
+  Préférer `&` pour deux ou trois valeurs, et `CONCAT` ou `JOINDRE.TEXTE` pour des plages ou de nombreuses valeurs.
+  S'il faut joindre avec un séparateur, préférer toujours `JOINDRE.TEXTE`.
+
+  ```js
+  =A2 & " " & B2                         {* Préféré pour quelques valeurs *}
+  =CONCAT(A2; " "; B2; C2; "-"; D2)      {* Préféré pour les longues concaténations *}
+  =JOINDRE.TEXTE("|"; VRAI; A2; B2; C2)  {* Préféré pour les format standard *}
+  ```
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="& et CONCAT">
+  Supposons que la cellule `A2` contient la valeur "Marie" et `B2` la valeur "Tremblay" 
+    ```js
+    ="Bonjour " & A2                    → Bonjour Marie
+    =A2 & " " & B2                      → Marie Tremblay
+    =CONCAT(A2; " "; B2)                → Marie Tremblay   (équivalent)
+    ="Facture #" & C2 & " du " & TEXTE(D2; "jj/mm/aaaa")
+    ```
+
+    **Cas d'usage :** Construire une adresse complète à partir de champs séparés.
+    ```js
+    =A2 & ", " & B2 & " (" & C2 & ")"
+    ```
+    > **Ex** : 123 rue Principale, Rimouski (G5L 1A1)
+  </TabItem>
+  <TabItem label="JOINDRE.TEXTE">
+    `JOINDRE.TEXTE` simplifie l'assemblage de plusieurs valeurs avec un séparateur commun, surtout utile avec des plages.
+
+    ```js
+    =JOINDRE.TEXTE("; "; VRAI; A2:A6)
+    ```
+    > Assemble les valeurs de A2 à A6 séparées par "; ", ignore les cellules vides
+
+    ```js
+    =JOINDRE.TEXTE(", "; VRAI; "Montréal"; "Québec"; ""; "Laval") 
+    ```
+    > → Montréal, Québec, Laval. La cellule vide est ignorée
+
+    **Cas d'usage :** Lister les compétences d'un employé stockées en colonnes séparées.
+    ```js
+    =JOINDRE.TEXTE(", "; VRAI; C2:H2)
+    ```
+    > **Ex.** : Excel, SQL, Python 
+  </TabItem>
+</Tabs>
+
+---
+
+{/* ## Remplacer et substituer
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `SUBSTITUE` | `SUBSTITUE(texte; ancien; nouveau; [occurrence])` | Remplace un texte par un autre (cherche par contenu) |
+| `REMPLACER` | `REMPLACER(texte; position; nb_car; nouveau_texte)` | Remplace des caractères à une position précise |
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="SUBSTITUE">
+    ```js
+    =SUBSTITUE("Bonjour monde"; "monde"; "Québec")  → Bonjour Québec
+    =SUBSTITUE(A2; "-"; "/")                         → Remplace tous les tirets par des /
+    =SUBSTITUE(A2; "-"; "/"; 1)                      → Remplace seulement le 1er tiret
+    =SUBSTITUE(A2; "-"; "/"; 2)                      → Remplace seulement le 2e tiret
+    ```
+
+    **Cas d'usage :** Normaliser des numéros de téléphone saisis de façons différentes.
+    ```js
+    =SUBSTITUE(SUBSTITUE(SUBSTITUE(A2; "-"; ""); "("; ""); ")"; "")
+    {* Retire tous les tirets et parenthèses : (418) 555-1234 → 4185551234 *}
+    ```
+  </TabItem>
+  <TabItem label="REMPLACER">
+    `REMPLACER` opère par **position**, pas par contenu — utile quand la structure est fixe.
+
+    ```js
+    =REMPLACER("QC-MTL-042"; 4; 3; "QUE")   → QC-QUE-042
+    {* Remplace 3 caractères à partir de la position 4 *}
+
+    =REMPLACER(A2; 1; 2; "ON")
+    {* Remplace les 2 premiers caractères par "ON" *}
+    ```
+
+    **Cas d'usage :** Mettre à jour un préfixe d'année dans un code de facture `2024-00451`.
+    ```js
+    =REMPLACER(A2; 1; 4; "2025")   → 2025-00451
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Nettoyer le texte
+
+### Tableau de référence
+
+| Fonction | Syntaxe | Description |
+|---|---|---|
+| `SUPPRESPACE` | `SUPPRESPACE(texte)` | Supprime les espaces en début, fin et les doublons internes |
+| `EPURAGE` | `EPURAGE(texte)` | Supprime les caractères non imprimables (sauts de ligne, etc.) |
+
+<Aside type="tip" title="Toujours nettoyer les données importées">
+  Les données provenant de CSV, de bases de données ou de copier-coller contiennent fréquemment des espaces invisibles ou des caractères non imprimables qui faussent les comparaisons et les recherches. Appliquer `SUPPRESPACE` et `EPURAGE` en combinaison est une bonne pratique systématique.
+</Aside>
+
+### Exemples pratiques
+
+<Tabs>
+  <TabItem label="SUPPRESPACE">
+    ```js
+    =SUPPRESPACE("  Sophie   Tremblay  ")   → Sophie Tremblay
+    {* Espaces en début/fin supprimés, double espace interne réduit à un *}
+
+    =SUPPRESPACE(A2)
+    ```
+
+    **Cas d'usage :** Avant une comparaison ou une recherche, éliminer les espaces parasites.
+    ```js
+    =RECHERCHEV(SUPPRESPACE(A2); $D$2:$F$100; 2; FAUX)
+    {* La valeur cherchée est nettoyée avant la recherche *}
+    ```
+  </TabItem>
+  <TabItem label="EPURAGE">
+    ```js
+    =EPURAGE(A2)
+    {* Supprime les caractères invisibles : sauts de ligne (Alt+Entrée), tabulations, etc. *}
+    ```
+
+    **Combiner les deux pour un nettoyage complet :**
+    ```js
+    =SUPPRESPACE(EPURAGE(A2))
+    {* Supprime d'abord les caractères non imprimables, puis les espaces superflus *}
+    ```
+
+    **Cas d'usage :** Nettoyer des données exportées d'un ERP ou d'un PDF qui contiennent des sauts de ligne dans les cellules.
+  </TabItem>
+</Tabs> */}
+
+---
+
+
+## Synthèse
+
+| Besoin | Fonction recommandée |
+|---|---|
+| Standardiser la casse d'un nom | `NOMPROPRE(texte)` |
+| Comparer sans tenir compte de la casse | `MAJUSCULE(A2) = MAJUSCULE(B2)` |
+| Valider la longueur d'un champ | `NBCAR(texte)` |
+| Extraire un préfixe de longueur fixe | `GAUCHE(texte; n)` |
+| Extraire un suffixe de longueur fixe | `DROITE(texte; n)` |
+| Extraire un segment au milieu | `STXT(texte; position; n)` |
+| Extraire avant un séparateur variable | `GAUCHE(A2; CHERCHE("-"; A2) - 1)` |
+| Assembler des champs en une phrase | `&` ou `CONCAT` |
+| Assembler une plage avec séparateur | `JOINDRE.TEXTE(délim; VRAI; plage)` |
+{/* | Intégrer un nombre/date dans un texte | `TEXTE(valeur; format)` |
+| Remplacer un contenu par un autre | `SUBSTITUE(texte; ancien; nouveau)` |
+| Remplacer à une position précise | `REMPLACER(texte; pos; n; nouveau)` |
+| Supprimer les espaces parasites | `SUPPRESPACE(texte)` |
+| Supprimer les caractères invisibles | `EPURAGE(texte)` |
+| Nettoyage complet après import | `SUPPRESPACE(EPURAGE(texte))` |
+| Convertir un texte en nombre | `VALEUR(texte)` |
+| Vérifier si un @ est présent | `SIERREUR(CHERCHE("@"; A2); 0) > 0` | */}
