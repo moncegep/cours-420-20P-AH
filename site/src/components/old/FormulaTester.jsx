@@ -764,7 +764,7 @@ export default function ExcelFormulaTester() {
             <div style={{ display: "flex", borderBottom: "1px solid #1e3048" }}>
               {[
                 { id: "lint", label: "Diagnostic", count: warnings.length },
-                { id: "explain", label: "Analyse IA" },
+                { id: "explain", label: "Analyse" },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -918,9 +918,9 @@ export default function ExcelFormulaTester() {
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", color: "#64748b", textAlign: "center" }}>
                       <div style={{ width: 48, height: 48, borderRadius: "50%", background: "#60a5fa15", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, marginBottom: 12 }}>🤖</div>
-                      <div style={{ fontSize: 14, fontWeight: 600, color: "#94a3b8" }}>Analyse IA</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#94a3b8" }}>Analyse</div>
                       <div style={{ fontSize: 12, marginTop: 4, maxWidth: 260, lineHeight: 1.5 }}>
-                        Cliquez sur « Analyser IA » pour obtenir une explication détaillée
+                        Cliquez sur « Analyser » pour obtenir une explication détaillée
                       </div>
                     </div>
                   )}

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { tryEvaluate, SUPPORTED_FUNCTIONS } from "./evaluator.js";
+import { tryEvaluate, SUPPORTED_FUNCTIONS } from "./excel-formula-tester/evaluator.js";
 
 const GRID_ROWS = 10;
 const GRID_COLS = 6;
