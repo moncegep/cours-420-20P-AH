@@ -90,7 +90,8 @@
 }
 
 .ft-container {
-  max-width: 1200px;
+  padding-left: 2vw;
+  padding-right: 2vw;
   margin: 0 auto;
 }
 
@@ -910,6 +911,27 @@
 .ft-tree-leaf.number { background: #38bdf806; }
 .ft-tree-leaf.bool { background: #f59e0b06; }
 
+/* ── Collapsible trace nodes ── */
+
+.ft-collapsible {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ft-tree-chevron {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.55em;
+  margin-right: 6px;
+  transition: transform 0.15s ease;
+  color: var(--ft-text-dim, #888);
+}
+
+.ft-tree-chevron.open {
+  transform: rotate(90deg);
+}
+
+
 /* ── Shared badge ── */
 
 .ft-trace-badge {
@@ -988,23 +1010,27 @@
 
 .ft-explanation-text {
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.5;
   color: #cbd5e1;
-  white-space: pre-wrap;
+  /* white-space: pre-wrap; */
 }
 
-.ft-explanation-text strong {
-  color: var(--ft-accent);
-  font-weight: 600;
-}
+  .ft-explanation-text h3 {
+    margin-bottom: 2px;
+  }
 
-.ft-explanation-text code {
-  background: #1e304866;
-  padding: 1px 5px;
-  border-radius: 3px;
-  font-family: var(--ft-mono);
-  font-size: 13px;
-}
+  .ft-explanation-text strong {
+    color: var(--ft-accent);
+    font-weight: 600;
+  }
+
+  .ft-explanation-text code {
+    background: #1e304866;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--ft-mono);
+    font-size: 13px;
+  }
 
 .ft-btn-details {
   margin-top: 16px;

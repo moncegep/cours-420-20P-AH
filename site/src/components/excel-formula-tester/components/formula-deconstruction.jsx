@@ -22,7 +22,7 @@ function TraceNode({ node, depth = 0, isLast = true }) {
               <div className="ft-tree-connector" />
               <div className="ft-tree-branch-content">
                 <div className={`ft-tree-header si-condition ${node.conditionResult ? "truthy" : "falsy"}`}>
-                  <span className="ft-trace-badge condition">Test</span>
+                  <span className="ft-trace-badge condition">Test logique</span>
                   <code className="ft-tree-raw">{condChild.raw}</code>
                   <span className="ft-trace-arrow">→</span>
                   <span className={`ft-trace-result ${node.conditionResult ? "truthy" : "falsy"}`}>

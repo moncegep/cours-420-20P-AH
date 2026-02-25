@@ -2,16 +2,17 @@ import { useState, useRef, useCallback } from "react";
 import { tryEvaluate, traceEvaluate, SUPPORTED_FUNCTIONS } from "./evaluator.js";
 import { FN_CATALOG, EXCEL_FUNCTIONS } from "./function-catalog.js";
 import { FormulaHighlight } from "./components/formula-preview.jsx"
-import { TracePanel } from "./components/formula-deconstruction.jsx"
+import { TracePanel } from "./components/TracePanel.jsx"
 import { NamedConstantsPanel } from "./components/named-constants-panel.jsx"
-import { Lightbulb, Brain, Search } from "lucide-react"
+import { Lightbulb, Brain, Search } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import "./FormulaTester.css";
 
 const GRID_ROWS = 12;
 const GRID_COLS = 10;
 
 // ── Backend API URL ──
-const API_BASE = import.meta.env?.PUBLIC_API_BASE || "https://excel-analyzer-22z8.onrender.com";
+const API_BASE = import.meta.env?.PUBLIC_API_BASE || "http://localhost:8000" || "https://excel-analyzer-22z8.onrender.com";
 const colLabel = (i) => String.fromCharCode(65 + i);
 const createEmptyGrid = () =>
   Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(""));
@@ -368,6 +369,7 @@ export default function ExcelFormulaTester() {
         throw new Error(err.detail || `HTTP ${res.status}`);
       }
       const data = await res.json();
+      console.log(data.explanation);
       setExplanation(data.explanation);
     } catch (err) {
       setExplanation(`Erreur : ${err.message}\n\nVérifiez que le serveur backend est lancé sur ${API_BASE}`);
@@ -674,7 +676,10 @@ export default function ExcelFormulaTester() {
                       </div>
                     ) : explanation ? (
                       <div>
-                        <div className="ft-explanation-text">{renderMarkdown(explanation)}</div>
+                        <div className="ft-explanation-text">
+                          <ReactMarkdown>{explanation}</ReactMarkdown>
+                          {/* {renderMarkdown(explanation)} */}
+                        </div>
 
                         {!details && !isLoadingDetails && (
                           <button className="ft-btn-details" onClick={analyzeDetails}>
