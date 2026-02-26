@@ -86,6 +86,12 @@ Les colonnes **G, H, I et J** seront calculées par tes formules.
 
 ### Calculs à réaliser
 
+<Aside type="note" title="Formule à développer">
+Pour chacun des calculs plus bas, il faut écrire une seule formule par colonne. 
+Cette formule sera appliquée à toutes les cellules de la colonne. Si besoin, tu peux 
+te créer des colonnes de calcul intermédiaire pour simplifier l'écriture de la formule finale.
+</Aside>
+
 #### A. Jours de retard (colonne `G`)
 
 Calcule le nombre de jours de retard selon la logique suivante :
@@ -93,6 +99,14 @@ Calcule le nombre de jours de retard selon la logique suivante :
 - Si la facture est **payée** → différence entre la date de paiement et la date d'échéance
 - Si la facture est **non payée** → différence entre `AUJOURDHUI()` et la date d'échéance
 - Le résultat ne doit **jamais être négatif** (un paiement avant l'échéance ou une facture non encore échue = 0 jour de retard)
+
+<Aside type="tip" title="Comment éviter d'avoir des valeurs négatives?">
+  La fonction `MAX()` peut vous aider à empêcher les valeurs négatives.
+</Aside>
+
+<Aside type="tip" title='Comment vérifier si une cellule contient une valeur?'>
+  Pour vérifier si une cellule contient une valeur (date), tu peux la comparer à une chaîne vide : `F2<>""` retourne VRAI si une date est saisie.
+</Aside>
 
 #### B. Statut automatique (colonne `H`)
 
@@ -105,14 +119,14 @@ La colonne doit afficher automatiquement :
 | Pas de date de paiement **et** échéance non dépassée | `À recevoir` |
 
 <Aside type="note">
-  Tu auras besoin d'imbriquer des `SI()` pour gérer les trois cas ou alternativement tu peux utiliser `SI.CONDITIONS()`.   
-  Pour vérifier si une cellule contient une date, tu peux la comparer à une chaîne vide : `F2<>""` retourne VRAI si une date est saisie.
+  Tu auras besoin d'imbriquer des `SI()` pour gérer les trois cas. Alternativement, tu peux y arriver en utilisant `SI.CONDITIONS()`. 
 </Aside>
 
 #### C. Intérêt de retard (colonne `I`)
 
 Applique un taux de **2 % par tranche de 30 jours de retard** sur le montant de la facture. 
-Si la facture est payée ou n'est pas en retard, l'intérêt doit être `0`.  
+**Si la facture est payée ou n'est pas en retard, l'intérêt doit être `0`.**
+
 **Formule** : `montant × 0,02 × (jours_de_retard ÷ 30)`
 
 #### D. Nom normalisé (colonne `J`)
@@ -138,9 +152,6 @@ Crée une feuille nommée **`Comptes_Payables`** reproduisant la même structure
 - Colonne A : Numéro de facture (préfixe `CP-001`, `CP-002`, etc.)
 - Colonne B : **Fournisseur** (au lieu de Client)
 - Colonnes C à I : identiques à la Partie 1 (mêmes formules)
-  - G: Jours de retard
-  - H: Statut
-  - I: Intérêt de retard
 - **Colonne J : Priorité** (Voir section ci-dessous)
 - **Colonne K : Nom normalisé** (même formule que Partie 1)
 
@@ -197,8 +208,9 @@ Utilise la fonction `CONCAT()` pour générer les phrases suivantes automatiquem
 | `"Rapport généré le 2026-02-26"` | Texte fixe + date d'aujourd'hui |
 
 <Aside type="tip">
-  Pour formater un montant à l'intérieur d'un `CONCAT()`, utilise la fonction `TEXTE()`.   
-  Par exemple : `TEXTE(A1;"# ##0,00 $")` transforme un nombre en texte avec le format monétaire.
+  Pour formater un montant à l'intérieur d'un `CONCAT()`, utilise la fonction `TEXTE()`.      
+  - `TEXTE(A1;"# ##0,00 $")` transforme un nombre en texte avec le format monétaire.
+  - `TEXTE(A1;"yyyy-mm-dd")` transforme une date en texte suivant le format ANNÉE-MOIS-JOUR.
 </Aside>
 
 ### Mise en forme conditionnelle
