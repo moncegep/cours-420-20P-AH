@@ -12,7 +12,7 @@ const GRID_ROWS = 12;
 const GRID_COLS = 10;
 
 // ── Backend API URL ──
-const API_BASE = import.meta.env?.PUBLIC_API_BASE || "http://localhost:8000" || "https://excel-analyzer-22z8.onrender.com";
+const API_BASE = import.meta.env?.PUBLIC_API_BASE || "https://excel-analyzer-22z8.onrender.com";
 const colLabel = (i) => String.fromCharCode(65 + i);
 const createEmptyGrid = () =>
   Array.from({ length: GRID_ROWS }, () => Array(GRID_COLS).fill(""));
