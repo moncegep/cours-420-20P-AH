@@ -1,0 +1,220 @@
+---
+title: "Labo 1: Gestion des comptes recevables et payables"
+description: "Créer un chiffrier Excel de gestion des comptes clients et fournisseurs avec formules automatisées et tableau de bord."
+sidebar:
+  label: "Comptes recevables/payables"
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+import DataTable from "./../../../components/DataTable.astro";
+
+
+## Objectif
+
+Tu dois créer un **chiffrier Excel** qui permet à une petite entreprise québécoise de gérer ses comptes à recevoir (clients) et à payer (fournisseurs). 
+Le chiffrier doit calculer automatiquement les retards, les intérêts, les statuts et présenter un tableau de bord de la situation financière.
+
+<Aside type="caution" title="Fichier de remise">
+  Nomme le fichier (à remettre) `Labo_Comptes_PrenomNom.xlsx` en remplaçant `PrenomNom` par ton prénom et nom de famille.
+</Aside>
+
+### Fonctions Excel utiles
+
+Voici la liste des fonctions utiles pour cet exercice :
+
+- `AUJOURDHUI()` : Affiche la date actuelle du système et se met à jour automatiquement.
+- `SI()` : Vérifie si une condition est vraie ou fausse et retourne une valeur différente selon le résultat.
+- `SI.CONDITIONS()` : Permet de tester plusieurs conditions et retourne la valeur associée à la première condition vraie.
+- `NB()` : Compte le nombre de cellules contenant des nombres dans une plage donnée.
+- `NB.SI()` : Compte le nombre de cellules qui répondent à un critère précis (ex. : ">10").
+- `SOMME.SI()` : Additionne les cellules qui respectent un critère spécifique.
+- `SOMME()` : Additionne une série de nombres ou une plage de cellules.
+- `MOYENNE()` : Calcule la moyenne (valeur moyenne) d’une plage de nombres.
+- `MOYENNE.SI()` : Calcule la moyenne des cellules qui répondent à un critère donné.
+- `MAJUSCULE()` : Convertit un texte en lettres majuscules.
+- `CONCAT()` : Combine plusieurs chaînes de texte en une seule.
+
+---
+
+## Partie 1 – Comptes recevables (45 %)
+
+Crée une feuille nommée **`Comptes_Recevables`** avec les colonnes et données suivantes.  
+
+<Aside type="note" title="Colonnes avec valeur calculée">
+Les colonnes **G, H et I** seront calculées par tes formules.
+</Aside>
+
+| Colonne | Titre | Format |
+|---|---|---|
+| A | No facture | Texte (ex. : `CR-001`) |
+| B | Client | Texte |
+| C | Date facture | Date (`AAAA-MM-JJ`) |
+| D | Date échéance | Date (`AAAA-MM-JJ`) |
+| E | Montant | Monétaire (2 décimales, symbole `$`) |
+| F | Date paiement | Date (`AAAA-MM-JJ`) ou vide |
+| G | Jours de retard | Nombre entier (**calculé)** |
+| H | Statut | Texte (**calculé)** |
+| I | Intérêt de retard | Monétaire (**calculé)** |
+| J | Nom normalisé | Texte (calculé) |
+
+
+### Données à saisir
+
+<DataTable
+  columns={["No facture", "Client", "Date facture", "Date échéance", "Montant", "Date paiement"]}
+  rows={[
+    ["CR-001", "boulangerie Chez Rosalie", "2025-11-15", "2025-12-15", "2450", "2025-12-10"],
+    ["CR-002", "Librairie Le Signet", "2025-12-01", "2026-01-01", "875", "2026-01-10"],
+    ["CR-003", "café dépôt MTL", "2025-12-10", "2026-01-10", "1320", "2026-01-05"],
+    ["CR-004", "GARAGE TREMBLAY & Fils", "2025-11-01", "2025-12-01", "5200"],
+    ["CR-005", "Boutique Nordik", "2025-12-20", "2026-01-20", "3750"],
+    ["CR-006", "Restaurant La Poutinerie", "2026-01-05", "2026-02-05", "960"],
+    ["CR-007", "Studio graphique Pixel", "2026-01-20", "2026-03-20", "4100"],
+    ["CR-008", "Transport Québec Express", "2026-02-01", "2026-03-15", "1680"]
+  ]}
+/>
+
+<Aside type="note" title="Comprendre les données">
+  Ces 8 factures couvrent les trois cas nécessaires :
+  - **Payées** : CR-001 (payée avant échéance), CR-002 (payée en retard), CR-003 (payée avant échéance)
+  - **En retard** : CR-004 (retard important), CR-005 (retard moyen), CR-006 (retard récent)
+  - **Non échues** : CR-007 et CR-008 (échéances futures)
+
+  Les noms de clients sont volontairement saisis avec des casses différentes pour simuler des saisies incohérentes.
+</Aside>
+
+### Calculs à réaliser
+
+#### A. Jours de retard (colonne `G`)
+
+Calcule le nombre de jours de retard selon la logique suivante :
+
+- Si la facture est **payée** → différence entre la date de paiement et la date d'échéance
+- Si la facture est **non payée** → différence entre `AUJOURDHUI()` et la date d'échéance
+- Le résultat ne doit **jamais être négatif** (un paiement avant l'échéance ou une facture non encore échue = 0 jour de retard)
+
+#### B. Statut automatique (colonne `H`)
+
+La colonne doit afficher automatiquement :
+
+| Condition | Valeur affichée |
+|---|---|
+| Une date de paiement est saisie | `Payée` |
+| Pas de date de paiement **et** échéance dépassée | `En retard` |
+| Pas de date de paiement **et** échéance non dépassée | `À recevoir` |
+
+<Aside type="note">
+  Tu auras besoin d'imbriquer des `SI()` pour gérer les trois cas ou alternativement tu peux utiliser `SI.CONDITIONS()`.   
+  Pour vérifier si une cellule contient une date, tu peux la comparer à une chaîne vide : `F2<>""` retourne VRAI si une date est saisie.
+</Aside>
+
+#### C. Intérêt de retard (colonne `I`)
+
+Applique un taux de **2 % par tranche de 30 jours de retard** sur le montant de la facture. 
+Si la facture est payée ou n'est pas en retard, l'intérêt doit être `0`.  
+**Formule** : `montant × 0,02 × (jours_de_retard ÷ 30)`
+
+#### D. Nom normalisé (colonne `J`)
+
+Affiche le nom du client en **lettres majuscules**, peu importe la casse saisie dans la colonne `B`.
+
+### Indicateurs (sous le tableau)
+
+Calcule les indicateurs suivants à l'aide des fonctions appropriées :
+
+1. Nombre total de factures
+2. Nombre de factures en retard
+3. Total des montants en retard
+4. Total des montants à recevoir
+5. Moyenne des jours de retard (factures en retard seulement)
+
+---
+
+## Partie 2 – Comptes payables (30 %)
+
+Crée une feuille nommée **`Comptes_Payables`** reproduisant la même structure que la Partie 1 avec les **modifications suivantes** .  
+
+- Colonne A : Numéro de facture (préfixe `CP-001`, `CP-002`, etc.)
+- Colonne B : **Fournisseur** (au lieu de Client)
+- Colonnes C à I : identiques à la Partie 1 (mêmes formules)
+  - G: Jours de retard
+  - H: Statut
+  - I: Intérêt de retard
+- **Colonne J : Priorité** (Voir section ci-dessous)
+- **Colonne K : Nom normalisé** (même formule que Partie 1)
+
+### Données à saisir
+
+<DataTable
+  columns={["No facture", "Fournisseur", "Date facture", "Date échéance", "Montant", "Date paiement"]}
+  rows={[
+    ["CP-001", "Distribution Alimentaire Côté", "2025-12-01", "2026-01-01", "3800", "2025-12-28"],
+    ["CP-002", "Imprimerie Beauce", "2025-11-15", "2025-12-15","6500"],
+    ["CP-003", "Location Équipements Plus", "2026-01-10", "2026-02-10", "2100"],
+    ["CP-004", "Services TI Laval", "2026-01-15",  "2026-02-15" , "1450", "2026-02-20"],
+    ["CP-005", "Nettoyage ProNet", "2026-02-01", "2026-03-15" ,"780"],
+    ["CP-006", "Fournitures Bureau Dépôt", "2026-02-10", "2026-03-31", "420"]
+  ]}
+/>
+
+### Priorité automatique (colonne `J`)
+
+| Condition | Valeur affichée |
+|---|---|
+| Retard supérieur à 30 jours | `URGENT` |
+| Retard entre 1 et 30 jours | `À payer rapidement` |
+| Aucun retard ou facture payée | `OK` |
+
+### Indicateurs
+
+Calcule les **mêmes 5 indicateurs** que dans la Partie 1, adaptés aux comptes payables.
+
+---
+
+## Partie 3 – Tableau de bord (25 %)
+
+Crée une feuille nommée **`Tableau_de_bord`**. Cette feuille doit **référencer les données des deux autres feuilles** (aucune donnée saisie manuellement).
+
+### Indicateurs à afficher
+
+| # | Indicateur | Source |
+|---|---|---|
+| 1 | Total à recevoir (factures non payées) | `Comptes_Recevables` |
+| 2 | Total en retard (recevables) | `Comptes_Recevables` |
+| 3 | Total à payer (factures non payées) | `Comptes_Payables` |
+| 4 | Total en retard (payables) | `Comptes_Payables` |
+| 5 | Total combiné des intérêts de retard (recevables + payables) | Les deux feuilles |
+
+### Phrases récapitulatives
+
+Utilise la fonction `CONCAT()` pour générer les phrases suivantes automatiquement dans des cellules dédiées :
+
+| Phrase attendue (exemple) | Éléments à assembler |
+|---|---|
+| `"Recevables en retard : 9 910,00 $"` | Texte fixe + valeur de l'indicateur 2 |
+| `"Payables en retard : 6 500,00 $"` | Texte fixe + valeur de l'indicateur 4 |
+| `"Rapport généré le 2026-02-26"` | Texte fixe + date d'aujourd'hui |
+
+<Aside type="tip">
+  Pour formater un montant à l'intérieur d'un `CONCAT()`, utilise la fonction `TEXTE()`.   
+  Par exemple : `TEXTE(A1;"# ##0,00 $")` transforme un nombre en texte avec le format monétaire.
+</Aside>
+
+### Mise en forme conditionnelle
+
+Applique une **mise en forme conditionnelle** sur les cellules suivantes: *Total en retard (recevables)* et *Total en retard (payables)*
+
+#### Règles
+
+| Condition | Mise en forme |
+|---|---|
+| La valeur dépasse **5 000 $** | Fond **rouge**, texte **blanc**, **gras** |
+| La valeur est entre **1 000 $** et **5 000 $** | Fond **jaune**, texte **noir** |
+| La valeur est inférieure à **1 000 $** | Fond **vert**, texte **noir** |
+
+
+<Aside type="tip" title="Conseil pour la remise">
+  Relis-toi et vérifie tes formules avant de déposer ton fichier sur Léa.  
+  N'oublie pas de nommer le fichier (à remettre) `Labo_Comptes_PrenomNom.xlsx` en remplaçant `PrenomNom` par ton prénom et nom de famille.
+</Aside>

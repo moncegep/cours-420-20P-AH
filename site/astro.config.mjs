@@ -37,42 +37,43 @@ export default defineConfig({
 								{ label: 'Fonction SI', slug: 'cours/02-fonction-si' },
 								{ label: 'Fonction conditionnel', slug: 'cours/02-fonction-conditionnel' },
 								{ label: 'Synthèse', slug: 'cours/02-synthese' },
-								{ label: "Exercices", items: [
-									{ label: 'Exercices', slug: 'cours/02-exercices' },
-									// { label: 'Problèmes', slug: 'exercices/02-exercices' },
-								]}
+								// { label: "Exercices", items: [
+								// 	{ label: 'Exercices', slug: 'cours/02-exercices' },
+								// 	// { label: 'Problèmes', slug: 'exercices/02-exercices' },
+								// ]}
 							]
 						},
 						{
 							label: 'Semaine 3',
+							collapsed: true,
 							items: [
 								{ label: 'Fonction ET, OU', slug: 'cours/03-fonction-etou' },
 								{ label: 'Mise en forme conditionnelle', slug: 'cours/03-mise-en-forme' },
-								{ label: "Exercices", items: [
-									{ label: 'Exercices', slug: 'exercices/03-exercices' },
-								]}
+								// { label: "Exercices", items: [
+								// 	{ label: 'Exercices', slug: 'exercices/03-exercices' },
+								// ]}
 							]
 						},
 						{
 							label: 'Semaine 4',
+							collapsed: true,
 							items: [
 								{ label: 'Fonctions dates', slug: 'cours/04-fonctions-dates' },
 								{ label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
 								{ label: "Exercices", items: [
 									{ label: 'Exercices', slug: 'exercices/04-exercices-dates' },
 								]},
-								{ label: "Problèmes", items: [
-									{ label: "Crédit d'impôt solidarité", slug: 'exercices/04-problemes' },
-								]}
+								// { label: "Problèmes", items: [
+								// 	{ label: "Crédit d'impôt solidarité", slug: 'exercices/04-problemes' },
+								// ]}
 							]
 						},
-						{
-							label: 'Semaine 5',
-							items: [
-								{ label: 'Révision', slug: 'cours/04-fonctions-dates' },
-								// { label: 'Fonctions texte', slug: 'cours/04-fonctions-textes' },
-							]
-						},
+						// {
+						// 	label: 'Semaine 5',
+						// 	items: [
+						// 		{ label: 'Révision', slug: 'cours/04-fonctions-dates' },
+						// 	]
+						// },
 					],
 				},
 				{
@@ -85,7 +86,7 @@ export default defineConfig({
 				{
 					label: 'Référence',
 					autogenerate: { directory: 'reference' },
-				},
+				}
 			],
 		}),
 		react(),
