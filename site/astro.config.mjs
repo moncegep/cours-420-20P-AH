@@ -68,12 +68,15 @@ export default defineConfig({
 								// ]}
 							]
 						},
-						// {
-						// 	label: 'Semaine 5',
-						// 	items: [
-						// 		{ label: 'Révision', slug: 'cours/04-fonctions-dates' },
-						// 	]
-						// },
+						{
+							label: 'Semaine 5',
+							items: [
+								{ label: 'Fonction de recherche', slug: 'cours/05-fonction-recherche' },
+								{ label: "Exercices", items: [
+									{ label: 'Exercices', slug: 'exercices/05-exercices-recherche' },
+								]},
+							]
+						},
 					],
 				},
 				{

@@ -1,0 +1,317 @@
+---
+title: "Exercices avancés — Fonctions de recherche"
+description: "Exercices avancés combinant plusieurs fonctions de recherche Excel"
+---
+
+## Niveau 5 — Combinaisons avancées
+
+### Exercice 5.1 — Recherche + nettoyage de texte
+
+**Contexte :** Chez *Transport Lacroix*, vous recevez un fichier CSV de commandes de livraison. Les noms des clients sont mal formatés (majuscules, espaces, accents incohérents). Vous devez les croiser avec votre table de clients officielle.
+
+**Feuille `Clients` (données propres) :**
+
+| A — No client | B — Nom | C — Ville | D — Crédit autorisé |
+|---|---|---|---|
+| CL001 | Tremblay, Michel | Amos | 15 000 $ |
+| CL002 | Côté, Nathalie | Val-d'Or | 25 000 $ |
+| CL003 | Gagnon, Pierre | Rouyn-Noranda | 10 000 $ |
+| CL004 | Bélanger, Julie | La Sarre | 20 000 $ |
+| CL005 | Fortin, André | Malartic | 12 000 $ |
+
+**Feuille `Commandes` (données brutes importées) :**
+
+| A — Nom saisi | B — Montant commande |
+|---|---|
+| `  TREMBLAY, MICHEL  ` | 8 500 $ |
+| `côté, nathalie` | 18 200 $ |
+| `  GAGNON,   PIERRE` | 12 000 $ |
+| `Bélanger, Julie` | 9 800 $ |
+| `  FORTIN,ANDRÉ  ` | 7 200 $ |
+
+<Steps>
+1. En colonne C, **nettoyez** le nom saisi : `SUPPRESPACE` + `NOMPROPRE` pour standardiser le format.
+
+2. En colonne D, retrouvez le **numéro de client** en utilisant `INDEX`/`EQUIV` avec `MAJUSCULE` et `SUPPRESPACE` appliqués **des deux côtés** de la recherche.
+
+3. En colonne E, retrouvez le **crédit autorisé** du client.
+
+4. En colonne F, affichez « ✓ Approuvé » si le montant de la commande est ≤ au crédit autorisé, sinon « ✗ Dépassement — Approbation requise ».
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Le problème : `NOMPROPRE` standardise la casse mais les noms dans la table Clients sont déjà en format « Nom, Prénom ». Utilisez plutôt `MAJUSCULE` + `SUPPRESPACE` des **deux côtés** pour comparer en neutralisant les différences :
+    ```
+    =EQUIV(MAJUSCULE(SUPPRESPACE(A2)); MAJUSCULE(SUPPRESPACE(Clients!B$2:B$6)); 0)
+    ```
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    C2: =NOMPROPRE(SUPPRESPACE(A2))
+
+    D2: =SIERREUR(
+          INDEX(Clients!$A$2:$A$6;
+            EQUIV(MAJUSCULE(SUPPRESPACE(A2)); MAJUSCULE(SUPPRESPACE(Clients!$B$2:$B$6)); 0)
+          );
+          "Client non trouvé"
+        )
+
+    E2: =SIERREUR(
+          INDEX(Clients!$D$2:$D$6;
+            EQUIV(MAJUSCULE(SUPPRESPACE(A2)); MAJUSCULE(SUPPRESPACE(Clients!$B$2:$B$6)); 0)
+          );
+          0
+        )
+
+    F2: =SI(D2="Client non trouvé"; "⚠ Client inconnu";
+          SI(B2<=E2; "✓ Approuvé"; "✗ Dépassement — Approbation requise"))
+    ```
+    *Note : la formule EQUIV avec MAJUSCULE sur une plage est une formule matricielle. Dans les versions antérieures à Microsoft 365, validez avec Ctrl+Maj+Entrée.*
+  </TabItem> */}
+</Tabs>
+
+---
+
+### Exercice 5.2 — Décodage de codes composites
+
+**Contexte :** La brasserie *Boréale* encode chaque lot de production avec un code de 14 caractères : `BOR-IPA-341-06`.
+
+| Position | Contenu | Longueur |
+|---|---|---|
+| 1–3 | Code brasserie (toujours BOR) | 3 |
+| 5–7 | Type de bière | 3 |
+| 9–11 | Format (ml) | 3 |
+| 13–14 | Quantité par emballage | 2 |
+
+Vous disposez de trois tables de correspondance :
+
+**Table `Types` :** BLA → Blonde d'été, IPA → IPA du Nord-Est, ROU → Rousse, NOI → Noire à l'avoine
+
+**Table `Formats` :** 341 → Bouteille 341 ml, 473 → Canette 473 ml
+
+**Table `Emballages` :** 06 → Pack de 6, 12 → Caisse de 12, 24 → Caisse de 24
+
+**Données :**
+
+| A — Code lot |
+|---|
+| BOR-IPA-341-06 |
+| BOR-BLA-473-12 |
+| BOR-ROU-341-24 |
+| BOR-NOI-473-06 |
+
+<Steps>
+1. En colonne B, extrayez le **code type** (positions 5 à 7) avec `STXT`.
+2. En colonne C, retrouvez le **nom de la bière** avec `RECHERCHEX` sur la table Types.
+3. En colonne D, extrayez le **code format** et retrouvez la **description du format**.
+4. En colonne E, extrayez la **quantité** et retrouvez la **description de l'emballage**.
+5. En colonne F, construisez une **description complète** en concaténant : nom + format + emballage.
+   Exemple : `IPA du Nord-Est — Bouteille 341 ml — Pack de 6`
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    ```
+    B2: =STXT(A2; 5; 3)
+    C2: =RECHERCHEX(B2; Types!A:A; Types!B:B; "Type inconnu")
+    D2: =RECHERCHEX(STXT(A2; 9; 3); Formats!A:A; Formats!B:B; "Format inconnu")
+    ```
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    B2: =STXT(A2; 5; 3)
+    C2: =RECHERCHEX(B2; Types!$A:$A; Types!$B:$B; "Type inconnu")
+    D2: =RECHERCHEX(STXT(A2; 9; 3); Formats!$A:$A; Formats!$B:$B; "Format inconnu")
+    E2: =RECHERCHEX(DROITE(A2; 2); Emballages!$A:$A; Emballages!$B:$B; "Emballage inconnu")
+    F2: =C2 & " — " & D2 & " — " & E2
+    ```
+    Résultat pour `BOR-IPA-341-06` : **IPA du Nord-Est — Bouteille 341 ml — Pack de 6**
+  </TabItem> */}
+</Tabs>
+
+---
+
+{/* ## Exercice synthèse — Centre de location d'équipements *LokaPlein Air* (Alma)
+
+**Contexte :** *LokaPlein Air* est un centre de location d'équipements de plein air situé à Alma, au Lac-Saint-Jean. Le centre loue des kayaks, des vélos, du matériel de camping et des raquettes/skis selon la saison. Vous devez créer un classeur complet de gestion des locations intégrant toutes les fonctions de recherche vues dans le cours.
+
+<Aside type="note" title="Ce que vous allez construire">
+  Un classeur de **6 feuilles** qui combine `RECHERCHEV`, `RECHERCHEX`, `INDEX`/`EQUIV`, les fonctions conditionnelles (`SI`, `SOMME.SI`, `NB.SI`), les fonctions de texte (`STXT`, `GAUCHE`, `CONCATENER`) et les fonctions de dates (`AUJOURDHUI`, `DATEDIF`, `NB.JOURS.OUVRES`).
+</Aside>
+
+---
+
+### Feuille 1 — `Paramètres`
+
+| Paramètre | Valeur | Nom suggéré |
+|---|---|---|
+| Taxe TPS | 5 % | `TauxTPS` |
+| Taxe TVQ | 9,975 % | `TauxTVQ` |
+| Tarif retard par jour | 15,00 $ | `TarifRetard` |
+| Rabais membre (%) | 15 % | `RabaisMembre` |
+| Dépôt standard | 50,00 $ | `DepotStandard` |
+
+---
+
+### Feuille 2 — `Équipements`
+
+| A — Code | B — Catégorie | C — Description | D — Tarif journalier | E — Tarif weekend | F — Saison | G — Dépôt requis |
+|---|---|---|---|---|---|---|
+| KAY-S01 | Kayak | Kayak solo récréatif | 45,00 $ | 55,00 $ | Été | 100,00 $ |
+| KAY-D01 | Kayak | Kayak double familial | 65,00 $ | 80,00 $ | Été | 150,00 $ |
+| VEL-M01 | Vélo | Vélo de montagne adulte | 35,00 $ | 45,00 $ | Été | 75,00 $ |
+| VEL-E01 | Vélo | Vélo électrique | 55,00 $ | 70,00 $ | Été | 200,00 $ |
+| CAM-T02 | Camping | Tente 4 places | 40,00 $ | 50,00 $ | Toute | 80,00 $ |
+| CAM-S01 | Camping | Sac de couchage -10°C | 20,00 $ | 25,00 $ | Toute | 40,00 $ |
+| RAQ-A01 | Raquette | Raquettes adulte (paire) | 25,00 $ | 30,00 $ | Hiver | 50,00 $ |
+| SKF-C01 | Ski de fond | Ensemble ski de fond classique | 40,00 $ | 50,00 $ | Hiver | 100,00 $ |
+
+**Structure du code :** `XXX-Y##` → les 3 premières lettres = catégorie, la lettre après le tiret = sous-type, les 2 chiffres = numéro séquentiel.
+
+---
+
+### Feuille 3 — `Clients`
+
+| A — No | B — Nom | C — Prénom | D — Téléphone | E — Courriel | F — Membre | G — Date inscription |
+|---|---|---|---|---|---|---|
+| C001 | Tremblay | Mathieu | 418-555-1234 | m.tremblay@email.ca | Oui | 2022-05-10 |
+| C002 | Bouchard | Isabelle | 418-555-5678 | i.bouchard@email.ca | Non | 2024-03-22 |
+| C003 | Simard | Patrick | 418-555-9012 | p.simard@email.ca | Oui | 2021-08-15 |
+| C004 | Gauthier | Marie-Pier | 418-555-3456 | mp.gauthier@email.ca | Oui | 2023-01-08 |
+| C005 | Lavoie | Simon | 418-555-7890 | s.lavoie@email.ca | Non | 2025-06-30 |
+| C006 | Harvey | Annick | 418-555-2345 | a.harvey@email.ca | Oui | 2020-11-12 |
+
+---
+
+### Feuille 4 — `Locations`
+
+Créez un registre de locations avec les colonnes suivantes :
+
+| Colonne | En-tête | Type |
+|---|---|---|
+| A | No location | Saisie (LOC-001, LOC-002, ...) |
+| B | No client | Saisie |
+| C | Nom complet | **Calculé** — `INDEX`/`EQUIV` : `Prénom Nom` depuis `Clients` |
+| D | Membre ? | **Calculé** — `INDEX`/`EQUIV` depuis `Clients` |
+| E | Code équipement | Saisie |
+| F | Description | **Calculé** — `RECHERCHEX` depuis `Équipements` |
+| G | Catégorie | **Calculé** — `RECHERCHEX` ou `STXT` + table de correspondance |
+| H | Date début | Saisie |
+| I | Date retour prévue | Saisie |
+| J | Nb jours | **Calculé** — `I - H` |
+| K | Inclut weekend ? | **Calculé** — `SI` + `JOURSEM` pour vérifier si la période couvre un samedi ou dimanche |
+| L | Tarif applicable | **Calculé** — `SI` tarif weekend ou journalier, avec `RECHERCHEX` |
+| M | Sous-total location | **Calculé** — tarif × jours |
+| N | Rabais membre | **Calculé** — `SI(D="Oui"; M × RabaisMembre; 0)` |
+| O | Montant avant taxes | **Calculé** — M − N |
+| P | TPS | **Calculé** |
+| Q | TVQ | **Calculé** |
+| R | Dépôt | **Calculé** — `RECHERCHEX` depuis `Équipements` colonne G |
+| S | Total à payer | **Calculé** — O + P + Q |
+
+**Données de location à saisir :**
+
+| No | Client | Équipement | Début | Retour prévu |
+|---|---|---|---|---|
+| LOC-001 | C001 | KAY-S01 | 2026-06-15 | 2026-06-17 |
+| LOC-002 | C003 | VEL-E01 | 2026-06-20 | 2026-06-22 |
+| LOC-003 | C002 | CAM-T02 | 2026-07-01 | 2026-07-05 |
+| LOC-004 | C005 | KAY-D01 | 2026-07-10 | 2026-07-13 |
+| LOC-005 | C004 | RAQ-A01 | 2026-01-15 | 2026-01-17 |
+| LOC-006 | C006 | SKF-C01 | 2026-02-01 | 2026-02-04 |
+| LOC-007 | C001 | VEL-M01 | 2026-08-05 | 2026-08-05 |
+| LOC-008 | C003 | CAM-S01 | 2026-07-15 | 2026-07-20 |
+
+---
+
+### Feuille 5 — `Retours`
+
+Enregistrez les retours avec des dates réelles (certains en retard) :
+
+| A — No location | B — Date retour réel | C — Date prévue | D — Jours de retard | E — Frais de retard | F — Solde final |
+|---|---|---|---|---|---|
+| *(saisie)* | *(saisie)* | **Calculé** — `INDEX`/`EQUIV` depuis `Locations` | **Calculé** — `MAX(0; B-C)` | **Calculé** — D × `TarifRetard` | **Calculé** — Total depuis `Locations` + E − Dépôt remboursé |
+
+**Données :**
+
+| No location | Date retour réel |
+|---|---|
+| LOC-001 | 2026-06-17 |
+| LOC-002 | 2026-06-24 |
+| LOC-003 | 2026-07-06 |
+| LOC-005 | 2026-01-17 |
+| LOC-007 | 2026-08-05 |
+
+<Aside type="tip" title="Colonne C — Date prévue">
+  Utilisez `INDEX`/`EQUIV` pour aller chercher la date de retour prévue dans la feuille `Locations` à partir du numéro de location. Cela évite de saisir la date deux fois et élimine les erreurs.
+</Aside>
+
+---
+
+### Feuille 6 — `Fiche_Client`
+
+Créez une fiche dynamique (même principe que la fiche rapport de la *Menuiserie Abitibi*) où l'on sélectionne un numéro de client en B1 et toutes les informations se mettent à jour :
+
+```
+╔═══════════════════════════════════════════════════════════════╗
+║                    LOKAPLEIN AIR — ALMA                       ║
+║                   FICHE CLIENT                                ║
+╠═══════════════════════════════════════════════════════════════╣
+║                                                               ║
+║  Client no :         [INDEX/EQUIV]                            ║
+║  Nom :               [Prénom Nom — INDEX/EQUIV]               ║
+║  Téléphone :         [INDEX/EQUIV]                            ║
+║  Courriel :          [INDEX/EQUIV]                            ║
+║  Membre :            [INDEX/EQUIV]                            ║
+║  Inscrit depuis :    [TEXTE + DATEDIF]                        ║
+║                                                               ║
+╠══════════════════ HISTORIQUE DE LOCATION ═════════════════════╣
+║                                                               ║
+║  Nombre de locations :      [NB.SI sur Locations]             ║
+║  Montant total loué :       [SOMME.SI sur Locations]          ║
+║  Dernière location :        [recherche + MAX]                 ║
+║  Équipement le plus loué :  [MODE ou NB.SI par catégorie]     ║
+║                                                               ║
+╠══════════════════ STATUT ════════════════════════════════════╣
+║                                                               ║
+║  Locations en cours :       [NB.SI.ENS — pas de retour]       ║
+║  Retards en cours :         [calculé]                         ║
+║  Total frais de retard :    [SOMME.SI sur Retours]            ║
+║  Catégorie client :         [SI basé sur total loué]          ║
+║                                                               ║
+║  Rapport généré le :  [TEXTE(AUJOURDHUI(); "jj MMMM aaaa")]  ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+<Steps>
+1. **Informations du client** : `INDEX`/`EQUIV` sur `Clients`. Formatez la date avec `TEXTE`. L'ancienneté d'inscription utilise `DATEDIF`.
+
+2. **Historique** : `NB.SI` et `SOMME.SI` sur `Locations` filtrés par le numéro de client en B1. Pour la dernière location, combinez `MAX` + `SI` en matriciel ou utilisez `RECHERCHEX` avec le mode de recherche « dernier ».
+
+3. **Statut** : Croisez les feuilles `Locations` et `Retours` pour identifier les locations non retournées. Catégorisez le client selon son total de locations :
+   - < 200 $ → « Occasionnel »
+   - < 500 $ → « Régulier »
+   - ≥ 500 $ → « Fidèle »
+
+4. **Mise en forme** : Format professionnel avec bordures, couleurs et prêt à imprimer sur une page.
+</Steps> */}
+
+---
+{/* 
+### 📊 Critères d'évaluation
+
+<CardGrid>
+  <Card title="Recherches simples (RECHERCHEV)" icon="magnifier">
+    Les formules `RECHERCHEV` utilisent la correspondance exacte (`FAUX`) pour les codes et la correspondance approchée (`VRAI`) uniquement pour les barèmes. Les références sont absolues pour les plages du tableau.
+  </Card>
+  <Card title="Recherches avancées (RECHERCHEX, INDEX/EQUIV)" icon="rocket">
+    Les recherches inversées (vers la gauche) fonctionnent correctement. La recherche bidimensionnelle croise deux critères. Les formules matricielles sont validées correctement.
+  </Card>
+  <Card title="Combinaison avec texte et dates" icon="seti:text">
+    Les codes composites sont décodés avec `STXT`/`GAUCHE`/`DROITE` puis recherchés dans les tables de correspondance. Les dates sont formatées et les calculs d'ancienneté/retard sont corrects.
+  </Card>
+  <Card title="Robustesse et ergonomie" icon="approve-check">
+    Toutes les recherches sont protégées par `SIERREUR`. Les noms définis sont utilisés pour les paramètres. La fiche client se met à jour dynamiquement. La mise en forme est professionnelle.
+  </Card>
+</CardGrid> */}

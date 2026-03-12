@@ -1,10 +1,12 @@
 ---
 interface Props {
   columns: string[];
+  rowAlignments: string[];
+  colSize?: number;
   rows: (string | number)[][];
 }
 
-const { columns, rows } = Astro.props;
+const { columns, rows, rowAlignments = [], colSize } = Astro.props;
 
 // Génère A, B, C, ... Z (simple)
 const letters = columns.map((_, i) =>
@@ -34,7 +36,10 @@ const letters = columns.map((_, i) =>
     {rows.map((row) => (
       <tr>
         {columns.map((_, i) => (
-          <td>{row[i] ?? ""}</td>
+          <td style={`
+            text-align: ${rowAlignments[i] ?? "left"};
+            ${colSize && "min-width:" + colSize + "px"}
+            `}>{row[i] ?? ""}</td>
         ))}
       </tr>
     ))}
@@ -46,6 +51,10 @@ const letters = columns.map((_, i) =>
   border-collapse: collapse;
   width: 100%;
   table-layout: fixed;
+}
+
+.data-table thead {
+  width: 100%;
 }
 
 .data-table th,

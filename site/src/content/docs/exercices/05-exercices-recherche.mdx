@@ -1,0 +1,485 @@
+---
+title: "Exercices — Fonctions de recherche"
+description: "Exercices progressifs sur les fonctions de recherche Excel : RECHERCHEV, RECHERCHEX, INDEX/EQUIV et leurs combinaisons"
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+import QuizClassification from '../../../components/QuizClassification';
+import DataTable from "./../../../components/DataTable.astro";
+
+Ces exercices progressent du plus simple au plus complexe. Chaque niveau introduit une nouvelle fonction ou une nouvelle combinaison, toujours dans un contexte de gestion d'entreprise.
+
+<Aside type="note" title="Fonctions couvertes">
+  `RECHERCHEV`, `RECHERCHEH`, `RECHERCHEX`, `INDEX`, `EQUIV`, combinées avec `SI`, `SIERREUR`, `STXT`, `GAUCHE`, `SUPPRESPACE`, `MAJUSCULE`, `NB.SI`, `SOMME.SI`.
+</Aside>
+
+<Aside type="caution" title="Démarche recommandée">
+  Avant d'écrire une formule, identifie toujours : **1)** la valeur clé, **2)** le tableau de référence, **3)** la valeur de retour. 
+  Écris la formule seulement après avoir répondu à ces trois questions.
+</Aside>
+
+---
+
+## Niveau 1 — RECHERCHEV simple
+
+### Exercice 1.1 — Catalogue de produits
+
+**Contexte :** La quincaillerie *Outils du Nord* à Rouyn-Noranda possède un catalogue de produits. 
+Le commis à la caisse entre le code produit pour récupérer les informations associées au produit.
+
+**Feuille `Catalogue` :**
+
+<DataTable
+  columns={["Code", "Description", "Catégorie", "Prix", "Fournisseur"]}
+  rowAlignments={[,,,"right",]}
+  colSize={100}
+  rows={[
+    ["QN-001", "Marteau 16 oz", "Outillage", "24,99 $", "Stanley"],
+    ["QN-002", "Tournevis plat", "Outillage", "8,49 $", "Mastercraft"],
+    ["QN-003", "Peinture latex 3,78 L", "Peinture", "42,99 $", "Sico"],
+    ["QN-004", "Vis à bois #8 (100)", "Quincaillerie", "6,99 $", "GRK"],
+    ["QN-005", "Ruban à mesurer 25 pi", "Outillage", "19,99 $", "Stanley"],
+    ["QN-006", "Silicone cuisine", "Adhésifs", "11,49 $", "LePage"],
+    ["QN-007", "Perceuse sans fil 20V", "Électrique", "149,99 $", "DeWalt"],
+    ["QN-008", "Ampoule LED 60W (4)", "Électrique", "12,99 $", "Philips"],
+  ]}
+/>
+
+Dans une **Feuille `Caisse`**, la cellule `B1` contiendra le code entré par le commis.  
+Applique la fonction `RECHERCHEV` pour faire afficher:
+
+<Steps>
+1. En B3: la **description** du produit à partir du code en B1.
+2. En B4: la **catégorie**.
+3. En B5: le **prix**.
+4. En B6: le **fournisseur**.
+5. **En bonus:** Protège chaque formule avec `SIERREUR` pour afficher « Code invalide » si le code n'existe pas.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Le code est dans la première colonne du catalogue → `RECHERCHEV` convient parfaitement.   
+    La description est la colonne 2, la catégorie la colonne 3, etc.
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    B3: =SIERREUR(RECHERCHEV(B1; Catalogue!A:E; 2; FAUX); "Code invalide")
+    B4: =SIERREUR(RECHERCHEV(B1; Catalogue!A:E; 3; FAUX); "Code invalide")
+    B5: =SIERREUR(RECHERCHEV(B1; Catalogue!A:E; 4; FAUX); "Code invalide")
+    B6: =SIERREUR(RECHERCHEV(B1; Catalogue!A:E; 5; FAUX); "Code invalide")
+    ```
+  </TabItem> */}
+</Tabs>
+
+---
+
+### Exercice 1.2 — Facture avec recherche automatique
+
+**Contexte :** En utilisant le même catalogue, crée une mini-facture sur la feuille `Facture` avec 5 lignes de commande :
+
+| A — Code produit | B — Description | C — Prix unit. | D — Quantité | E — Sous-total |
+|---|---|---|---|---|
+| *(saisie)* | *(RECHERCHEV)* | *(RECHERCHEV)* | *(saisie)* | *(calcul)* |
+
+> Tu es libre de choisir le code de produit et la quantité associée.
+
+<Steps>
+1. L'utilisateur saisit les codes en colonne A et les quantités en colonne D .
+2. La description (B) et le prix (C) se remplissent automatiquement par `RECHERCHEV`.
+3. Le sous-total (E) = prix × quantité.
+4. En bas, calcule le **total avant taxes**, la **TPS (5 %)**, la **TVQ (9,975 %)** et le **total final**.
+5. Place les taux de TPS et TVQ dans des cellules nommées sur une feuille `Paramètres`.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Utilise des références absolues pour la plage du catalogue (`Catalogue!$A$2:$E$9`) car la formule sera copiée vers le bas. Les taux de taxe doivent être référencés par nom (`TauxTPS`, `TauxTVQ`).
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    B2: =SIERREUR(RECHERCHEV(A2; Catalogue!$A$2:$E$9; 2; FAUX); "")
+    C2: =SIERREUR(RECHERCHEV(A2; Catalogue!$A$2:$E$9; 4; FAUX); 0)
+    E2: =C2*D2
+
+    Total avant taxes : =SOMME(E2:E6)
+    TPS :               =B10*TauxTPS
+    TVQ :               =B10*TauxTVQ
+    Total :             =B10+B11+B12
+    ```
+  </TabItem> */}
+</Tabs>
+
+---
+
+## Niveau 2 — RECHERCHEV approchée (barèmes)
+
+### Exercice 2.1 — Grille de commissions
+
+**Contexte :** L'entreprise *Électroménagers Lapointe* de Chicoutimi verse des commissions à ses vendeurs selon les ventes mensuelles :
+
+**Feuille `Barème` :**
+
+<DataTable
+  columns={["Ventes minimum", "Taux de commission"]}
+  rows={[
+    ["0", "2 %"],
+    ["5 000", "4 %"],
+    ["10 000", "6 %"],
+    ["20 000", "8 %"],
+    ["35 000", "10 %"],
+    ["50 000", "12 %"],
+  ]}
+/>
+
+
+**Feuille `Commissions` :**
+
+<DataTable
+  columns={["Vendeur", "Ventes du mois"]}
+  rows={[
+    ["Lapointe, Sylvie", "8 200 $"],
+    ["Bergeron, Jean", "22 500 $"],
+    ["Dufour, Marie", "4 800 $"],
+    ["Pelletier, Éric", "51 000 $"],
+    ["Girard, Annie", "15 300 $"],
+    ["Morin, Pierre", "35 000 $"],
+  ]}
+/>
+
+Dans la feuille `Commissions`:
+<Steps>
+1. En colonne C, retrouve le **taux de commission** applicable avec `RECHERCHEV` en mode approché (`VRAI`).
+2. En colonne D, calcule le **montant de la commission** (ventes × taux).
+3. En colonne E, affiche « Bronze » (si montant < 5 000), « Argent » (si montant < 20 000), « Or » (si montant < 50 000) ou « Platine » (si montant ≥ 50 000).
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Le barème est déjà trié en ordre croissant — c'est le cas classique pour `RECHERCHEV` avec `VRAI`. Pour 8 200 $, Excel trouve la plus grande valeur ≤ 8 200, soit 5 000, et retourne 4 %.
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    C2: =RECHERCHEV(B2; Barème!$A$2:$B$7; 2; VRAI)
+    D2: =B2*C2
+    E2: =SI(B2<5000; "Bronze"; SI(B2<20000; "Argent"; SI(B2<50000; "Or"; "Platine")))
+    ```
+  </TabItem> */}
+</Tabs>
+
+---
+
+{/* ### Exercice 2.2 — Tranches d'imposition simplifiées
+
+**Contexte :** Pour un exercice de modélisation, tu utilises des tranches d'impôt fédéral simplifiées :
+
+<DataTable
+  columns={["Revenu imposable minimum", "Taux marginal"]}
+  rows={[
+    ["0", "15 %"],
+    ["55 867", "20,5 %"],
+    ["111 733", "26 %"],
+    ["154 906", "29 %"],
+    ["220 000", "33 %"],
+  ]}
+/>
+
+**Données des contribuables :**
+
+| Nom | Revenu imposable |
+|---|---|
+| Tremblay, Anne | 48 000 $ |
+| Gagnon, Robert | 125 000 $ |
+| Bouchard, Claire | 72 000 $ |
+| Roy, Simon | 230 000 $ |
+
+<Steps>
+1. En colonne C, retrouve le **taux marginal** applicable.
+2. En colonne D, calcule l'**impôt approximatif** (revenu × taux). *(Simplification pédagogique — le calcul réel est par tranches cumulatives.)*
+3. En colonne E, affiche le **palier** avec `RECHERCHEX` ou `INDEX`/`EQUIV` : « Palier 1 », « Palier 2 », etc.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Pour le palier, ajoute une colonne C au barème avec les noms de paliers, puis utilise `RECHERCHEV` avec 3 colonnes ou `RECHERCHEX` avec correspondance approchée (5e argument = -1).
+  </TabItem>
+  <TabItem label="✅ Solution">
+    ```
+    C2: =RECHERCHEV(B2; Barème!$A$2:$B$6; 2; VRAI)
+    D2: =B2*C2
+    E2: =RECHERCHEX(B2; Barème!$A$2:$A$6; Barème!$C$2:$C$6; ; -1)
+    ```
+    Avec `RECHERCHEX`, le 5e argument `-1` signifie « correspondance exacte, sinon l'élément inférieur suivant » — équivalent au `VRAI` de `RECHERCHEV`.
+  </TabItem>
+</Tabs> */}
+
+---
+
+## Niveau 3 — RECHERCHEX
+
+### Exercice 3.1 — Recherche inversée (vers la gauche)
+
+**Contexte :** Chez *Transport Lacroix* de Rouyn-Noranda, la liste des employés comporte un code employé en colonne A et le nom en colonne B. Un gestionnaire connaît le **nom** d'un employé et veut retrouver son **code** — une recherche **vers la gauche** que `RECHERCHEV` ne peut pas faire.
+
+**Feuille `Personnel` :**
+
+<DataTable
+  columns={["Code", "Nom", "Département", "Téléphone"]}
+  rows={[
+    ["TRN-ADM-001", "Tremblay, Sophie", "Administration", "819-555-1234"],
+    ["TRN-ENT-002", "Gagnon, Marc", "Entretien", "819-555-5678"],
+    ["TRN-ADM-003", "Bouchard, Émilie", "Administration", "819-555-9012"],
+    ["TRN-LOG-004", "Roy, Catherine", "Logistique", "819-555-3456"],
+    ["TRN-ENT-005", "Côté, Alexandre", "Entretien", "819-555-7890"],
+  ]}
+/>
+
+Dans une **Feuille `Gestionnaire`**, la cellule `B1` contiendra le nom saisi par le gestionnaire.  
+Applique la fonction `RECHERCHEX` pour faire afficher:
+
+<Steps>
+1. En B3: le **code employé** à partir du nom en B1 — une recherche vers la gauche.
+2. En B4: le **département**.
+3. En B5: le **téléphone**.
+4. Gère le cas « employé introuvable » avec le 4e argument de `RECHERCHEX`.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Avec `RECHERCHEX`, la plage de recherche (colonne B) et la plage de retour (colonne A) sont indépendantes. Pas besoin que la clé soit en première colonne.
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    B3: =RECHERCHEX(B1; Personnel!B:B; Personnel!A:A; "Employé introuvable")
+    B4: =RECHERCHEX(B1; Personnel!B:B; Personnel!C:C; "Employé introuvable")
+    B5: =RECHERCHEX(B1; Personnel!B:B; Personnel!D:D; "Employé introuvable")
+    ```
+  </TabItem> */}
+</Tabs>
+
+{/* ### Exercice 3.2 — Recherche avec caractères génériques
+
+**Contexte :** La brasserie *Boréale* à Blainville dispose d'une table de produits avec des codes complexes :
+
+<DataTable
+  columns={["Code produit", "Nom", "Format", "Prix détail"]}
+  rows={[
+    ["BOR-BLA-341-06", "Blonde d'été", "341 ml", "2,49 $"],
+    ["BOR-BLA-473-06", "Blonde d'été", "473 ml", "3,29 $"],
+    ["BOR-IPA-341-06", "IPA du Nord-Est", "341 ml", "2,99 $"],
+    ["BOR-IPA-473-06", "IPA du Nord-Est", "473 ml", "3,79 $"],
+    ["BOR-ROU-341-12", "Rousse", "341 ml", "2,49 $"],
+    ["BOR-ROU-473-06", "Rousse", "473 ml", "3,29 $"],
+    ["BOR-NOI-341-06", "Noire à l'avoine", "341 ml", "2,99 $"],
+    ["BOR-BLA-341-12", "Blonde d'été", "341 ml (12)", "26,99 $"],
+  ]}
+/>
+
+<Steps>
+1. En utilisant `RECHERCHEX` avec caractères génériques, trouve le **premier produit IPA** :
+   `=RECHERCHEX("BOR-IPA*"; A:A; B:B; "Non trouvé"; 2)`
+
+2. Trouve le **prix du premier produit en format 473 ml** :
+   `=RECHERCHEX("*473*"; A:A; D:D; 0; 2)`
+
+3. Trouve le **nom du premier produit vendu en format 12** (caisse) :
+   `=RECHERCHEX("*-12"; A:A; B:B; "Aucun format 12"; 2)`
+
+4. Combine avec `STXT` : à partir d'un code saisi en F1, extrais le type de bière (positions 5 à 7) et retrouve le nom complet. Utilise une table de correspondance :
+
+   | Code | Type |
+   |---|---|
+   | BLA | Blonde |
+   | IPA | IPA |
+   | ROU | Rousse |
+   | NOI | Noire |
+
+   ```
+   =RECHERCHEX(STXT(F1; 5; 3); G:G; H:H; "Type inconnu")
+   ```
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    Le 5e argument de `RECHERCHEX` doit être `2` pour activer les caractères génériques. `*` remplace n'importe quel nombre de caractères, `?` remplace exactement un caractère.
+  </TabItem>
+  <TabItem label="✅ Solution complète">
+    ```
+    Premier IPA :    =RECHERCHEX("BOR-IPA*"; A:A; B:B; "Non trouvé"; 2)
+                     → "IPA du Nord-Est"
+
+    Prix 473 ml :    =RECHERCHEX("*473*"; A:A; D:D; 0; 2)
+                     → 3,29 $
+
+    Format 12 :      =RECHERCHEX("*-12"; A:A; B:B; "Aucun format 12"; 2)
+                     → "Blonde d'été"
+
+    Type depuis F1 : =RECHERCHEX(STXT(F1; 5; 3); G:G; H:H; "Type inconnu")
+    ```
+  </TabItem>
+</Tabs> */}
+
+---
+
+## Niveau 4 — INDEX + EQUIV
+
+### Exercice 4.1 — Recherche vers la gauche (sans RECHERCHEX)
+
+**Contexte :** Même tableau du *Transport Lacroix* (exercice 3.1), mais cette fois, tu doit utiliser `INDEX`/`EQUIV`.
+
+<Steps>
+1. Retrouve le **code employé** à partir du nom en B1 en utilisant uniquement `INDEX` et `EQUIV`.
+2. Enveloppe dans `SIERREUR`.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    `EQUIV` trouve la position du nom dans la colonne B, puis `INDEX` retourne la valeur à cette position dans la colonne A.
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    =SIERREUR(
+      INDEX(Personnel!A:A; EQUIV(B1; Personnel!B:B; 0));
+      "Employé introuvable"
+    )
+    ```
+    Décomposition : si B1 = « Gagnon, Marc », `EQUIV` retourne **2** (2e position), et `INDEX` retourne la 2e valeur de la colonne A : `TRN-ENT-002`.
+  </TabItem> */}
+</Tabs>
+
+---
+
+### Exercice 4.2 — Recherche bidimensionnelle (croisement ligne × colonne)
+
+**Contexte :** La fromagerie *Les Têtes Fromagères* de Warwick publie une grille de prix selon le format et le type de fromage :
+
+**Feuille `GrillePrix` :**
+
+<DataTable
+  columns={["", "200 g", "400 g", "1 kg", "Meule (2 kg)"]}
+  rows={[
+    ["Cheddar vieilli", "7,99 $", "13,99 $", "29,99 $", "52,99 $"],
+    ["Brie double crème", "9,49 $", "16,99 $", "34,99 $", "59,99 $"],
+    ["Bleu bénédictin", "10,99 $", "18,99 $", "39,99 $", "69,99 $"],
+    ["Raclette", "8,99 $", "15,99 $", "32,99 $", "56,99 $"],
+    ["Gouda fumé", "9,99 $", "17,49 $", "36,99 $", "64,99 $"],
+  ]}
+/>
+
+Dans une **Feuille `Recherche`**, la cellule `B1` contiendra le type de fromage et la cellule `B2` contiendra le format:
+
+<Steps>
+1. En B4, retrouve le **prix** en croisant le type (B1) et le format (B2) avec deux `EQUIV` et un `INDEX`.
+2. En B5, calcule le **prix au kg** : divise le prix trouvé par le poids en kg du format sélectionné. Utilise un `RECHERCHEX` ou `SI` imbriqué pour convertir le format en poids numérique.
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice">
+    `INDEX` accepte un argument ligne **et** un argument colonne. Utilise `EQUIV` sur les types de fromage pour trouver la ligne, et `EQUIV` sur les formats pour trouver la colonne.
+  </TabItem>
+  {/* <TabItem label="✅ Solution">
+    ```
+    B4: =SIERREUR(
+          INDEX(GrillePrix!B2:E6;
+            EQUIV(B1; GrillePrix!A2:A6; 0);
+            EQUIV(B2; GrillePrix!B1:E1; 0)
+          );
+          "Combinaison invalide"
+        )
+
+    Conversion format → poids :
+    B5 (auxiliaire): =RECHERCHEX(B2; {"200 g";"400 g";"1 kg";"Meule (2 kg)"}; {0,2;0,4;1;2})
+
+    Prix au kg :
+    B6: =B4 / B5
+    ```
+  </TabItem> */}
+</Tabs>
+
+---
+
+{/* ### Exercice 4.3 — Tableau de bord dynamique multi-feuilles
+
+**Contexte :** Dans le classeur de suivi des ventes régionales (vu dans l'exercice sur les fonctions conditionnelles), les données sont maintenant séparées sur plusieurs feuilles.
+
+**Feuille `Vendeurs` :**
+
+<DataTable
+  columns={["Code", "Nom", "Région", "Date embauche"]}
+  rows={[
+    ["V001", "Dubois, Sarah", "Montréal", "2019-03-15"],
+    ["V002", "Richard, Thomas", "Québec", "2020-08-01"],
+    ["V003", "Caron, Julie", "Laval", "2018-06-12"],
+    ["V004", "Nadeau, Pierre", "Gatineau", "2021-01-20"],
+    ["V005", "Poulin, Amélie", "Sherbrooke", "2017-09-05"],
+    ["V006", "Bérubé, Nicolas", "Montréal", "2022-11-10"],
+  ]}
+/>
+
+**Feuille `Ventes_2026` :**
+
+<DataTable
+  columns={["Code vendeur", "Mois", "Montant", "Type client"]}
+  rows={[
+    ["V001", "Janvier", "12 500", "Entreprise"],
+    ["V003", "Janvier", "8 200", "Particulier"],
+    ["V002", "Janvier", "15 000", "Entreprise"],
+    ["V001", "Février", "14 200", "Particulier"],
+    ["V005", "Janvier", "9 800", "Entreprise"],
+    ["V004", "Février", "7 600", "Particulier"],
+    ["V006", "Janvier", "5 400", "Entreprise"],
+    ["V003", "Février", "11 300", "Entreprise"],
+    ["V002", "Février", "13 100", "Particulier"],
+    ["V001", "Janvier", "6 700", "Particulier"],
+    ["V005", "Février", "10 500", "Entreprise"],
+    ["V006", "Février", "8 900", "Particulier"],
+  ]}
+/>
+
+**Feuille `Tableau de bord`, cellule B1 = code vendeur sélectionné :**
+
+<Steps>
+1. **Nom du vendeur** (B3) : `INDEX`/`EQUIV` sur la feuille `Vendeurs`.
+2. **Région** (B4) : idem.
+3. **Date d'embauche** (B5) : idem, formatée avec `TEXTE(date; "jj MMMM aaaa")`.
+4. **Ancienneté** (B6) : `DATEDIF` sur la date trouvée.
+5. **Total des ventes** (B8) : `SOMME.SI` sur `Ventes_2026` pour ce vendeur.
+6. **Nombre de transactions** (B9) : `NB.SI` sur `Ventes_2026` pour ce vendeur.
+7. **Vente moyenne** (B10) : `MOYENNE.SI` sur `Ventes_2026` pour ce vendeur.
+8. **Ventes « Entreprise »** (B11) : `SOMME.SI.ENS` (double critère : code vendeur ET type « Entreprise »).
+9. **Ventes « Particulier »** (B12) : idem, critère « Particulier ».
+10. **Statut** (B14) : `SI` — si le total des ventes dépasse 25 000 $, afficher « Objectif atteint ✓ », sinon « En cours ».
+</Steps>
+
+<Tabs>
+  <TabItem label="💡 Indice — Infos vendeur">
+    ```
+    B3: =INDEX(Vendeurs!B:B; EQUIV(B1; Vendeurs!A:A; 0))
+    B5: =TEXTE(INDEX(Vendeurs!D:D; EQUIV(B1; Vendeurs!A:A; 0)); "jj MMMM aaaa")
+    B6: =DATEDIF(INDEX(Vendeurs!D:D; EQUIV(B1; Vendeurs!A:A; 0)); AUJOURDHUI(); "Y") & " an(s)"
+    ```
+  </TabItem>
+  <TabItem label="💡 Indice — Ventes">
+    ```
+    B8:  =SOMME.SI(Ventes_2026!A:A; B1; Ventes_2026!C:C)
+    B9:  =NB.SI(Ventes_2026!A:A; B1)
+    B10: =MOYENNE.SI(Ventes_2026!A:A; B1; Ventes_2026!C:C)
+    B11: =SOMME.SI.ENS(Ventes_2026!C:C; Ventes_2026!A:A; B1; Ventes_2026!D:D; "Entreprise")
+    ```
+  </TabItem>
+  <TabItem label="✅ Solution complète">
+    ```
+    B3:  =SIERREUR(INDEX(Vendeurs!B:B; EQUIV(B1; Vendeurs!A:A; 0)); "—")
+    B4:  =SIERREUR(INDEX(Vendeurs!C:C; EQUIV(B1; Vendeurs!A:A; 0)); "—")
+    B5:  =SIERREUR(TEXTE(INDEX(Vendeurs!D:D; EQUIV(B1; Vendeurs!A:A; 0)); "jj MMMM aaaa"); "—")
+    B6:  =SIERREUR(DATEDIF(INDEX(Vendeurs!D:D; EQUIV(B1; Vendeurs!A:A; 0)); AUJOURDHUI(); "Y") & " an(s) et " & DATEDIF(INDEX(Vendeurs!D:D; EQUIV(B1; Vendeurs!A:A; 0)); AUJOURDHUI(); "YM") & " mois"; "—")
+    B8:  =SOMME.SI(Ventes_2026!A:A; B1; Ventes_2026!C:C)
+    B9:  =NB.SI(Ventes_2026!A:A; B1)
+    B10: =SIERREUR(MOYENNE.SI(Ventes_2026!A:A; B1; Ventes_2026!C:C); 0)
+    B11: =SOMME.SI.ENS(Ventes_2026!C:C; Ventes_2026!A:A; B1; Ventes_2026!D:D; "Entreprise")
+    B12: =SOMME.SI.ENS(Ventes_2026!C:C; Ventes_2026!A:A; B1; Ventes_2026!D:D; "Particulier")
+    B14: =SI(B8>=25000; "Objectif atteint ✓"; "En cours")
+    ```
+  </TabItem>
+</Tabs> */}
+
+---
