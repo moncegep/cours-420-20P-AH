@@ -1,0 +1,312 @@
+---
+title: "Labo 2: Gestion des stocks et des commandes fournisseurs"
+description: "Créer un chiffrier Excel de suivi des inventaires et des commandes fournisseurs avec formules automatisées et tableau de bord."
+sidebar:
+  label: "Stocks et commandes"
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid, Badge } from '@astrojs/starlight/components';
+
+import DataTable from "./../../../components/DataTable.astro";
+
+
+## Objectif
+
+Tu dois créer un **chiffrier Excel** qui permet à un petit commerce de détail québécois de gérer ses **stocks de produits** et ses **commandes auprès de fournisseurs**. 
+Le chiffrier doit calculer automatiquement les niveaux de stock, les valeurs d'inventaire, les retards de livraison et présenter un tableau de bord de la situation globale.
+
+<Aside type="caution" title="Fichier de remise">
+  Nomme le fichier (à remettre) `Labo_Stocks_PrenomNom.xlsx` en remplaçant `PrenomNom` par ton prénom et nom de famille.
+</Aside>
+
+### Fonctions Excel utiles
+
+Voici la liste des fonctions utiles pour cet exercice :
+
+- `AUJOURDHUI()` : Affiche la date actuelle du système et se met à jour automatiquement.
+- `SI()` : Vérifie si une condition est vraie ou fausse et retourne une valeur différente selon le résultat.
+- `SI.CONDITIONS()` : Permet de tester plusieurs conditions et retourne la valeur associée à la première condition vraie.
+- `NB()` : Compte le nombre de cellules contenant des nombres dans une plage donnée.
+- `NB.SI()` : Compte le nombre de cellules qui répondent à un critère précis (ex. : `">10"`).
+- `SOMME.SI()` : Additionne les cellules qui respectent un critère spécifique.
+- `SOMME()` : Additionne une série de nombres ou une plage de cellules.
+- `MOYENNE()` : Calcule la moyenne (valeur moyenne) d'une plage de nombres.
+- `MOYENNE.SI()` : Calcule la moyenne des cellules qui répondent à un critère donné.
+- `MAJUSCULE()` : Convertit un texte en lettres majuscules.
+- `CONCAT()` : Combine plusieurs chaînes de texte en une seule.
+- `MAX()` : Retourne la plus grande valeur parmi une liste de valeurs.
+
+---
+
+## Partie 1 – Suivi des stocks (45 %)
+
+Crée une feuille nommée **`Stocks`** avec les colonnes et données suivantes.  
+
+<Aside type="note" title="Colonnes avec valeur calculée">
+Les colonnes **G, H, I et J** seront calculées par tes formules.
+</Aside>
+
+| Colonne | Titre | Format |
+|---|---|---|
+| A | Code produit | Texte (ex. : `PRD-001`) |
+| B | Produit | Texte |
+| C | Catégorie | Texte |
+| D | Quantité en stock | Nombre entier |
+| E | Seuil minimum | Nombre entier |
+| F | Prix unitaire | Monétaire (2 décimales, symbole `$`) |
+| G | Valeur en stock | Monétaire **(calculé)** |
+| H | Écart avec le seuil | Nombre entier **(calculé)** |
+| I | Statut du stock | Texte **(calculé)** |
+| J | Catégorie normalisée | Texte **(calculé)** |
+
+
+### Données à saisir
+
+<DataTable
+  columns={["Code produit", "Produit", "Catégorie", "Qté en stock", "Seuil minimum", "Prix unitaire"]}
+  rows={[
+    ["PRD-001", "Sirop d'érable biologique 500 ml", "Alimentaire", "120", "30", "14,50"],
+    ["PRD-002", "Tuque en laine mérinos", "textile", "8", "15", "34,99"],
+    ["PRD-003", "Savon artisanal lavande", "SOINS", "45", "20", "8,75"],
+    ["PRD-004", "Bougie de soya canneberge", "Maison", "3", "10", "22,00"],
+    ["PRD-005", "Bière microbrasserie IPA (6 pack)", "alimentaire", "60", "25", "16,99"],
+    ["PRD-006", "Mitaines en cuir doublées", "Textile", "0", "12", "49,95"],
+    ["PRD-007", "Tisane boréale menthe-sapin", "alimentaire", "200", "50", "6,50"],
+    ["PRD-008", "Planche à découper en érable", "maison", "18", "10", "38,00"],
+    ["PRD-009", "Ensemble bas de laine", "TEXTILE", "5", "20", "27,50"],
+    ["PRD-010", "Chocolat noir 70 % Québec", "Alimentaire", "0", "40", "11,25"]
+  ]}
+/>
+
+<Aside type="note" title="Comprendre les données">
+  Ces 10 produits couvrent les trois situations de stock nécessaires :
+  - **Stock suffisant** : PRD-001, PRD-005, PRD-007, PRD-008 (quantité au-dessus du seuil minimum)
+  - **Stock critique** : PRD-002, PRD-004, PRD-009 (quantité sous le seuil, mais pas à zéro)
+  - **Rupture de stock** : PRD-006 et PRD-010 (quantité à zéro)
+  - **Cas limite** : PRD-003 (quantité au-dessus du seuil, mais pas de beaucoup)
+
+  Les catégories sont volontairement saisies avec des casses différentes pour simuler des saisies incohérentes.
+</Aside>
+
+### Calculs à réaliser
+
+<Aside type="note" title="Formule à développer">
+Pour chacun des calculs plus bas, il faut écrire une seule formule par colonne. 
+Cette formule sera appliquée à toutes les cellules de la colonne. Si besoin, tu peux 
+te créer des colonnes de calcul intermédiaire pour simplifier l'écriture de la formule finale.
+</Aside>
+
+#### A. Valeur en stock (colonne `G`)
+
+Calcule la **valeur totale en stock** pour chaque produit :
+
+**Formule** : `quantité en stock × prix unitaire`
+
+#### B. Écart avec le seuil (colonne `H`)
+
+Calcule la **différence** entre la quantité en stock et le seuil minimum :
+
+- Le résultat peut être **négatif** (indique un manque)
+- Le résultat peut être **positif** (indique un surplus par rapport au seuil)
+- Le résultat peut être **zéro** (stock exactement au seuil)
+
+**Formule** : `quantité en stock − seuil minimum`
+
+#### C. Statut du stock (colonne `I`)
+
+La colonne doit afficher automatiquement :
+
+| Condition | Valeur affichée |
+|---|---|
+| La quantité en stock est **égale à 0** | `Rupture` |
+| La quantité est **inférieure au seuil** minimum (mais pas 0) | `Critique` |
+| La quantité est **supérieure ou égale au seuil** minimum | `OK` |
+
+<Aside type="note">
+  Tu auras besoin d'imbriquer des `SI()` pour gérer les trois cas. Alternativement, tu peux y arriver en utilisant `SI.CONDITIONS()`. 
+</Aside>
+
+#### D. Catégorie normalisée (colonne `J`)
+
+Affiche la catégorie du produit en **lettres majuscules**, peu importe la casse saisie dans la colonne `C`.
+
+### Indicateurs (sous le tableau)
+
+Calcule les indicateurs suivants à l'aide des fonctions appropriées :
+
+1. Nombre total de produits
+2. Nombre de produits en rupture de stock
+3. Nombre de produits en état critique
+4. Valeur totale de l'inventaire (somme de la colonne G)
+5. Valeur moyenne d'un produit en stock (moyenne de la colonne G, **seulement les produits ayant une quantité supérieure à 0**)
+
+---
+
+## Partie 2 – Commandes fournisseurs (30 %)
+
+Crée une feuille nommée **`Commandes`** avec la structure suivante.
+
+<Aside type="note" title="Colonnes avec valeur calculée">
+Les colonnes **H, I, J et K** seront calculées par tes formules.
+</Aside>
+
+| Colonne | Titre | Format |
+|---|---|---|
+| A | No commande | Texte (ex. : `CMD-001`) |
+| B | Fournisseur | Texte |
+| C | Date commande | Date (`AAAA-MM-JJ`) |
+| D | Date livraison prévue | Date (`AAAA-MM-JJ`) |
+| E | Montant | Monétaire (2 décimales, symbole `$`) |
+| F | Date livraison réelle | Date (`AAAA-MM-JJ`) ou vide |
+| G | Conforme | Texte (`Oui`, `Non` ou vide) |
+| H | Jours de retard | Nombre entier **(calculé)** |
+| I | Statut | Texte **(calculé)** |
+| J | Pénalité | Monétaire **(calculé)** |
+| K | Fournisseur normalisé | Texte **(calculé)** |
+
+
+### Données à saisir
+
+<DataTable
+  columns={["No commande", "Fournisseur", "Date commande", "Date livraison prévue", "Montant", "Date livraison réelle", "Conforme"]}
+  rows={[
+    ["CMD-001", "Érablière du rang Saint-Paul", "2025-12-01", "2025-12-20", "2800", "2025-12-18", "Oui"],
+    ["CMD-002", "ferme maraîchère Beaupré", "2025-12-10", "2026-01-10", "1450", "2026-01-25", "Non"],
+    ["CMD-003", "Microbrasserie Lac-Saint-Jean", "2026-01-05", "2026-01-25", "3200", "2026-01-24", "Oui"],
+    ["CMD-004", "ATELIER TEXTILE RICHMOND", "2025-11-20", "2025-12-20", "5600"],
+    ["CMD-005", "Savonnerie des Cantons", "2026-01-15", "2026-02-15", "980"],
+    ["CMD-006", "Chocolaterie artisanale Bromont", "2026-02-01", "2026-03-01", "1750"],
+    ["CMD-007", "menuiserie Abitibi", "2026-02-10", "2026-03-25", "2200"],
+    ["CMD-008", "Distribution Nordique Saguenay", "2026-02-20", "2026-04-01", "890"]
+  ]}
+/>
+
+<Aside type="note" title="Comprendre les données">
+  Ces 8 commandes couvrent les cas nécessaires :
+  - **Livrées à temps** : CMD-001 (avant la date prévue, conforme), CMD-003 (juste à temps, conforme)
+  - **Livrée en retard** : CMD-002 (retard + non conforme)
+  - **En retard (non livrées)** : CMD-004 (retard important), CMD-005 (retard moyen)
+  - **En attente (non échues)** : CMD-006, CMD-007 et CMD-008 (dates futures)
+
+  Les noms de fournisseurs sont volontairement saisis avec des casses différentes pour simuler des saisies incohérentes.
+</Aside>
+
+### Calculs à réaliser
+
+<Aside type="note" title="Formule à développer">
+Pour chacun des calculs plus bas, il faut écrire une seule formule par colonne. 
+Cette formule sera appliquée à toutes les cellules de la colonne.
+</Aside>
+
+#### A. Jours de retard (colonne `H`)
+
+Calcule le nombre de jours de retard de livraison selon la logique suivante :
+
+- Si la commande est **livrée** → différence entre la date de livraison réelle et la date de livraison prévue
+- Si la commande est **non livrée** → différence entre `AUJOURDHUI()` et la date de livraison prévue
+- Le résultat ne doit **jamais être négatif** (une livraison avant la date prévue ou une commande non encore échue = 0 jour de retard)
+
+<Aside type="tip" title="Comment éviter d'avoir des valeurs négatives?">
+  La fonction `MAX()` peut vous aider à empêcher les valeurs négatives.
+</Aside>
+
+<Aside type="tip" title='Comment vérifier si une cellule contient une valeur?'>
+  Pour vérifier si une cellule contient une valeur (date), tu peux la comparer à une chaîne vide : `F2<>""` retourne VRAI si une date est saisie.
+</Aside>
+
+#### B. Statut automatique (colonne `I`)
+
+La colonne doit afficher automatiquement :
+
+| Condition | Valeur affichée |
+|---|---|
+| Une date de livraison réelle est saisie | `Livrée` |
+| Pas de date de livraison **et** date prévue dépassée | `En retard` |
+| Pas de date de livraison **et** date prévue non dépassée | `En attente` |
+
+<Aside type="note">
+  Tu auras besoin d'imbriquer des `SI()` pour gérer les trois cas. Alternativement, tu peux y arriver en utilisant `SI.CONDITIONS()`. 
+</Aside>
+
+#### C. Pénalité de retard (colonne `J`)
+
+Applique une pénalité de **1,5 % par tranche de 15 jours de retard** sur le montant de la commande.
+**Si la commande est livrée à temps ou n'est pas en retard, la pénalité doit être `0`.**
+
+**Formule** : `montant × 0,015 × (jours_de_retard ÷ 15)`
+
+<Aside type="note">
+  Attention : une commande **livrée en retard** (comme CMD-002) doit aussi avoir une pénalité calculée, car le retard a bien eu lieu même si la livraison a fini par arriver.
+</Aside>
+
+#### D. Fournisseur normalisé (colonne `K`)
+
+Affiche le nom du fournisseur en **lettres majuscules**, peu importe la casse saisie dans la colonne `B`.
+
+### Indicateurs (sous le tableau)
+
+Calcule les indicateurs suivants à l'aide des fonctions appropriées :
+
+1. Nombre total de commandes
+2. Nombre de commandes en retard (non livrées et échéance dépassée)
+3. Total des montants des commandes en retard
+4. Total des montants en attente de livraison
+5. Moyenne des jours de retard (commandes en retard seulement, **incluant les livrées en retard**)
+
+---
+
+## Partie 3 – Tableau de bord (25 %)
+
+Crée une feuille nommée **`Tableau_de_bord`**. Cette feuille doit **référencer les données des deux autres feuilles** (aucune donnée saisie manuellement).
+
+### Indicateurs à afficher
+
+| # | Indicateur | Source |
+|---|---|---|
+| 1 | Valeur totale de l'inventaire | `Stocks` |
+| 2 | Nombre de produits en rupture ou en état critique | `Stocks` |
+| 3 | Total des commandes en attente (non livrées) | `Commandes` |
+| 4 | Total des pénalités de retard | `Commandes` |
+| 5 | Solde net (valeur inventaire − commandes en attente) | Les deux feuilles |
+
+### Phrases récapitulatives
+
+Utilise la fonction `CONCAT()` pour générer les phrases suivantes automatiquement dans des cellules dédiées :
+
+| Phrase attendue (exemple) | Éléments à assembler |
+|---|---|
+| `"Inventaire total : 15 432,50 $"` | Texte fixe + valeur de l'indicateur 1 |
+| `"Produits à commander : 5"` | Texte fixe + valeur de l'indicateur 2 |
+| `"Rapport généré le 2026-03-12"` | Texte fixe + date d'aujourd'hui |
+
+<Aside type="tip">
+  Pour formater un montant à l'intérieur d'un `CONCAT()`, utilise la fonction `TEXTE()`.      
+  - `TEXTE(A1;"# ##0,00 $")` transforme un nombre en texte avec le format monétaire.
+  - `TEXTE(A1;"yyyy-mm-dd")` transforme une date en texte suivant le format ANNÉE-MOIS-JOUR.
+</Aside>
+
+### Mise en forme conditionnelle
+
+Applique une **mise en forme conditionnelle** sur les cellules suivantes : *Nombre de produits en rupture ou en état critique* et *Total des pénalités de retard*
+
+#### Règles pour le nombre de produits en rupture/critique
+
+| Condition | Mise en forme |
+|---|---|
+| La valeur est **supérieure à 4** | Fond **rouge**, texte **blanc**, **gras** |
+| La valeur est **entre 2 et 4** | Fond **jaune**, texte **noir** |
+| La valeur est **inférieure à 2** | Fond **vert**, texte **noir** |
+
+#### Règles pour le total des pénalités
+
+| Condition | Mise en forme |
+|---|---|
+| La valeur dépasse **500 $** | Fond **rouge**, texte **blanc**, **gras** |
+| La valeur est entre **100 $** et **500 $** | Fond **jaune**, texte **noir** |
+| La valeur est inférieure à **100 $** | Fond **vert**, texte **noir** |
+
+
+<Aside type="tip" title="Conseil pour la remise">
+  Relis-toi et vérifie tes formules avant de déposer ton fichier sur Léa.  
+  N'oublie pas de nommer le fichier (à remettre) `Labo_Stocks_PrenomNom.xlsx` en remplaçant `PrenomNom` par ton prénom et nom de famille.
+</Aside>
