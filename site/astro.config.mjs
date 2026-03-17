@@ -77,6 +77,13 @@ export default defineConfig({
 								]},
 							]
 						},
+						{
+							label: 'Semaine 6',
+							items: [
+								{ label: 'Quiz de révision', slug: 'exercices/07-quiz-revision' },
+								// { label: 'Exercice de synthese', slug: 'exercices/07-synthese' }
+							]
+						},
 					],
 				},
 				{

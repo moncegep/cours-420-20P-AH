@@ -1,0 +1,449 @@
+---
+title: "Exercice de révision — Analyse d'adresses clients"
+description: "Exercice intégrateur de révision : nettoyage de données, fonctions de texte, recherche, validation et analyse dans Excel."
+sidebar:
+  label: "Révision : Adresses clients"
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+
+## Mise en situation
+
+Une entreprise montréalaise possède une liste d'adresses clients provenant de plusieurs sources. Les codes postaux sont incohérents : espaces, tirets, minuscules, codes incomplets ou hors Montréal. Votre tâche est de **nettoyer les données, enrichir les informations et produire une analyse.**
+
+<Aside type="tip" title="Compétences révisées">
+  Cet exercice intègre l'ensemble des notions vues : fonctions de texte, conditionnelles, logiques, de recherche, d'agrégation et mise en forme conditionnelle.
+</Aside>
+
+## Données de départ
+
+Créez un classeur avec **deux feuilles** :
+
+### Feuille `Clients`
+
+| Client | Code postal | Montant achat |
+|--------|------------|---------------|
+| C001 | H2X 1Y4 | 125 |
+| C002 | h1a3t9 | 89 |
+| C003 | H4W-2K7 | 230 |
+| C004 | J4B 5T6 | 54 |
+| C005 | H3A2M1 | 310 |
+| C006 | H8P 3A1 | 76 |
+| C007 | H2Z | 145 |
+| C008 | H9C 2K4 | 205 |
+| C009 | H3N 1X9 | 99 |
+| C010 | ABC123 | 40 |
+
+### Feuille `Correspondance`
+
+| FSA | Arrondissement |
+|-----|----------------|
+| H1A | Rivière-des-Prairies |
+| H2X | Ville-Marie |
+| H3A | Ville-Marie |
+| H3N | Côte-des-Neiges–Notre-Dame-de-Grâce |
+| H4W | Côte-des-Neiges–Notre-Dame-de-Grâce |
+| H8P | LaSalle |
+| H9C | L'Île-Bizard–Sainte-Geneviève |
+
+<Aside type="note" title="Pourquoi une feuille séparée ?">
+  En entreprise, les tables de référence (correspondances, paramètres, taux) sont toujours sur une feuille distincte. Cela permet de les modifier sans toucher aux formules, et de les réutiliser dans plusieurs analyses.
+</Aside>
+
+---
+
+## Partie 1 — Nettoyage du code postal (15 points)
+
+Ajoutez une colonne **D — Code postal normalisé** dans la feuille `Clients`.
+
+<Steps>
+1. **Retirer les espaces** du code postal brut avec `SUBSTITUE`.
+2. **Retirer les tirets** avec un deuxième `SUBSTITUE` imbriqué.
+3. **Convertir en majuscules** avec `MAJUSCULE`.
+4. **Conserver les 6 premiers caractères** avec `GAUCHE` pour éliminer tout caractère excédentaire.
+</Steps>
+
+L'objectif est d'obtenir un code postal uniforme de 6 caractères, en majuscules, sans espace ni tiret.
+
+<Tabs>
+  <TabItem label="Indice">
+    Les `SUBSTITUE` s'imbriquent de l'intérieur vers l'extérieur. Commencez par retirer les espaces, puis les tirets, puis appliquez `MAJUSCULE`, puis `GAUCHE`.
+
+    ```
+    =GAUCHE(MAJUSCULE(SUBSTITUE(SUBSTITUE(B2; " "; ""); "-"; "")); 6)
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Client | Code postal | Normalisé |
+    |--------|------------|-----------|
+    | C001 | H2X 1Y4 | H2X1Y4 |
+    | C002 | h1a3t9 | H1A3T9 |
+    | C003 | H4W-2K7 | H4W2K7 |
+    | C004 | J4B 5T6 | J4B5T6 |
+    | C005 | H3A2M1 | H3A2M1 |
+    | C006 | H8P 3A1 | H8P3A1 |
+    | C007 | H2Z | H2Z |
+    | C008 | H9C 2K4 | H9C2K4 |
+    | C009 | H3N 1X9 | H3N1X9 |
+    | C010 | ABC123 | ABC123 |
+  </TabItem>
+</Tabs>
+
+---
+
+## Partie 2 — Extraction du FSA (10 points)
+
+Ajoutez une colonne **E — FSA** (Forward Sortation Area).
+
+Le FSA correspond aux **3 premiers caractères** du code postal canadien. Il identifie une zone géographique.
+
+<Steps>
+1. Extraire les 3 premiers caractères du code postal normalisé (colonne D).
+</Steps>
+
+<Tabs>
+  <TabItem label="Indice">
+    ```
+    =GAUCHE(D2; 3)
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Client | FSA |
+    |--------|-----|
+    | C001 | H2X |
+    | C002 | H1A |
+    | C003 | H4W |
+    | C004 | J4B |
+    | C005 | H3A |
+    | C006 | H8P |
+    | C007 | H2Z |
+    | C008 | H9C |
+    | C009 | H3N |
+    | C010 | ABC |
+  </TabItem>
+</Tabs>
+
+---
+
+## Partie 3 — Validation du code postal (15 points)
+
+Ajoutez une colonne **F — Statut format**.
+
+<Steps>
+1. **Vérifier la longueur** : le code postal normalisé doit contenir exactement 6 caractères. Si ce n'est pas le cas, afficher `"Invalide"`.
+2. **Vérifier le format canadien** : le modèle est **Lettre–Chiffre–Lettre–Chiffre–Lettre–Chiffre** (ex. `H2X1Y4`). Si la longueur est correcte mais que le format ne correspond pas, afficher `"Format incorrect"`.
+3. Si les deux conditions sont respectées, afficher `"OK"`.
+</Steps>
+
+<Aside type="caution" title="Comment vérifier si un caractère est un chiffre ?">
+  Excel n'a pas de fonction `EST.LETTRE`. L'astuce est d'utiliser `ESTNUM(CNUM(STXT(...)))` pour tester si un caractère individuel est un chiffre :
+
+  - `=ESTNUM(CNUM(STXT(D2; 2; 1)))` → retourne `VRAI` si le 2e caractère est un chiffre.
+  - Pour les positions qui doivent être des lettres, vérifiez que le caractère **n'est pas** un chiffre : `=NON(ESTNUM(CNUM(STXT(D2; 1; 1))))`.
+</Aside>
+
+<Tabs>
+  <TabItem label="Indice — Version simple (longueur seulement)">
+    ```
+    =SI(NBCAR(D2)=6; "OK"; "Invalide")
+    ```
+    Cette version ne vérifie que la longueur, pas le format lettre-chiffre.
+  </TabItem>
+  <TabItem label="Indice — Version complète (longueur + format)">
+    Pour vérifier le modèle L-C-L-C-L-C, testez les 6 positions :
+
+    ```
+    =SI(NBCAR(D2)<>6; "Invalide";
+      SI(ET(
+        NON(ESTNUM(CNUM(STXT(D2;1;1))));
+        ESTNUM(CNUM(STXT(D2;2;1)));
+        NON(ESTNUM(CNUM(STXT(D2;3;1))));
+        ESTNUM(CNUM(STXT(D2;4;1)));
+        NON(ESTNUM(CNUM(STXT(D2;5;1))));
+        ESTNUM(CNUM(STXT(D2;6;1)))
+      ); "OK"; "Format incorrect"))
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Client | Normalisé | Statut (simple) | Statut (complet) |
+    |--------|-----------|-----------------|-------------------|
+    | C001 | H2X1Y4 | OK | OK |
+    | C002 | H1A3T9 | OK | OK |
+    | C003 | H4W2K7 | OK | OK |
+    | C004 | J4B5T6 | OK | OK |
+    | C005 | H3A2M1 | OK | OK |
+    | C006 | H8P3A1 | OK | OK |
+    | C007 | H2Z | Invalide | Invalide |
+    | C008 | H9C2K4 | OK | OK |
+    | C009 | H3N1X9 | OK | OK |
+    | C010 | ABC123 | OK | Format incorrect |
+
+    Le client C010 a 6 caractères mais le format est A-B-C-1-2-3 (3 lettres puis 3 chiffres), ce qui ne respecte pas le modèle canadien L-C-L-C-L-C.
+  </TabItem>
+</Tabs>
+
+---
+
+## Partie 4 — Correspondance avec l'arrondissement (20 points)
+
+Ajoutez une colonne **G — Arrondissement**.
+
+<Steps>
+1. **Chercher le FSA** (colonne E) dans la table de la feuille `Correspondance` pour retourner l'arrondissement associé.
+2. **Gérer les absences** : si le FSA n'existe pas dans la table, afficher `"Hors Montréal"`.
+3. **Gérer les invalides** : si le statut (colonne F) est `"Invalide"` ou `"Format incorrect"`, afficher `"Code invalide"` plutôt que de tenter la recherche.
+</Steps>
+
+<Aside type="tip" title="RECHERCHEX vs RECHERCHEV">
+  `RECHERCHEX` est plus simple ici car elle accepte un 4e argument pour la valeur par défaut si la recherche échoue, sans avoir besoin de `SIERREUR`. Si tu utilises `RECHERCHEV`, enveloppe-la dans `SIERREUR`.
+</Aside>
+
+<Tabs>
+  <TabItem label="Indice — Avec RECHERCHEX">
+    ```
+    =SI(F2="OK";
+      RECHERCHEX(E2; Correspondance!A:A; Correspondance!B:B; "Hors Montréal");
+      "Code invalide")
+    ```
+  </TabItem>
+  <TabItem label="Indice — Avec RECHERCHEV + SIERREUR">
+    ```
+    =SI(F2="OK";
+      SIERREUR(RECHERCHEV(E2; Correspondance!A:B; 2; FAUX); "Hors Montréal");
+      "Code invalide")
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Client | FSA | Arrondissement |
+    |--------|-----|----------------|
+    | C001 | H2X | Ville-Marie |
+    | C002 | H1A | Rivière-des-Prairies |
+    | C003 | H4W | Côte-des-Neiges–Notre-Dame-de-Grâce |
+    | C004 | J4B | Hors Montréal |
+    | C005 | H3A | Ville-Marie |
+    | C006 | H8P | LaSalle |
+    | C007 | H2Z | Code invalide |
+    | C008 | H9C | L'Île-Bizard–Sainte-Geneviève |
+    | C009 | H3N | Côte-des-Neiges–Notre-Dame-de-Grâce |
+    | C010 | ABC | Code invalide |
+  </TabItem>
+</Tabs>
+
+---
+
+## Partie 5 — Regroupement géographique (10 points)
+
+Ajoutez une colonne **H — Secteur**.
+
+<Steps>
+1. Classer chaque client dans un secteur selon l'arrondissement trouvé en colonne G :
+   - **Centre** → Ville-Marie, Côte-des-Neiges–Notre-Dame-de-Grâce
+   - **Ouest** → LaSalle, L'Île-Bizard–Sainte-Geneviève
+   - **Est** → Rivière-des-Prairies
+   - **Exclu** → Code invalide ou Hors Montréal
+</Steps>
+
+<Aside type="caution" title="Attention aux cas exclus">
+  Les clients dont le code postal est invalide ou hors Montréal ne doivent pas être comptés dans un secteur géographique montréalais. Vérifiez d'abord la colonne G avant de classer.
+</Aside>
+
+<Tabs>
+  <TabItem label="Indice — Avec SI imbriqués">
+    ```
+    =SI(OU(G2="Code invalide"; G2="Hors Montréal"); "Exclu";
+      SI(OU(G2="Ville-Marie"; G2="Côte-des-Neiges–Notre-Dame-de-Grâce"); "Centre";
+        SI(OU(G2="LaSalle"; G2="L'Île-Bizard–Sainte-Geneviève"); "Ouest";
+          SI(G2="Rivière-des-Prairies"; "Est";
+            "Exclu"))))
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Client | Arrondissement | Secteur |
+    |--------|----------------|---------|
+    | C001 | Ville-Marie | Centre |
+    | C002 | Rivière-des-Prairies | Est |
+    | C003 | CDN–NDG | Centre |
+    | C004 | Hors Montréal | Exclu |
+    | C005 | Ville-Marie | Centre |
+    | C006 | LaSalle | Ouest |
+    | C007 | Code invalide | Exclu |
+    | C008 | L'Île-Bizard–Ste-Geneviève | Ouest |
+    | C009 | CDN–NDG | Centre |
+    | C010 | Code invalide | Exclu |
+  </TabItem>
+</Tabs>
+
+---
+
+## Partie 6 — Analyse statistique (15 points)
+
+Créez une zone d'analyse dans la feuille `Clients` (par exemple à partir de la colonne J) ou sur une feuille `Analyse`.
+
+<Steps>
+1. **Nombre total de clients** : comptez toutes les entrées dans la colonne Client.
+2. **Nombre de clients montréalais** : comptez les clients dont le secteur (colonne H) n'est **ni** `"Exclu"`.
+3. **Nombre de codes postaux invalides** : comptez les clients dont le statut (colonne F) n'est pas `"OK"`.
+4. **Montant total des achats** : additionnez la colonne Montant.
+5. **Montant moyen des achats (tous clients)** : moyenne de la colonne Montant.
+6. **Montant moyen des achats (Montréal seulement)** : moyenne conditionnelle excluant les clients `"Exclu"`.
+</Steps>
+
+<Tabs>
+  <TabItem label="Indices">
+    ```
+    Nb total :        =NBVAL(A2:A11)
+    Nb Montréal :     =NB.SI(H2:H11; "<>Exclu")
+    Nb invalides :    =NB.SI(F2:F11; "<>OK")
+    Total achats :    =SOMME(C2:C11)
+    Moyenne tous :    =MOYENNE(C2:C11)
+    Moyenne Mtl :     =MOYENNE.SI(H2:H11; "<>Exclu"; C2:C11)
+    ```
+  </TabItem>
+  <TabItem label="Résultats attendus">
+    | Mesure | Valeur |
+    |--------|--------|
+    | Nombre total de clients | 10 |
+    | Nombre de clients montréalais | 7 |
+    | Nombre de codes postaux invalides | 2 |
+    | Montant total des achats | 1 373 $ |
+    | Montant moyen (tous) | 137,30 $ |
+    | Montant moyen (Montréal) | 162,00 $ |
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Mise en forme conditionnelle suggérée">
+  Appliquez une mise en forme conditionnelle sur la colonne F pour colorer les cellules :
+  - **Vert** → `"OK"`
+  - **Rouge** → `"Invalide"` ou `"Format incorrect"`
+
+  Cela permet de repérer visuellement les données problématiques.
+</Aside>
+
+---
+
+## Partie 7 — Tableau croisé dynamique (15 points)
+
+<Aside type="note" title="Prérequis">
+  Le tableau croisé dynamique (TCD) est un outil d'analyse d'Excel qui permet de résumer et regrouper des données sans écrire de formules. Si vous ne l'avez jamais utilisé, suivez les étapes ci-dessous.
+</Aside>
+
+<Steps>
+1. **Sélectionner les données** : sélectionnez la plage complète (colonnes A à H, incluant les en-têtes).
+2. **Insérer le TCD** : onglet **Insertion** → **Tableau croisé dynamique** → choisissez **Nouvelle feuille**.
+3. **Configurer les champs** :
+   - Glissez **Arrondissement** dans la zone **Lignes**.
+   - Glissez **Client** dans la zone **Valeurs** (il affichera automatiquement un décompte).
+   - Glissez **Montant achat** dans la zone **Valeurs** (il affichera la somme).
+4. **Filtrer les exclus** : ajoutez **Secteur** dans la zone **Filtres**, puis excluez `"Exclu"` pour ne garder que les clients montréalais.
+5. **Trier** : cliquez sur la colonne des montants et triez en ordre décroissant pour identifier l'arrondissement le plus rentable.
+</Steps>
+
+<Tabs>
+  <TabItem label="Résultat attendu du TCD">
+    | Arrondissement | Nb clients | Somme achats |
+    |----------------|-----------|-------------|
+    | Ville-Marie | 2 | 435 $ |
+    | CDN–NDG | 2 | 329 $ |
+    | L'Île-Bizard–Ste-Geneviève | 1 | 205 $ |
+    | Rivière-des-Prairies | 1 | 89 $ |
+    | LaSalle | 1 | 76 $ |
+    | **Total** | **7** | **1 134 $** |
+
+    L'arrondissement qui génère le plus de revenus est **Ville-Marie** (435 $).
+  </TabItem>
+</Tabs>
+
+---
+
+## Bonus — Liste déroulante dynamique (10 points supplémentaires)
+
+<Steps>
+1. **Créer une liste déroulante** : dans une cellule (par exemple J1), ajoutez une validation de données → **Liste** → source : la colonne Arrondissement de la feuille `Correspondance` (ou utilisez `=UNIQUE(G2:G11)` si votre version d'Excel le permet).
+2. **Afficher le total des achats** pour l'arrondissement sélectionné avec `SOMME.SI`.
+3. **Afficher le nombre de clients** pour l'arrondissement sélectionné avec `NB.SI`.
+</Steps>
+
+<Tabs>
+  <TabItem label="Indices">
+    ```
+    Total achats :  =SOMME.SI(G2:G11; J1; C2:C11)
+    Nb clients :    =NB.SI(G2:G11; J1)
+    ```
+
+    Pour la liste déroulante : **Données** → **Validation** → Type : **Liste** → Source : `=Correspondance!B2:B8`
+  </TabItem>
+  <TabItem label="Exemple de résultat">
+    Si l'utilisateur sélectionne **Ville-Marie** :
+
+    | Mesure | Valeur |
+    |--------|--------|
+    | Arrondissement sélectionné | Ville-Marie |
+    | Total des achats | 435 $ |
+    | Nombre de clients | 2 |
+  </TabItem>
+</Tabs>
+
+---
+
+## Question de réflexion
+
+L'entreprise souhaite ouvrir une nouvelle succursale à Montréal.
+
+> Dans quel **secteur** devrait-elle s'installer ? Justifiez votre réponse à partir du nombre de clients, du montant des ventes et de la répartition géographique.
+
+<Tabs>
+  <TabItem label="Pistes de réflexion">
+    Pour structurer votre réponse, considérez :
+
+    - Quel secteur a le **plus grand nombre de clients** ?
+    - Quel secteur génère le **plus de revenus** ?
+    - Quel secteur a le **montant moyen par client** le plus élevé ?
+    - Y a-t-il un secteur **sous-représenté** qui pourrait être une opportunité ?
+
+    Il n'y a pas de réponse unique — c'est la qualité de l'argumentation qui compte.
+  </TabItem>
+  <TabItem label="Données pour l'analyse">
+    | Secteur | Nb clients | Total achats | Moyenne par client |
+    |---------|-----------|-------------|-------------------|
+    | Centre | 4 | 764 $ | 191,00 $ |
+    | Ouest | 2 | 281 $ | 140,50 $ |
+    | Est | 1 | 89 $ | 89,00 $ |
+
+    Le secteur **Centre** domine autant en volume qu'en valeur moyenne. Le secteur **Ouest** pourrait être intéressant si l'entreprise veut diversifier sa couverture géographique.
+  </TabItem>
+</Tabs>
+
+---
+
+## Grille d'évaluation
+
+<CardGrid>
+  <Card title="Partie 1 — Nettoyage" icon="seti:text">
+    **/15** — Code postal normalisé correctement pour les 10 clients. Formule avec SUBSTITUE imbriqués, MAJUSCULE et GAUCHE.
+  </Card>
+  <Card title="Partie 2 — FSA" icon="seti:folder">
+    **/10** — FSA extrait correctement. Formule GAUCHE sur le code normalisé.
+  </Card>
+  <Card title="Partie 3 — Validation" icon="approve-check">
+    **/15** — Statut correct pour les 10 clients. Version simple (longueur) : 10/15. Version complète (format L-C-L-C-L-C) : 15/15.
+  </Card>
+  <Card title="Partie 4 — Arrondissement" icon="magnifier">
+    **/20** — Recherche fonctionnelle avec gestion des absences et des codes invalides. RECHERCHEX ou RECHERCHEV + SIERREUR.
+  </Card>
+  <Card title="Partie 5 — Secteur" icon="star">
+    **/10** — Regroupement correct incluant la catégorie « Exclu ». SI imbriqués avec OU.
+  </Card>
+  <Card title="Partie 6 — Analyse" icon="bar-chart">
+    **/15** — Les 6 mesures sont calculées correctement avec les bonnes fonctions d'agrégation.
+  </Card>
+  <Card title="Partie 7 — TCD" icon="seti:config">
+    **/15** — TCD créé avec les bons champs, filtré pour exclure les non-montréalais, réponse correcte sur l'arrondissement le plus rentable.
+  </Card>
+  <Card title="Bonus" icon="rocket">
+    **+10** — Liste déroulante fonctionnelle avec SOMME.SI et NB.SI dynamiques.
+  </Card>
+</CardGrid>
+
+<Aside type="note" title="Barème">
+  L'exercice est noté sur **100 points**. Le bonus (10 points) est hors barème et peut compenser des points perdus ailleurs.
+</Aside>

@@ -1,0 +1,604 @@
+---
+title: "Quiz de révision"
+description: "Quiz de révision couvrant l'ensemble des notions vues : références, mise en forme conditionnelle, fonctions conditionnelles, logiques, de dates, de texte et de recherche."
+sidebar:
+  label: Quiz de révision
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import QuizClassification from './../../../components/QuizClassification';
+
+Ce quiz couvre **l'ensemble des notions** vues à date dans le cours. Il est organisé par thème pour vous permettre d'identifier rapidement les sujets à retravailler.
+
+---
+
+
+## Références (relatives, absolues, mixtes)
+ 
+export const quizReferences = [
+  {
+    id: 'ref1',
+    question: 'Dans la formule =A1*$B$1, que se passe-t-il quand on la copie de C2 vers C3 ?',
+    options: [
+      'A1 devient A2, B1 reste B1',
+      'A1 et B1 deviennent A2 et B2',
+      'Rien ne change',
+      'A1 reste A1, B1 devient B2'
+    ],
+    correct: 'A1 devient A2, B1 reste B1',
+    explanation: 'La référence A1 est relative : elle s\'ajuste en copiant vers le bas (A1 → A2). La référence $B$1 est absolue : le $ devant la colonne ET la ligne empêche tout ajustement.'
+  },
+  {
+    id: 'ref2',
+    question: 'Quelle référence permet de fixer la colonne mais pas la ligne ?',
+    options: ['$A$1', '$A1', 'A$1', 'A1'],
+    correct: '$A1',
+    explanation: '$A1 est une référence mixte : le $ devant A fixe la colonne, mais la ligne (1) s\'ajuste quand on copie vers le bas. À l\'inverse, A$1 fixe la ligne mais pas la colonne.'
+  },
+//   {
+//     id: 'ref3',
+//     question: 'Quel raccourci clavier permet de basculer entre les types de références (relative → absolue → mixte) ?',
+//     options: ['Ctrl+$', 'F4', 'Alt+R', 'F2'],
+//     correct: 'F4',
+//     explanation: 'La touche F4 fait cycler entre A1 → $A$1 → A$1 → $A1 → A1 lors de l\'édition d\'une formule. C\'est le raccourci le plus utile pour travailler avec les références.'
+//   },
+//   {
+//     id: 'ref4',
+//     question: 'Un tableau de ventes a les produits en colonne A et les mois en ligne 1. Vous voulez multiplier chaque vente par le taux de taxe en cellule H1. En écrivant la formule en B2, quelle référence utiliser pour H1 avant de la copier partout ?',
+//     options: ['H1', '$H$1', '$H1', 'H$1'],
+//     correct: '$H$1',
+//     explanation: 'La cellule du taux de taxe ne doit jamais bouger, peu importe la direction de la copie. Il faut donc fixer à la fois la colonne ($H) et la ligne ($1) avec une référence absolue $H$1.'
+//   },
+  {
+    id: 'ref5',
+    question: 'Vous créez une formule en B2 qui référence la colonne A pour chaque ligne, mais le taux en ligne 1 change selon la colonne. Quelle référence mixte utiliser pour le taux en B1 ?',
+    options: ['$B$1', 'B$1', '$B1', 'B1'],
+    correct: 'B$1',
+    explanation: 'B$1 fixe la ligne 1 (le taux est toujours en ligne 1) mais laisse la colonne relative (elle s\'ajuste en C1, D1, etc. quand on copie vers la droite). C\'est le cas typique d\'un tableau avec des paramètres en en-tête.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizReferences} title="Quiz" />
+ 
+---
+ 
+## Mise en forme conditionnelle
+ 
+export const quizMEF = [
+  {
+    id: 'mef1',
+    question: 'La mise en forme conditionnelle modifie :',
+    options: [
+      'La valeur de la cellule',
+      'L\'apparence de la cellule (couleur, police, icône)',
+      'La formule de la cellule',
+      'Le type de données de la cellule'
+    ],
+    correct: 'L\'apparence de la cellule (couleur, police, icône)',
+    explanation: 'La mise en forme conditionnelle ne modifie que l\'apparence visuelle. La valeur, la formule et le type de données restent intacts. C\'est un outil de visualisation, pas de calcul.'
+  },
+  {
+    id: 'mef2',
+    question: 'Pour colorer une ligne entière selon la valeur en colonne D, quelle référence utiliser dans la formule de la règle ?',
+    options: ['=D2', '=$D2', '=$D$2', '=D$2'],
+    correct: '=$D2',
+    explanation: '=$D2 fixe la colonne D (chaque cellule de la ligne vérifie la même colonne) mais garde la ligne relative (la règle suit chaque ligne du tableau). C\'est le cas classique de référence mixte en mise en forme conditionnelle.'
+  },
+//   {
+//     id: 'mef3',
+//     question: 'Quelle est la différence entre une échelle de couleurs à 2 couleurs et une à 3 couleurs ?',
+//     options: [
+//       'L\'échelle à 3 couleurs est plus précise',
+//       'L\'échelle à 2 couleurs utilise un dégradé min-max, celle à 3 couleurs ajoute un point milieu',
+//       'L\'échelle à 3 couleurs ne fonctionne qu\'avec des nombres entiers',
+//       'Il n\'y a aucune différence fonctionnelle'
+//     ],
+//     correct: 'L\'échelle à 2 couleurs utilise un dégradé min-max, celle à 3 couleurs ajoute un point milieu',
+//     explanation: 'L\'échelle à 2 couleurs crée un dégradé entre la valeur minimale et maximale. L\'échelle à 3 couleurs ajoute une couleur intermédiaire (souvent au percentile 50 %), ce qui permet de mieux distinguer les valeurs proches de la moyenne.'
+//   },
+  {
+    id: 'mef4',
+    question: 'Vous avez appliqué deux règles de mise en forme conditionnelle sur la même plage et elles se contredisent. Que se passe-t-il ?',
+    options: [
+      'Excel affiche une erreur',
+      'La règle la plus récente écrase l\'autre',
+      'La règle qui apparaît en premier dans le gestionnaire de règles a priorité',
+      'Les deux règles sont ignorées'
+    ],
+    correct: 'La règle qui apparaît en premier dans le gestionnaire de règles a priorité',
+    explanation: 'Excel applique les règles dans l\'ordre du gestionnaire de règles (Accueil → Mise en forme conditionnelle → Gérer les règles). La première règle qui s\'applique a la priorité. On peut réorganiser l\'ordre pour contrôler le résultat.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizMEF} title="Quiz" />
+ 
+---
+ 
+## Fonction SI et fonctions logiques (ET, OU)
+ 
+export const quizSI = [
+  {
+    id: 'si1',
+    question: 'Que retourne =SI(75>=60; "Réussite"; "Échec") ?',
+    options: ['Échec', 'Réussite', '75', 'VRAI'],
+    correct: 'Réussite',
+    explanation: '75 >= 60 est VRAI, donc la fonction retourne la valeur_si_vrai, soit "Réussite". La fonction SI évalue toujours un test logique, puis retourne l\'une des deux valeurs selon le résultat.'
+  },
+  {
+    id: 'si2',
+    question: 'Quelle formule vérifie qu\'un employé a une moyenne ≥ 80 et au moins 3 activités ?',
+    options: [
+      '=SI(B2>=80; SI(C2>=3; "Oui"; "Non"); "Non")',
+      '=SI(ET(B2>=80; C2>=3); "Oui"; "Non")',
+      '=SI(OU(B2>=80; C2>=3); "Oui"; "Non")',
+      'Les options 1 et 2 sont équivalentes'
+    ],
+    correct: 'Les options 1 et 2 sont équivalentes',
+    explanation: 'Les deux approches donnent le même résultat. L\'option 1 utilise des SI imbriqués, l\'option 2 utilise ET — les deux exigent que les deux conditions soient vraies. OU retournerait VRAI si une seule condition est satisfaite, ce qui n\'est pas demandé.'
+  },
+  {
+    id: 'si3',
+    question: 'Que fait =OU(A1>10; B1="Montréal") ?',
+    options: [
+      'Retourne VRAI si les deux conditions sont vraies',
+      'Retourne VRAI si au moins une condition est vraie',
+      'Retourne la valeur de A1 ou de B1',
+      'Produit une erreur car les types sont différents'
+    ],
+    correct: 'Retourne VRAI si au moins une condition est vraie',
+    explanation: 'OU retourne VRAI dès qu\'au moins une de ses conditions est satisfaite. Pour exiger que toutes les conditions soient vraies simultanément, il faut utiliser ET. Les types différents (nombre et texte) ne posent aucun problème.'
+  },
+//   {
+//     id: 'si4',
+//     question: 'Une note est en B2. On veut afficher "Excellent" si ≥ 90, "Bien" si ≥ 70, "Passable" si ≥ 60, sinon "Échec". Combien de fonctions SI faut-il imbriquer ?',
+//     options: ['1', '2', '3', '4'],
+//     correct: '3',
+//     explanation: 'Pour N catégories, il faut N−1 fonctions SI imbriquées. Ici, 4 catégories nécessitent 3 SI : =SI(B2>=90; "Excellent"; SI(B2>=70; "Bien"; SI(B2>=60; "Passable"; "Échec"))). Chaque SI gère un seuil, et le dernier "si_faux" couvre le cas restant.'
+//   },
+//   {
+//     id: 'si5',
+//     question: 'Que retourne =ET(VRAI; FAUX; VRAI) ?',
+//     options: ['VRAI', 'FAUX', '2', 'Erreur'],
+//     correct: 'FAUX',
+//     explanation: 'ET retourne VRAI seulement si TOUTES les conditions sont vraies. Ici, la deuxième condition est FAUX, donc le résultat global est FAUX. Il suffit d\'un seul FAUX pour que ET retourne FAUX.'
+//   }
+];
+ 
+<QuizClassification client:visible questions={quizSI} title="Quiz" />
+ 
+---
+ 
+## Fonctions d'agrégation conditionnelle (NB.SI, SOMME.SI, MOYENNE.SI)
+ 
+export const quizAgregation = [
+  {
+    id: 'ag1',
+    question: 'Quelle formule compte les notes ≥ 60 dans B2:B50 ?',
+    options: [
+      '=NB.SI(B2:B50; >=60)',
+      '=NB.SI(B2:B50; ">=60")',
+      '=COMPTE.SI(B2:B50; ">=60")',
+      '=NB.SI(B2:B50; ">60")'
+    ],
+    correct: '=NB.SI(B2:B50; ">=60")',
+    explanation: 'Le critère avec opérateur doit être entre guillemets : ">=60". L\'option A omet les guillemets (erreur de syntaxe). L\'option C utilise un nom de fonction inexistant. L\'option D utilise > au lieu de >=, excluant la valeur 60.'
+  },
+  {
+    id: 'ag2',
+    question: 'Quelle formule additionne les ventes (colonne C) pour Montréal (colonne A) ?',
+    options: [
+      '=SOMME.SI(C2:C100; "Montréal")',
+      '=SOMME.SI(C2:C100; "Montréal"; A2:A100)',
+      '=SOMME.SI(A2:A100; "Montréal"; C2:C100)',
+      '=SOMME(SI(A2:A100="Montréal"))'
+    ],
+    correct: '=SOMME.SI(A2:A100; "Montréal"; C2:C100)',
+    explanation: 'La syntaxe de SOMME.SI est : SOMME.SI(plage_critère; critère; plage_somme). On cherche "Montréal" dans A2:A100 (plage de critère) et on additionne les valeurs correspondantes dans C2:C100 (plage de somme). L\'option B inverse les plages.'
+  },
+  {
+    id: 'ag3',
+    question: 'Quelle est la différence fondamentale entre NB.SI, SOMME.SI et MOYENNE.SI ?',
+    options: [
+      'Elles utilisent des critères différents',
+      'NB.SI compte, SOMME.SI additionne, MOYENNE.SI calcule la moyenne',
+      'Seule MOYENNE.SI accepte un troisième argument',
+      'NB.SI ne fonctionne qu\'avec des nombres'
+    ],
+    correct: 'NB.SI compte, SOMME.SI additionne, MOYENNE.SI calcule la moyenne',
+    explanation: 'Les trois fonctions appliquent un critère pour filtrer les données, mais l\'opération diffère : compter le nombre de cellules (NB.SI), additionner les valeurs (SOMME.SI) ou calculer leur moyenne (MOYENNE.SI). Elles acceptent toutes les mêmes types de critères.'
+  },
+  {
+    id: 'ag4',
+    question: 'Vous voulez compter les cellules qui contiennent la valeur d\'une cellule E1. Quelle syntaxe est correcte ?',
+    options: [
+      '=NB.SI(A2:A100; E1)',
+      '=NB.SI(A2:A100; "E1")',
+      '=NB.SI(A2:A100; "=" & E1)',
+      '=NB.SI(A2:A100; =E1)'
+    ],
+    correct: '=NB.SI(A2:A100; E1)',
+    explanation: 'Quand le critère est une référence de cellule sans opérateur, on utilise simplement la référence sans guillemets : NB.SI(plage; E1). Les guillemets "E1" chercheraient le texte littéral "E1". La syntaxe "=" & E1 est pour les critères avec opérateur.'
+  },
+  {
+    id: 'ag5',
+    question: 'Quelle formule calcule la moyenne des ventes (colonne C) uniquement pour les transactions supérieures à 500 $ ?',
+    options: [
+      '=MOYENNE.SI(C2:C100; ">500")',
+      '=MOYENNE.SI(A2:A100; ">500"; C2:C100)',
+      '=MOYENNE(C2:C100; ">500")',
+      '=SOMME.SI(C2:C100; ">500") / NB.SI(C2:C100; ">500")'
+    ],
+    correct: '=MOYENNE.SI(C2:C100; ">500")',
+    explanation: 'Quand la plage de critère et la plage de calcul sont les mêmes, on n\'a besoin que de deux arguments. MOYENNE.SI(C2:C100; ">500") évalue et calcule la moyenne sur la même colonne. L\'option D donnerait le même résultat mais de façon inutilement complexe.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizAgregation} title="Quiz" />
+ 
+---
+ 
+## Fonctions de dates
+ 
+export const quizDates = [
+  {
+    id: 'dt1',
+    question: 'Quelle fonction retourne la date du jour sans l\'heure ?',
+    options: ['MAINTENANT()', 'AUJOURDHUI()', 'DATE()', 'TEMPS()'],
+    correct: 'AUJOURDHUI()',
+    explanation: 'AUJOURDHUI() retourne uniquement la date du jour. MAINTENANT() retourne la date ET l\'heure. DATE() sert à construire une date à partir de trois valeurs. TEMPS() construit une valeur d\'heure.'
+  },
+  {
+    id: 'dt2',
+    question: 'Comment Excel stocke-t-il les dates en interne ?',
+    options: [
+      'Comme du texte au format AAAA-MM-JJ',
+      'Comme des numéros de série (nombres entiers)',
+      'Comme des objets Date (similaire à JavaScript)',
+      'Comme trois colonnes séparées (année, mois, jour)'
+    ],
+    correct: 'Comme des numéros de série (nombres entiers)',
+    explanation: 'Excel stocke chaque date comme un entier : le 1er janvier 1900 = 1, et chaque jour ajoute 1. C\'est ce qui permet de soustraire deux dates pour obtenir un nombre de jours, ou d\'ajouter un nombre à une date.'
+  },
+//   {
+//     id: 'dt3',
+//     question: 'Que retourne =DATE(2026; 3; 0) ?',
+//     options: ['Erreur #VALEUR!', '2026-03-01', '2026-02-28', '2026-03-00'],
+//     correct: '2026-02-28',
+//     explanation: 'Le jour 0 d\'un mois correspond au dernier jour du mois précédent. DATE(2026; 3; 0) = "le jour avant le 1er mars 2026", soit le 28 février 2026. Cette astuce fonctionne même pour les années bissextiles.'
+//   },
+  {
+    id: 'dt4',
+    question: 'Avec =JOURSEM(date; 2), que représente la valeur 1 ?',
+    options: ['Dimanche', 'Lundi', 'Samedi', 'Le premier jour du mois'],
+    correct: 'Lundi',
+    explanation: 'Le type 2 commence la semaine le lundi : 1=lundi, 2=mardi, ..., 7=dimanche. C\'est la convention utilisée au Québec et en Europe. Le type 1 (par défaut) commence le dimanche.'
+  },
+//   {
+//     id: 'dt5',
+//     question: 'Que retourne =FIN.MOIS("2026-01-15"; 0) ?',
+//     options: ['2026-01-15', '2026-01-31', '2026-02-28', '2026-01-01'],
+//     correct: '2026-01-31',
+//     explanation: 'FIN.MOIS retourne le dernier jour du mois situé N mois après la date. Avec N=0, on obtient le dernier jour du mois en cours. FIN.MOIS("2026-01-15"; 0) = 31 janvier 2026. Avec N=1, on aurait le 28 février.'
+//   },
+  {
+    id: 'dt6',
+    question: 'Une commande est passée le 15 mars 2026 (en A2). Quelle formule retourne la date de livraison prévue dans 30 jours ?',
+    options: [
+      '=DATE(2026; 3; 15+30)',
+      '=A2 + 30',
+      '=JOURSEM(A2; 30)',
+      '=FIN.MOIS(A2; 1)'
+    ],
+    correct: '=A2 + 30',
+    explanation: 'Puisque les dates sont des numéros de série, on peut simplement ajouter 30 à la date pour obtenir la date 30 jours plus tard. L\'option A fonctionnerait aussi (DATE ajuste automatiquement : jour 45 → mois suivant), mais A2+30 est plus simple et universel.'
+  },
+//   {
+//     id: 'dt7',
+//     question: 'Que retournent =ANNEE("2026-08-22"), =MOIS("2026-08-22") et =JOUR("2026-08-22") respectivement ?',
+//     options: [
+//       '2026, 8, 22',
+//       '2026, "août", "samedi"',
+//       '126, 08, 22',
+//       '2026, 08, 22'
+//     ],
+//     correct: '2026, 8, 22',
+//     explanation: 'ANNEE, MOIS et JOUR extraient chacun la composante numérique correspondante. MOIS retourne un nombre (8, pas "août") et JOUR retourne le numéro du jour dans le mois (22, pas le nom du jour de la semaine).'
+//   },
+  {
+    id: 'dt8',
+    question: 'Un employé est embauché à la date en D2. Quelle formule calcule approximativement le nombre d\'années depuis son embauche ?',
+    options: [
+      '=AUJOURDHUI() - D2',
+      '=(AUJOURDHUI() - D2) / 365,25',
+      '=ANNEE(AUJOURDHUI()) - ANNEE(D2)',
+      '=MOIS(AUJOURDHUI()) - MOIS(D2)'
+    ],
+    correct: '=(AUJOURDHUI() - D2) / 365,25',
+    explanation: 'AUJOURDHUI() - D2 donne le nombre de jours, qu\'on divise par 365,25 (tenant compte des années bissextiles) pour obtenir un nombre d\'années approximatif. L\'option C (ANNEE - ANNEE) ignore le mois et le jour : un employé embauché le 31 décembre 2025 aurait déjà "1 an" le 1er janvier 2026.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizDates} title="Quiz" />
+ 
+---
+ 
+## Fonctions de texte
+ 
+export const quizTexte = [
+  {
+    id: 'tx1',
+    question: 'Quelle fonction extrait 3 caractères à partir de la 5e position dans un texte ?',
+    options: [
+      '=GAUCHE(texte; 5; 3)',
+      '=STXT(texte; 5; 3)',
+      '=DROITE(texte; 5; 3)',
+      '=NBCAR(texte; 5; 3)'
+    ],
+    correct: '=STXT(texte; 5; 3)',
+    explanation: 'STXT(texte; position_départ; nb_caractères) extrait un nombre donné de caractères à partir d\'une position précise. GAUCHE et DROITE n\'acceptent que 2 arguments (texte et nb_caractères). NBCAR retourne la longueur d\'un texte, pas une extraction.'
+  },
+  {
+    id: 'tx2',
+    question: 'Que retourne =NOMPROPRE("SOPHIE TREMBLAY") ?',
+    options: [
+      'sophie tremblay',
+      'SOPHIE TREMBLAY',
+      'Sophie Tremblay',
+      'Sophie tremblay'
+    ],
+    correct: 'Sophie Tremblay',
+    explanation: 'NOMPROPRE met en majuscule la première lettre de chaque mot et convertit le reste en minuscules. Attention : les particules comme "de", "du", "van" seront aussi capitalisées (ex. "De La Fontaine").'
+  },
+  {
+    id: 'tx3',
+    question: 'Quelle est la différence entre MAJUSCULE, MINUSCULE et NOMPROPRE ?',
+    options: [
+      'MAJUSCULE et MINUSCULE sont identiques, NOMPROPRE est différent',
+      'MAJUSCULE → tout en majuscules, MINUSCULE → tout en minuscules, NOMPROPRE → première lettre de chaque mot en majuscule',
+      'MAJUSCULE met la première lettre en majuscule, NOMPROPRE met tout en majuscules',
+      'Elles ne fonctionnent qu\'avec du texte en anglais'
+    ],
+    correct: 'MAJUSCULE → tout en majuscules, MINUSCULE → tout en minuscules, NOMPROPRE → première lettre de chaque mot en majuscule',
+    explanation: 'MAJUSCULE("sophie") → "SOPHIE", MINUSCULE("SOPHIE") → "sophie", NOMPROPRE("sophie tremblay") → "Sophie Tremblay". Ce sont trois niveaux de transformation de casse, utiles selon le contexte de standardisation.'
+  },
+  {
+    id: 'tx4',
+    question: 'Le code produit "MTL-2026-A15" est en cellule A2. Quelle formule extrait "2026" ?',
+    options: [
+      '=GAUCHE(A2; 4)',
+      '=DROITE(A2; 4)',
+      '=STXT(A2; 5; 4)',
+      '=STXT(A2; 4; 4)'
+    ],
+    correct: '=STXT(A2; 5; 4)',
+    explanation: 'Le texte "2026" commence à la position 5 (après "MTL-" qui occupe les positions 1 à 4) et comporte 4 caractères. STXT(A2; 5; 4) extrait donc exactement "2026". L\'option D commencerait à la position 4, ce qui donnerait "-202".'
+  },
+  {
+    id: 'tx5',
+    question: 'Quelle formule retourne le nombre de caractères dans la cellule A2 ?',
+    options: [
+      '=LONGUEUR(A2)',
+      '=NB(A2)',
+      '=NBCAR(A2)',
+      '=TAILLE(A2)'
+    ],
+    correct: '=NBCAR(A2)',
+    explanation: 'NBCAR (Nombre de CARactères) retourne le nombre total de caractères dans un texte, y compris les espaces. LONGUEUR et TAILLE n\'existent pas en français dans Excel. NB compte les cellules numériques dans une plage, pas les caractères d\'un texte.'
+  },
+  {
+    id: 'tx6',
+    question: 'Quelle formule assemble le prénom en B2 et le nom en C2 pour obtenir "Sophie Tremblay" ?',
+    options: [
+      '=B2 + C2',
+      '=B2 & " " & C2',
+      '=CONCATENER(B2; C2)',
+      '=JOINDRE(B2; C2)'
+    ],
+    correct: '=B2 & " " & C2',
+    explanation: 'L\'opérateur & assemble des textes. L\'espace " " entre les deux évite d\'obtenir "SophieTremblay". L\'option A (le +) provoquerait une erreur #VALEUR! car on ne peut pas additionner du texte. L\'option C oublie l\'espace entre les deux : on obtiendrait "SophieTremblay".'
+  },
+  {
+    id: 'tx7',
+    question: 'Un code postal est dans la cellule A2. Quelle formule extrait les 3 premiers caractères (le FSA) ?',
+    options: [
+      '=STXT(A2; 1; 3)',
+      '=DROITE(A2; 3)',
+      '=GAUCHE(A2; 3)',
+      '=NBCAR(A2; 3)'
+    ],
+    correct: '=GAUCHE(A2; 3)',
+    explanation: 'GAUCHE(texte; n) extrait les n premiers caractères en partant de la gauche. L\'option A (STXT à partir de la position 1) donnerait le même résultat, mais GAUCHE est plus simple et plus lisible pour extraire le début d\'un texte. DROITE extrairait les 3 derniers caractères.'
+  },
+  {
+    id: 'tx8',
+    question: 'Un numéro de téléphone est en A2 (sans formatage). Quelle formule vérifie s\'il contient exactement 10 caractères ?',
+    options: [
+      '=SI(A2=10; "OK"; "Invalide")',
+      '=SI(NBCAR(A2)=10; "OK"; "Invalide")',
+      '=SI(NB(A2)=10; "OK"; "Invalide")',
+      '=SI(GAUCHE(A2; 10); "OK"; "Invalide")'
+    ],
+    correct: '=SI(NBCAR(A2)=10; "OK"; "Invalide")',
+    explanation: 'NBCAR compte le nombre de caractères dans le texte. Si le résultat est 10, le format est correct. L\'option A compare la valeur numérique de A2 au nombre 10 (pas sa longueur). L\'option C utilise NB qui compte les cellules numériques dans une plage.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizTexte} title="Quiz" />
+ 
+---
+ 
+## Fonctions de recherche
+ 
+export const quizRecherche = [
+  {
+    id: 'rc1',
+    question: 'Quel est le 4e argument de RECHERCHEV et que se passe-t-il si on l\'omet ?',
+    options: [
+      'Le format de sortie — il retourne du texte brut',
+      'La correspondance (VRAI/FAUX) — Excel utilise VRAI par défaut (approximative)',
+      'Le nom de la feuille — il cherche dans la feuille active',
+      'Le sens de recherche — il cherche de haut en bas'
+    ],
+    correct: 'La correspondance (VRAI/FAUX) — Excel utilise VRAI par défaut (approximative)',
+    explanation: 'Le 4e argument contrôle le type de correspondance : FAUX = exacte, VRAI = approximative. Si on l\'omet, Excel utilise VRAI, ce qui peut donner des résultats erronés si les données ne sont pas triées en ordre croissant. Toujours spécifier FAUX pour une correspondance exacte.'
+  },
+  {
+    id: 'rc2',
+    question: 'RECHERCHEV a une limitation importante. Laquelle ?',
+    options: [
+      'Elle ne fonctionne pas avec du texte',
+      'Elle ne peut retourner que des valeurs situées à droite de la colonne de recherche',
+      'Elle ne peut chercher que dans la première feuille du classeur',
+      'Elle est limitée à 100 lignes de données'
+    ],
+    correct: 'Elle ne peut retourner que des valeurs situées à droite de la colonne de recherche',
+    explanation: 'Le "V" de RECHERCHEV signifie "verticale" : elle cherche dans la première colonne du tableau et retourne une valeur d\'une colonne située à droite (numéro de colonne ≥ 2). Si la donnée à retourner se trouve à gauche de la colonne de recherche, RECHERCHEV ne peut pas y accéder.'
+  },
+  {
+    id: 'rc3',
+    question: 'Quel avantage principal a RECHERCHEX par rapport à RECHERCHEV ?',
+    options: [
+      'Elle est plus rapide',
+      'Elle peut chercher dans toute direction et offre une valeur par défaut si introuvable',
+      'Elle fonctionne avec les tableaux croisés dynamiques',
+      'Elle ne nécessite pas de plage de données'
+    ],
+    correct: 'Elle peut chercher dans toute direction et offre une valeur par défaut si introuvable',
+    explanation: 'RECHERCHEX n\'a pas la limitation "droite seulement" de RECHERCHEV. De plus, son 4e argument permet de spécifier une valeur par défaut (ex. "Introuvable") sans avoir à envelopper la formule dans SIERREUR. Elle utilise aussi la correspondance exacte par défaut.'
+  },
+  {
+    id: 'rc4',
+    question: 'Une RECHERCHEV retourne l\'erreur #N/A. Quelle formule affiche "Introuvable" au lieu de l\'erreur ?',
+    options: [
+      '=SI(RECHERCHEV(...)="#N/A"; "Introuvable"; RECHERCHEV(...))',
+      '=SIERREUR(RECHERCHEV(A2; table; 2; FAUX); "Introuvable")',
+      '=RECHERCHEV(A2; table; 2; "Introuvable")',
+      '=ESTERREUR(RECHERCHEV(A2; table; 2; FAUX))'
+    ],
+    correct: '=SIERREUR(RECHERCHEV(A2; table; 2; FAUX); "Introuvable")',
+    explanation: 'SIERREUR(valeur; valeur_si_erreur) exécute la formule et, si elle produit une erreur (quelle qu\'elle soit), retourne la valeur de remplacement. L\'option A ne fonctionne pas car on ne peut pas comparer un résultat d\'erreur avec du texte. L\'option C utilise un argument qui n\'existe pas. L\'option D retourne seulement VRAI/FAUX.'
+  },
+  {
+    id: 'rc5',
+    question: 'Quelle est la syntaxe correcte de RECHERCHEX pour chercher le nom de l\'arrondissement correspondant au FSA en A2, dans une table sur la feuille Correspondance ?',
+    options: [
+      '=RECHERCHEX(A2; Correspondance!B:B; Correspondance!A:A)',
+      '=RECHERCHEX(A2; Correspondance!A:A; Correspondance!B:B)',
+      '=RECHERCHEX(Correspondance!A:A; A2; Correspondance!B:B)',
+      '=RECHERCHEX(A2; Correspondance!A:B; 2)'
+    ],
+    correct: '=RECHERCHEX(A2; Correspondance!A:A; Correspondance!B:B)',
+    explanation: 'La syntaxe est RECHERCHEX(valeur_cherchée; plage_de_recherche; plage_de_résultat). On cherche A2 dans la colonne A de Correspondance (les FSA) et on retourne la valeur correspondante de la colonne B (les arrondissements). Contrairement à RECHERCHEV, les plages sont spécifiées séparément.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizRecherche} title="Quiz" />
+ 
+---
+ 
+## Synthèse et intégration
+ 
+export const quizSynthese = [
+  {
+    id: 'syn1',
+    question: 'Vous créez un rapport dynamique qui affiche les informations d\'un client choisi dans une liste déroulante. Quelle approche est la plus maintenable ?',
+    options: [
+      'Copier-coller les données manuellement',
+      'Utiliser des SI imbriqués pour tester chaque client',
+      'Utiliser RECHERCHEV (ou RECHERCHEX) avec une cellule de sélection liée à une validation de données',
+      'Créer une feuille séparée par client'
+    ],
+    correct: 'Utiliser RECHERCHEV (ou RECHERCHEX) avec une cellule de sélection liée à une validation de données',
+    explanation: 'RECHERCHEV ou RECHERCHEX avec une liste déroulante (validation de données) crée un rapport qui se met à jour automatiquement. Ajouter un client nécessite seulement d\'ajouter une ligne aux données, sans modifier les formules. Les SI imbriqués deviendraient ingérables avec plus de quelques clients.'
+  },
+  {
+    id: 'syn2',
+    question: 'Vous voulez compter les clients montréalais (ceux dont l\'arrondissement n\'est pas "Hors Montréal" ni "Code invalide"). Quelle approche est la plus simple ?',
+    options: [
+      '=NB.SI(G2:G11; "Montréal")',
+      '=NB.SI(G2:G11; "<>Hors Montréal") - NB.SI(G2:G11; "Code invalide")',
+      '=NBVAL(G2:G11) - NB.SI(G2:G11; "Hors Montréal") - NB.SI(G2:G11; "Code invalide")',
+      '=SOMME.SI(G2:G11; "<>Hors Montréal")'
+    ],
+    correct: '=NBVAL(G2:G11) - NB.SI(G2:G11; "Hors Montréal") - NB.SI(G2:G11; "Code invalide")',
+    explanation: 'On compte le total des cellules non vides (NBVAL), puis on soustrait les cas indésirables un par un. L\'option A ne fonctionnerait que si "Montréal" était la valeur exacte de chaque cellule. L\'option B oublie de compter à partir du total. L\'option D utilise SOMME.SI qui additionne des nombres, pas un compteur.'
+  },
+  {
+    id: 'syn3',
+    question: 'Un code postal normalisé est en D2. Quelle combinaison de formules permet d\'extraire le FSA (3 premiers caractères) puis de vérifier s\'il correspond à un arrondissement connu ?',
+    options: [
+      'DROITE pour le FSA, puis RECHERCHEV pour trouver l\'arrondissement',
+      'GAUCHE pour le FSA, puis SIERREUR + RECHERCHEV pour retourner l\'arrondissement ou "Hors Montréal"',
+      'STXT pour le FSA, puis SI pour vérifier',
+      'NBCAR pour le FSA, puis NB.SI pour vérifier'
+    ],
+    correct: 'GAUCHE pour le FSA, puis SIERREUR + RECHERCHEV pour retourner l\'arrondissement ou "Hors Montréal"',
+    explanation: 'GAUCHE(D2; 3) extrait le FSA (les 3 premiers caractères), puis SIERREUR(RECHERCHEV(FSA; table; 2; FAUX); "Hors Montréal") cherche l\'arrondissement et affiche "Hors Montréal" si le FSA n\'existe pas dans la table. L\'option A utilise DROITE qui extrairait les 3 derniers caractères. L\'option D compterait des caractères, pas un FSA.'
+  },
+  {
+    id: 'syn4',
+    question: 'Vous voulez afficher "Centre" si l\'arrondissement est "Ville-Marie" OU "CDN–NDG", et "Autre" sinon. Quelle formule est correcte ?',
+    options: [
+      '=SI(G2="Ville-Marie" OU G2="CDN–NDG"; "Centre"; "Autre")',
+      '=SI(OU(G2="Ville-Marie"; G2="CDN–NDG"); "Centre"; "Autre")',
+      '=SI(ET(G2="Ville-Marie"; G2="CDN–NDG"); "Centre"; "Autre")',
+      '=OU(SI(G2="Ville-Marie"; "Centre"); SI(G2="CDN–NDG"; "Centre"; "Autre"))'
+    ],
+    correct: '=SI(OU(G2="Ville-Marie"; G2="CDN–NDG"); "Centre"; "Autre")',
+    explanation: 'OU est une fonction qui doit envelopper ses conditions : OU(cond1; cond2). L\'option A utilise OU comme un mot-clé entre deux conditions, ce qui n\'est pas valide en Excel. L\'option C avec ET exigerait que les DEUX conditions soient vraies simultanément — impossible pour une seule cellule. L\'option D imbrique les fonctions dans le mauvais ordre.'
+  }
+];
+ 
+<QuizClassification client:visible questions={quizSynthese} title="Quiz" />
+
+---
+
+## Aide-mémoire
+
+<Tabs>
+  <TabItem label="Références">
+    | Type | Exemple | Comportement en copie |
+    |---|---|---|
+    | Relative | `A1` | S'ajuste en ligne et en colonne |
+    | Absolue | `$A$1` | Ne change jamais |
+    | Mixte (colonne fixe) | `$A1` | La colonne reste, la ligne s'ajuste |
+    | Mixte (ligne fixe) | `A$1` | La ligne reste, la colonne s'ajuste |
+  </TabItem>
+  <TabItem label="Conditionnelles">
+    | Fonction | Syntaxe | Rôle |
+    |---|---|---|
+    | `SI` | `=SI(test; si_vrai; si_faux)` | Retourne une valeur selon une condition |
+    | `ET` | `=ET(cond1; cond2; ...)` | VRAI si toutes les conditions sont vraies |
+    | `OU` | `=OU(cond1; cond2; ...)` | VRAI si au moins une condition est vraie |
+    | `NB.SI` | `=NB.SI(plage; critère)` | Compte les cellules selon un critère |
+    | `SOMME.SI` | `=SOMME.SI(plage; critère; somme_plage)` | Additionne selon un critère |
+    | `MOYENNE.SI` | `=MOYENNE.SI(plage; critère; moy_plage)` | Moyenne selon un critère |
+  </TabItem>
+  <TabItem label="Dates">
+    | Fonction | Syntaxe | Rôle |
+    |---|---|---|
+    | `AUJOURDHUI` | `=AUJOURDHUI()` | Date du jour |
+    | `DATE` | `=DATE(a; m; j)` | Construit une date |
+    | `ANNEE/MOIS/JOUR` | `=ANNEE(date)` | Extrait une composante |
+    | `JOURSEM` | `=JOURSEM(date; 2)` | Jour de la semaine (1=lun) |
+    | `FIN.MOIS` | `=FIN.MOIS(date; n)` | Dernier jour du mois |
+  </TabItem>
+  <TabItem label="Texte">
+    | Fonction | Syntaxe | Rôle |
+    |---|---|---|
+    | `GAUCHE/DROITE` | `=GAUCHE(t; n)` | Premiers/derniers caractères |
+    | `STXT` | `=STXT(t; pos; n)` | Extraction par position |
+    | `CHERCHE` | `=CHERCHE(c; t)` | Position d'un caractère |
+    | `NBCAR` | `=NBCAR(t)` | Nombre de caractères |
+    | `MAJUSCULE` | `=MAJUSCULE(t)` | Toutes les lettres en majuscule |
+    | `MINUSCULE` | `=MINUSCULE(t)` | Toutes les lettres en minuscule |
+    | `NOMPROPRE` | `=NOMPROPRE(t)` | Première lettre majuscule |
+  </TabItem>
+  <TabItem label="Recherche">
+    | Fonction | Syntaxe | Rôle |
+    |---|---|---|
+    | `RECHERCHEV` | `=RECHERCHEV(val; table; col; FAUX)` | Recherche verticale |
+    | `RECHERCHEH` | `=RECHERCHEH(val; table; ligne; FAUX)` | Recherche horizontale |
+    | `RECHERCHEX` | `=RECHERCHEX(val; cherche; résultat)` | Recherche moderne |
+  </TabItem>
+</Tabs>
