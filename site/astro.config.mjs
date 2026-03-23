@@ -84,6 +84,21 @@ export default defineConfig({
 								// { label: 'Exercice de synthese', slug: 'exercices/07-synthese' }
 							]
 						},
+						{
+							label: 'Semaine 8',
+							items: [
+								{ label: 'Tableaux croisés dynamiques', slug: 'cours/08-tableaux-croises-dynamiques' },
+								{ label: 'Exercice', slug: 'exercices/08-tcd' }
+							]
+						},
+						{
+							label: 'Semaine 9',
+							items: [
+								{ label: 'Graphiques', slug: 'cours/09-graphiques-croises-dynamiques' },
+								{ label: 'Exercice', slug: 'exercices/09-graphiques' },
+								// { label: 'Exercice de synthèse', slug: 'exercices/09-synthese-tgcd' }
+							]
+						},
 					],
 				},
 				{

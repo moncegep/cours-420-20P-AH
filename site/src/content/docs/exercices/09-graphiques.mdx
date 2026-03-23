@@ -1,0 +1,166 @@
+---
+title: "Exercice : Graphiques croisés dynamiques"
+description: Ajouter des graphiques aux tableaux croisés dynamiques de l'immeuble Pelletier pour visualiser les dépenses d'entretien.
+---
+
+import { Tabs, TabItem, Aside, Steps } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+Cet exercice fait suite à la **Partie 1** (Analyse de l'immeuble Pelletier avec les TCD). Tu vas maintenant transformer tes analyses en graphiques pour aider Marc Pelletier à visualiser rapidement la situation de son immeuble.
+
+<Aside type="note" title="Prérequis">
+Tu dois avoir complété les Parties 1 à 4 de l'exercice de la semaine 8. 
+Tu travailles dans le même fichier [`gestion_immeuble_pelletier.xlsx`](/files/gestion_immeuble_pelletier.xslx) 
+avec tes TCD déjà construits.
+</Aside>
+
+## Partie 6 : Premiers graphiques croisés dynamiques 
+
+Pour chaque question, crée un graphique croisé dynamique à partir d'un TCD existant (ou d'un nouveau TCD si nécessaire). Place chaque graphique dans sa propre feuille de graphique, nommée selon la convention `Graph-6A`, `Graph-6B`, etc.
+
+### A. Répartition des dépenses par catégorie
+
+**Objectif** : Marc veut voir d'un coup d'œil comment ses dépenses se répartissent entre les interventions urgentes, préventives et cosmétiques.
+
+Crée un graphique en **secteurs (camembert)** qui montre la part de chaque catégorie dans le coût total.
+
+**Mise en forme attendue** :
+- Titre : « Répartition des dépenses par catégorie »
+- Étiquettes de données affichant le **nom de la catégorie** et le **pourcentage**
+- Pas d'effet 3D
+
+<Aside type="tip" title="TCD source">
+Tu peux réutiliser le TCD de la question 2B en le modifiant, ou créer un nouveau TCD. Pour un camembert, tu as besoin d'un TCD simple : catégorie en Lignes, coût total en Valeurs (Somme).
+</Aside>
+
+### B. Dépenses totales par logement
+
+**Objectif** : Marc veut comparer rapidement les dépenses entre ses 8 logements.
+
+Crée un graphique en **barres horizontales** à partir du TCD de la question 2A (dépenses totales par logement).
+
+**Mise en forme attendue** :
+- Titre : « Dépenses totales par logement »
+- Étiquettes de données affichant le montant en dollars
+- Barres triées du plus élevé au moins élevé
+
+<Aside type="tip" title="Trier les barres">
+Pour que les barres soient triées par valeur décroissante, trie le TCD source : clic droit sur une valeur du TCD → **Trier** → **Du plus grand au plus petit**. Le graphique suivra automatiquement.
+</Aside>
+
+### C. Évolution mensuelle des dépenses
+
+**Objectif** : Marc veut voir si ses dépenses augmentent ou diminuent d'un mois à l'autre.
+
+Crée un graphique en **courbes avec marqueurs** montrant le total des dépenses pour chaque mois (janvier, février, mars).
+
+**Mise en forme attendue** :
+- Titre : « Évolution mensuelle des dépenses »
+- Marqueurs visibles sur chaque point
+- Axe vertical formaté en dollars
+
+<Aside type="note" title="Regroupement de dates">
+Si tu utilises le champ « Date demande » dans ton TCD, regroupe-le par mois (clic droit → Grouper). Si tu utilises la colonne « Mois » calculée, les valeurs 1, 2, 3 apparaîtront sur l'axe horizontal.
+</Aside>
+
+## Partie 7 : Graphiques d'analyse croisée
+
+Les graphiques croisés dynamiques deviennent particulièrement utiles quand on visualise deux dimensions simultanément.
+
+### A. Dépenses par logement ventilées par catégorie
+
+**Objectif** : Marc veut voir, pour chaque logement, quelle part des dépenses provient des urgences, de la prévention et du cosmétique.
+
+Crée un **histogramme empilé** à partir du TCD de la question 3A (dépenses par logement et par catégorie).
+
+**Mise en forme attendue** :
+- Titre : « Ventilation des dépenses par logement et catégorie »
+- Légende identifiant les trois catégories
+- Axe vertical formaté en dollars
+
+*Question de réflexion* : Quel logement a la plus grande proportion de dépenses urgentes par rapport à son total ? Est-ce que l'histogramme empilé te permet de répondre facilement à cette question ? Si non, quel type de graphique serait plus adapté ?
+
+<Aside type="tip" title="Empilé 100 %">
+Pour répondre à la question de réflexion, essaie de changer le type de graphique pour un **Histogramme empilé 100 %** (clic droit sur le graphique → **Modifier le type de graphique**). Compare les deux versions.
+</Aside>
+
+### B. Évolution mensuelle par catégorie
+
+**Objectif** : Marc veut suivre l'évolution des dépenses mois par mois, mais en distinguant les catégories d'intervention.
+
+Crée un graphique en **courbes avec marqueurs** à partir du TCD de la question 3B (dépenses mensuelles par catégorie).
+
+**Mise en forme attendue** :
+- Titre : « Évolution des dépenses mensuelles par catégorie »
+- Une courbe par catégorie (3 courbes)
+- Légende claire
+- Marqueurs sur chaque point
+
+*Question de réflexion* : En observant le graphique, les dépenses urgentes semblent-elles augmenter, diminuer ou rester stables au fil des mois ? Que devrait surveiller Marc ?
+
+### C. Comparaison main-d'œuvre vs matériaux par fournisseur
+
+**Objectif** : Marc veut comprendre, pour chaque fournisseur, quelle part du coût vient de la main-d'œuvre et quelle part vient des matériaux.
+
+Crée un nouveau TCD puis un **histogramme groupé** avec :
+- En lignes : le code fournisseur
+- En valeurs : la somme du coût main-d'œuvre **et** la somme du coût matériaux (deux champs dans la zone Valeurs)
+
+**Mise en forme attendue** :
+- Titre : « Coût main-d'œuvre vs matériaux par fournisseur »
+- Deux séries de barres côte à côte par fournisseur
+- Légende distinguant les deux types de coût
+
+<Aside type="note" title="Deux champs de valeurs">
+Pour afficher deux séries dans un même graphique, glisse les deux champs (coût main-d'œuvre et coût matériaux) dans la zone **Valeurs** du TCD. Excel crée automatiquement un champ « Valeurs » dans la zone Colonnes, ce qui produit deux barres par catégorie dans le graphique.
+</Aside>
+
+## Partie 8 : Tableau de bord
+
+Marc voudrait avoir une vue d'ensemble de la situation de son immeuble sur une seule page. Tu vas créer un mini tableau de bord.
+
+### A. Création du tableau de bord
+
+<Steps>
+1. Crée une nouvelle feuille nommée **Tableau de bord**.
+2. Choisis les **trois graphiques les plus pertinents** parmi ceux que tu as créés aux parties 6 et 7.
+3. Copie ces graphiques (ou déplace-les) dans la feuille Tableau de bord.
+4. Dispose-les de manière lisible (ex. : deux en haut, un en bas, ou une colonne de trois).
+5. Ajoute un titre général en haut de la feuille : « Suivi d'entretien — Immeuble Pelletier — Hiver 2026 ».
+</Steps>
+
+<Aside type="tip" title="Copier un graphique">
+Pour copier un graphique : clique sur le graphique → `Ctrl+C` → va dans la feuille Tableau de bord → `Ctrl+V`. Le graphique copié reste lié à son TCD source.
+</Aside>
+
+### B. Indicateurs clés
+
+En haut du tableau de bord, ajoute une zone d'indicateurs clés (KPI) avec les valeurs suivantes, calculées par formules :
+
+| Indicateur | Ce qu'il doit afficher |
+|---|---|
+| Dépenses totales | Le coût total de toutes les interventions |
+| Nombre d'interventions | Le nombre total d'interventions |
+| Coût moyen | Le coût moyen par intervention |
+| Interventions urgentes | Le nombre d'interventions de catégorie « Urgente » |
+
+<Aside type="note" title="Formules ou TCD ?">
+Pour ces indicateurs simples, des formules classiques (`SOMME`, `NBVAL`, `MOYENNE`, `NB.SI`) référençant la feuille Travaux sont plus pratiques qu'un TCD. Un tableau de bord peut combiner les deux approches.
+</Aside>
+
+{/* ### C. Interprétation
+
+Sous le tableau de bord, dans une zone de texte ou des cellules fusionnées, rédige un court paragraphe (4-5 phrases) répondant à la question suivante :
+
+> **En te basant sur les graphiques et les indicateurs, quelles sont les deux observations les plus importantes que Marc devrait retenir ? Quelles actions concrètes pourrait-il prendre ?** */}
+
+{/* ## Partie 9 : Synthèse finale 
+
+Dans la feuille **Synthèse** (créée à la Partie 1), ajoute les réponses aux questions suivantes.
+
+**9A.** Pour chacun des quatre types de graphiques utilisés dans cet exercice, donne un exemple de question d'affaires à laquelle ce type de graphique répond le mieux.
+
+**9B.** Marc te dit : *« Les camemberts c'est beau, je veux tout mettre en camembert. »* Explique-lui pourquoi ce n'est pas toujours le bon choix et donne un contre-exemple tiré de cet exercice.
+
+**9C.** Quel est l'avantage principal d'un graphique croisé dynamique par rapport à un graphique standard créé à partir d'une plage de cellules ? */}

@@ -1,0 +1,142 @@
+---
+title: "Exercice : Analyse de l'immeuble Pelletier avec les TCD"
+description: Utiliser les tableaux croisés dynamiques pour analyser les données d'entretien de l'immeuble de Marc Pelletier.
+sidebar:
+  order: 71
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+Marc Pelletier possède un immeuble de 8 logements à Montréal. Depuis janvier 2026, il consigne chaque intervention d'entretien dans un fichier Excel. Le fichier contient trois feuilles :
+
+- **Logements** — Les 8 logements (numéro, étage, pièces, superficie, loyer, locataire)
+- **Fournisseurs** — Les 5 fournisseurs réguliers (code, nom, spécialité, taux horaire)
+- **Travaux** — Les 16 interventions enregistrées depuis janvier (numéro, date, logement, fournisseur, catégorie, description, heures, coût matériaux)
+
+<Aside type="note" title="Fichier de départ">
+Télécharge le fichier [`gestion_immeuble_pelletier.xlsx`](/files/gestion_immeuble_pelletier.xslx). Toutes les questions de cet exercice se basent sur ce fichier.
+</Aside>
+
+## Partie 1 : Préparation des données
+
+Avant de créer des TCD, tu dois compléter la feuille **Travaux** avec des colonnes calculées. Ces colonnes permettront des analyses plus riches dans les TCD.
+
+| Colonne | En-tête | Contenu (description) |
+|---|---|---|
+| I | **Nom du locataire** | Le nom du locataire du logement concerné, récupéré automatiquement à partir du numéro de logement. Afficher « Inconnu » si le numéro n'est pas trouvé. |
+| J | **Taux horaire** | Le taux horaire du fournisseur, récupéré automatiquement à partir de son code. |
+| K | **Coût main-d'œuvre** | Le coût de la main-d'œuvre pour cette intervention. |
+| L | **Coût total** | Le coût complet de l'intervention (matériaux + main-d'œuvre). |
+| M | **Priorité** | « Critique » si l'intervention est urgente ET coûte plus de 500 $. « Haute » si elle est urgente (peu importe le coût). « Normale » sinon. |
+| N | **Mois** | Le numéro du mois de la date de demande. |
+
+<Aside type="tip" title="Note pour la RECHERCHEV">
+Si tu utilises `RECHERCHEV`, pense à ajouter `FAUX` pour les recherches exactes, et `SIERREUR` pour gérer les cas où un code n'est pas trouvé. 
+</Aside>
+
+<Aside type="caution" title="Convertir en Tableau Excel">
+Avant de passer à la Partie 2, convertis la plage de données de la feuille Travaux en **Tableau Excel**. 
+Coche « Mon tableau comporte des en-têtes ». Cela garantit que tes TCD se mettront à jour correctement si des lignes sont ajoutées plus tard.
+</Aside>
+
+---
+
+## Partie 2 : Premiers tableaux croisés dynamiques
+
+Tu vas maintenant créer des tableaux croisés dynamiques pour répondre à des questions d'analyse. 
+Pour chaque question, crée un **nouveau TCD** dans une nouvelle feuille.
+
+<Aside type="note" title="Convention de nommage">
+Nomme chaque feuille de TCD selon le numéro de la question : `TCD-2A`, `TCD-2B`, etc.
+</Aside>
+
+### A. Dépenses totales par logement
+
+**Question** : Quel est le coût total des interventions pour chaque logement ?
+
+Ton TCD doit montrer, pour chaque numéro de logement, le total des dépenses.
+
+*Vérifie ton résultat* : Le logement ayant le coût total le plus élevé devrait être le **101**.
+
+### B. Nombre d'interventions par catégorie
+
+**Question** : Combien d'interventions ont été réalisées dans chaque catégorie (urgente, préventive, cosmétique) ?
+
+<Aside type="tip" title="Quel champ compter ?">
+Pour compter des entrées dans un TCD, glisse un champ **texte** dans la zone Valeurs. Excel appliquera automatiquement la fonction Nombre (NB). Si tu glisses un champ numérique, il fera une somme par défaut — tu devras alors changer manuellement la fonction de synthèse.
+</Aside>
+
+### C. Coût moyen par fournisseur
+
+**Question** : Quel est le coût moyen d'une intervention selon le fournisseur ?
+
+Ton TCD doit afficher le code fournisseur en lignes et le coût total moyen en valeurs. Tu devras modifier la fonction de synthèse par défaut.
+
+---
+
+## Partie 3 : Analyse croisée
+
+Les TCD deviennent vraiment puissants quand on croise deux dimensions. Chaque question utilise à la fois les zones **Lignes** et **Colonnes**.
+
+### A. Dépenses par logement et par catégorie
+
+**Question** : Comment se répartissent les dépenses de chaque logement entre les catégories d'intervention ?
+
+Construis un TCD avec :
+- En lignes : les logements
+- En colonnes : les catégories
+- En valeurs : le coût total
+
+*Vérifie ton résultat* : Le logement **101** devrait avoir des dépenses dans au moins deux catégories différentes.
+
+### B. Dépenses mensuelles par catégorie
+
+**Question** : Comment les dépenses évoluent-elles de mois en mois pour chaque catégorie ?
+
+Construis un TCD qui montre les mois en lignes et les catégories en colonnes, avec le total des coûts en valeurs.
+
+<Aside type="tip" title="Regroupement de dates">
+Au lieu d'utiliser la colonne « Mois » que tu as calculée en Partie 1, essaie de placer directement le champ **Date demande** dans les lignes, puis de le regrouper par mois (clic droit → Grouper). Compare le résultat avec l'approche par la colonne Mois. Quel avantage vois-tu ?
+</Aside>
+
+### C. Part des dépenses par logement
+
+**Question** : Quel pourcentage des dépenses totales représente chaque logement ?
+
+Reprends le TCD de la question 2A (ou crées-en un nouveau) et modifie l'affichage des valeurs pour montrer le **% du total général** au lieu des montants bruts.
+
+<Aside type="note" title="Indice">
+Ouvre les **Paramètres des champs de valeurs**, puis va à l'onglet **Afficher les valeurs** pour changer le mode d'affichage. Le montant brut et le pourcentage peuvent coexister si tu glisses le même champ deux fois dans la zone Valeurs.
+</Aside>
+
+---
+
+## Partie 4 : Questions d'analyse
+
+Pour chaque question ci-dessous, détermine **toi-même** la configuration du TCD nécessaire (quels champs dans quelles zones, quelle fonction de synthèse). Construis le TCD, puis rédige une courte réponse (2-3 phrases) dans une cellule sous le TCD.
+
+### A. Fournisseur le plus sollicité
+
+Quel fournisseur a effectué le plus grand nombre d'interventions ? Est-ce aussi celui qui a généré le coût total le plus élevé ?
+
+### B. Urgences coûteuses
+
+Quel est le coût total des interventions de catégorie « Urgente » ? Quel pourcentage des dépenses totales cela représente-t-il ?
+
+### C. Mois le plus coûteux
+
+Quel mois a été le plus coûteux pour Marc ? Quelle catégorie d'intervention a le plus contribué à ce coût ?
+
+### D. Logements problématiques
+
+En utilisant un TCD avec les catégories en colonnes et les logements en lignes, identifie le ou les logements qui ont eu le plus d'interventions urgentes. Que pourrait recommander Marc comme action pour ces logements ?
+
+---
+
+## Partie 5 : Synthèse
+
+Dans une nouvelle feuille nommée **Synthèse**, réponds à la question suivante.
+Marc te demande : *« Je veux savoir rapidement si mes loyers couvrent mes dépenses d'entretien. »* 
+Quelle configuration de TCD lui proposerais-tu ? Décris les champs que tu placerais dans chaque zone.

@@ -1,0 +1,282 @@
+---
+title: "Exercice : Analyse des ventes — Chez Marco"
+description: Utiliser les formules de recherche et les tableaux croisés dynamiques pour analyser les ventes d'une épicerie de quartier.
+sidebar:
+  order: 75
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+Marco Bélanger est propriétaire d'une petite épicerie de quartier à Montréal, **Chez Marco**. Depuis janvier 2026, il enregistre chaque vente dans un fichier Excel. Il veut comprendre quels produits se vendent le mieux, quels jours sont les plus achalandés, quelles catégories génèrent le plus de revenus, et comment ses employés performent.
+
+Le fichier contient **quatre feuilles** :
+
+- **Ventes :** 184 lignes de ventes (98 transactions) de janvier à mars 2026, avec le code produit, le code employé et la quantité
+- **Produits :** 22 produits répartis en 6 catégories (fruits et légumes, produits laitiers, boulangerie, viandes, épicerie sèche, boissons), avec le prix unitaire et le fournisseur
+- **Employés :** 5 employés (propriétaire, gérante, caissiers, commis) avec leur poste et date d'embauche
+- **Fournisseurs :** 10 fournisseurs avec leurs coordonnées et délais de livraison
+
+<Aside type="note" title="Fichier de départ">
+Télécharge le fichier [`gestion_ventes_chez_marco.xlsx`](./files/gestion_ventes_chez_marco.xlsx). La feuille **Ventes** ne contient que 5 colonnes (de saisie). Tu vas l'enrichir avec des colonnes calculées avant de créer les TCD.
+</Aside>
+
+---
+
+## Partie 1 : Enrichir les données de ventes 
+
+La feuille `Ventes` ne contient que les codes (produit et employé). Pour que les TCD soient utiles, tu dois ajouter des colonnes calculées qui vont chercher l'information dans les autres feuilles.
+Pour chaque colonne, écris la formule en ligne 2, puis copie-la vers le bas.
+
+| Colonne | En-tête | Contenu |
+|---|---|---|
+| F | **Nom du produit** | Le nom du produit, récupéré automatiquement à partir du code produit. Afficher « Produit inconnu » si le code n'est pas trouvé. |
+| G | **Catégorie** | La catégorie du produit, récupérée à partir du code produit. |
+| H | **Prix unitaire** | Le prix unitaire du produit, récupéré à partir du code produit. |
+| I | **Montant** | Le montant de la ligne de vente (quantité × prix unitaire). |
+| J | **Prénom employé** | Le prénom de l'employé, récupéré à partir du code employé. |
+| K | **Jour de la semaine** | Le numéro du jour de la semaine (1 = lundi, 7 = dimanche). |
+| L | **Mois** | Le numéro du mois de la vente. |
+
+<Aside type="caution" title="JOURSEM et le type 2">
+La fonction `JOURSEM` retourne par défaut 1 = dimanche.  
+Pour obtenir 1 = lundi (plus naturel au Québec), utilise le 2e argument : `=JOURSEM(B2; 2)`.
+</Aside>
+
+### Vérification
+
+Avant de continuer, vérifie tes formules :
+
+- La ligne TX-0001 (Jambon tranché, 2 unités à 5,49 $) devrait donner un montant de **10,98 $**.
+- La colonne « Jour de la semaine » pour le 2026-01-03 (samedi) devrait afficher **6**.
+- Aucune cellule ne devrait contenir `#N/A` ou `#VALEUR!`.
+
+<Aside type="caution" title="Convertir en Tableau Excel">
+Avant de passer à la Partie 2, convertis la plage de données complète (colonnes A à L) en **Tableau Excel**. 
+</Aside>
+
+---
+
+## Partie 2 : Premiers tableaux croisés dynamiques 
+
+Crée un TCD pour chacune des questions suivantes. Place chaque TCD dans une nouvelle feuille nommée selon la convention `TCD-2A`, `TCD-2B`, etc.
+
+### A. Revenus par catégorie de produit
+
+**Question** : Quelle catégorie de produit génère le plus de revenus pour Chez Marco ?
+
+*Vérifie ton résultat* : La catégorie **Viandes** devrait être au sommet avec environ **546,85 $**, suivie de **Produits laitiers** (≈ 414,87 $). Le total général doit correspondre à **2 175,49 $**.
+
+### B. Nombre de transactions par employé
+ 
+**Question** : Quel employé a traité le plus de transactions ?
+ 
+<Aside type="tip" title="Compter des transactions, pas des lignes">
+Attention : une transaction (ex. TX-0015) peut contenir plusieurs lignes (plusieurs produits). 
+Si tu glisses « No transaction » dans Valeurs, Excel comptera les **lignes**, pas les transactions distinctes. 
+{/* Pour ce TCD, le comptage par lignes est acceptable, mais note la différence. */}
+</Aside>
+ 
+*Vérifie ton résultat* : **Sarah** devrait être en tête avec **48 lignes**, suivie de Karim (46), Mélodie (44) et Alex (43). Marco (le propriétaire) ne devrait avoir que **3 lignes** — cohérent avec son rôle.
+ 
+### C. Ventes par jour de la semaine
+ 
+**Question** : Quels jours de la semaine sont les plus rentables ? Trie du plus élevé au plus bas.
+ 
+{/* Construis un TCD avec le jour de la semaine en lignes et le montant total en valeurs.  */}
+ 
+*Vérifie ton résultat* : Le **vendredi** (jour 5) devrait être en tête avec environ **585,18 $**, suivi du **samedi** (≈ 524,40 $). Le **lundi** devrait être le jour le plus faible (≈ 149,97 $). Le dimanche (jour 7) ne devrait pas apparaître du tout.
+ 
+{/* *Question de réflexion* : Le résultat est-il cohérent avec le fait que l'épicerie est fermée le dimanche ? */}
+ 
+## Partie 3 : Analyses croisées
+ 
+### A. Revenus par catégorie et par mois
+ 
+**Question** : Les habitudes d'achat changent-elles d'un mois à l'autre ? Quelles catégories se vendent mieux en hiver ?
+ 
+**Indice:** Il faut faire croiser les catégories avec les mois.
+ 
+<Aside type="tip" title="Regroupement automatique">
+Si tu places directement le champ **Date** dans les colonnes au lieu du champ **Mois**, Excel peut te proposer un regroupement automatique. Essaie les deux approches et compare.
+</Aside>
+ 
+*Vérifie ton résultat* : Les totaux mensuels devraient être : janvier ≈ **871,95 $**, février ≈ **789,55 $**, mars ≈ **513,99 $**. La catégorie Viandes devrait dominer chaque mois.
+ 
+### B. Produits les plus vendus — quantité et revenus
+ 
+**Question** : Les produits les plus vendus en quantité sont-ils aussi ceux qui génèrent le plus de revenus ?
+ 
+Construis un TCD avec les noms de produits en lignes et, dans la zone Valeurs, **deux champs** : la somme des quantités et la somme des montants. Trie par quantité décroissante.
+ 
+*Vérifie ton résultat* : Le **Lait 2 %** devrait être le produit le plus vendu en quantité (**40 unités**, revenu ≈ 219,60 $). Mais en revenu, ce sont les **Poitrines de poulet** qui dominent (≈ **259,80 $** pour seulement 20 unités). La **Laitue romaine** est un bon exemple de produit à haute quantité (28 unités) mais faible revenu (≈ 64,12 $) à cause de son prix bas (2,29 $).
+ 
+*Question de réflexion* : Compare le classement par quantité et par revenu. Quel produit se vend en grande quantité mais génère peu de revenus ? Pourquoi ?
+ 
+### C. Performance par employé et par catégorie
+ 
+**Question** : Certains employés vendent-ils davantage certaines catégories de produits ?
+ 
+Construis un TCD avec les employés en lignes, les catégories en colonnes, et la somme des montants en valeurs.
+ 
+*Vérifie ton résultat* : La cellule la plus élevée devrait être **Alex × Viandes** (≈ 162,77 $). **Sarah** devrait avoir son montant le plus élevé dans **Produits laitiers** (≈ 142,96 $).
+ 
+<Aside type="note" title="Limites de cette analyse">
+Dans une épicerie, l'employé à la caisse enregistre les achats du client — il ne « vend » pas activement un produit. Ce TCD montre donc qui était à la caisse quand certaines catégories ont été achetées, pas nécessairement qui a influencé la vente.
+</Aside>
+ 
+---
+ 
+## Partie 4 — Pourcentages et proportions
+ 
+### A. Part de chaque catégorie dans le revenu total
+ 
+Crée un TCD montrant chaque catégorie avec sa part en **% du total général**.
+ 
+<Aside type="note" title="Comment faire">
+Ouvre les **Paramètres des champs de valeurs** → onglet **Afficher les valeurs** → choisis **% du total général**.
+</Aside>
+ 
+*Vérifie ton résultat* : Viandes ≈ **25,1 %**, Produits laitiers ≈ **19,1 %**, Fruits et légumes ≈ **15,3 %**, Épicerie sèche ≈ **15,2 %**, Boulangerie ≈ **14,5 %**, Boissons ≈ **10,8 %**.
+ 
+### B. Double affichage : montant et pourcentage
+ 
+Reprends le TCD de la question 4A et ajoute le même champ une deuxième fois dans la zone Valeurs : une colonne pour le **montant en dollars**, une colonne pour le **% du total**. Les deux côte à côte.
+ 
+*Vérifie ton résultat* : Les pourcentages doivent totaliser **100 %** et les montants doivent totaliser **2 175,49 $**.
+ 
+ 
+## Partie 5 : Graphiques croisés dynamiques
+ 
+### A. Répartition des revenus par catégorie — Camembert
+ 
+À partir du TCD 4A, crée un graphique en **secteurs** montrant la part de chaque catégorie.
+ 
+**Mise en forme** :
+- Titre : « Répartition des revenus par catégorie »
+- Étiquettes avec le nom de la catégorie et le pourcentage
+- Pas d'effet 3D
+ 
+*Vérifie ton résultat* : La pointe **Viandes** devrait occuper environ le quart du camembert (25,1 %). La pointe **Boissons** devrait être la plus petite (10,8 %).
+ 
+### B. Évolution mensuelle des ventes — Courbe
+ 
+À partir du TCD 3A, crée un graphique en **courbes avec marqueurs** montrant l'évolution mensuelle des ventes totales (toutes catégories confondues).
+ 
+**Mise en forme** :
+- Titre : « Évolution mensuelle des ventes »
+- Axe vertical en dollars
+- Marqueurs visibles
+ 
+*Vérifie ton résultat* : La courbe devrait montrer une **tendance descendante** de janvier (≈ 872 $) vers mars (≈ 514 $). Les trois marqueurs doivent être visibles.
+ 
+### C. Ventes par jour de la semaine — Barres horizontales
+ 
+À partir du TCD 2C, crée un graphique en **barres horizontales**.
+ 
+**Mise en forme** :
+- Titre : « Ventes par jour de la semaine »
+- Barres triées du jour le plus rentable au moins rentable
+- Étiquettes de données en dollars
+ 
+*Vérifie ton résultat* : La barre du **vendredi** devrait être la plus longue (≈ 585 $). L'écart avec le **lundi** (≈ 150 $) devrait être très visible — presque un facteur 4.
+ 
+### D. Revenus par catégorie et par mois — Histogramme empilé
+ 
+À partir du TCD 3A, crée un **histogramme empilé** montrant les mois en axe horizontal et les catégories empilées.
+ 
+**Mise en forme** :
+- Titre : « Composition des ventes mensuelles par catégorie »
+- Légende identifiant les catégories
+ 
+*Vérifie ton résultat* : La barre de **janvier** devrait être la plus haute (≈ 872 $). Dans chaque barre, la portion **Viandes** devrait être la plus grande. La barre de mars devrait être nettement plus courte que celles de janvier et février.
+ 
+*Question de réflexion* : Ce graphique permet-il de voir facilement si une catégorie spécifique a augmenté ou diminué entre janvier et mars ? Si non, quel type de graphique serait plus adapté pour cette question ?
+ 
+---
+ 
+## Partie 6 : Segments et tableau de bord
+ 
+### A. Ajouter des segments (slicers)
+ 
+Les segments sont des boutons de filtre visuels qui permettent de filtrer un ou plusieurs TCD en un clic.
+ 
+<Steps>
+1. Clique sur un de tes TCD.
+2. Va dans **Analyse du tableau croisé dynamique** → **Insérer un segment**.
+3. Coche **Catégorie** et **Prénom employé**. Clique OK.
+4. Deux panneaux de segments apparaissent. Clique sur une catégorie pour filtrer le TCD.
+5. Pour sélectionner plusieurs éléments, maintiens `Ctrl` en cliquant.
+6. Pour effacer le filtre, clique sur l'icône d'entonnoir avec un ✕ dans le coin du segment.
+</Steps>
+ 
+*Vérifie ton résultat* : En cliquant sur **Viandes** dans le segment Catégorie, le TCD ne devrait afficher que les produits de viande. En cliquant ensuite sur **Sarah** dans le segment Employé, le montant affiché devrait diminuer encore. En effaçant les deux filtres, le total revient à **2 175,49 $**.
+ 
+<Aside type="tip" title="Connecter un segment à plusieurs TCD">
+Un même segment peut filtrer plusieurs TCD en même temps. Clic droit sur le segment → **Connexions de rapport** → coche les TCD que tu veux lier. Très utile pour un tableau de bord.
+</Aside>
+ 
+### B. Construire un tableau de bord
+ 
+Crée une feuille nommée **Tableau de bord** qui regroupe :
+ 
+1. **Quatre indicateurs clés** en haut, calculés par formules à partir de la feuille Ventes :
+   - Revenu total
+   - Nombre de transactions
+   - Panier moyen (revenu total ÷ nombre de transactions distinctes)
+   - Produit le plus vendu (en quantité)
+ 
+2. **Trois graphiques** choisis parmi ceux des parties 5A à 5D — ceux que tu juges les plus utiles pour Marco.
+ 
+3. **Deux segments** (Catégorie et Employé) connectés aux TCD sources de tes graphiques.
+ 
+*Vérifie ton résultat* : Le revenu total devrait être **2 175,49 $**. Le nombre de transactions distinctes devrait être **98**. Le panier moyen devrait être environ **22,20 $**. Le produit le plus vendu en quantité devrait être le **Lait 2 % (2 L)**.
+ 
+<Aside type="caution" title="Panier moyen">
+Le panier moyen n'est pas la moyenne des montants par ligne — c'est le revenu total divisé par le nombre de **transactions distinctes**. Pour compter les transactions distinctes, tu peux utiliser une approche avec `SOMME` et `SI` en formule matricielle, ou simplement créer un TCD auxiliaire.
+</Aside>
+ 
+ 
+{/* ## Partie 7 : Questions d'analyse 
+ 
+Dans une feuille nommée **Analyse**, réponds aux questions suivantes en t'appuyant sur tes TCD et graphiques. Chaque réponse doit citer les **données précises** qui justifient ta recommandation (montants, pourcentages, classements).
+ 
+**A.** Marco envisage de prolonger ses heures d'ouverture un jour de la semaine. Quel jour lui recommanderais-tu de cibler et pourquoi ?
+ 
+*Vérifie ton résultat* : Ta réponse devrait s'appuyer sur le TCD 2C. Le **vendredi** (≈ 585 $) et le **samedi** (≈ 524 $) sont déjà les jours les plus forts. Le jour à cibler pour une prolongation devrait être un jour de milieu de semaine dont les ventes actuelles sont modestes mais qui a du potentiel — par exemple le **jeudi** (≈ 343 $, troisième position).
+ 
+**B.** Le fournisseur « Distrib. Alimentex » a un délai de livraison de 5 jours. En regardant les ventes de ses produits (épicerie sèche et eau), Marco devrait-il chercher un fournisseur plus rapide ? Justifie en montrant le poids de ces produits dans le revenu total.
+ 
+*Vérifie ton résultat* : Les produits Alimentex représentent environ **389,81 $**, soit ≈ **17,9 %** du revenu total. C'est un fournisseur significatif — un délai de 5 jours pour près d'un cinquième des revenus mérite attention.
+ 
+<Aside type="tip" title="Indice pour 7B">
+Tu auras besoin de filtrer ou de créer un TCD qui isole les produits du fournisseur Alimentex. Tu peux aussi utiliser un segment pour explorer cette question.
+</Aside>
+ 
+**C.** Marco veut mettre en promotion un produit qui se vend bien en quantité mais dont le revenu est modeste. En utilisant le TCD 3B, identifie ce produit et explique pourquoi c'est un bon candidat pour une promotion.
+ 
+*Vérifie ton résultat* : La **Laitue romaine** (28 unités vendues, seulement ≈ 64,12 $ de revenu, prix unitaire de 2,29 $) ou les **Bananes** (19 unités, ≈ 15,01 $, prix de 0,79 $/lb) sont de bons candidats. Un produit déjà populaire en volume a une clientèle existante — une promotion peut augmenter le panier moyen.
+ 
+**D.** En comparant les trois mois, les dépenses des clients semblent-elles augmenter, diminuer ou rester stables ? Quelle catégorie contribue le plus à la tendance observée ?
+ 
+*Vérifie ton résultat* : Les ventes sont en **baisse** : janvier (≈ 872 $) → février (≈ 790 $) → mars (≈ 514 $). La catégorie **Épicerie sèche** montre la variation la plus marquée entre janvier (≈ 166 $) et février (≈ 53 $), avant de remonter en mars (≈ 110 $). **Fruits et légumes** montre aussi un mouvement notable : hausse en février (≈ 176 $) puis forte baisse en mars (≈ 52 $). */}
+ 
+ 
+{/* ## Partie 8 : Synthèse
+ 
+Toujours dans la feuille **Analyse**, réponds aux questions de synthèse.
+ 
+**A.** Compare les deux approches suivantes pour obtenir le total des ventes de la catégorie « Viandes » :
+- Approche 1 : `=SOMME.SI(G:G; "Viandes"; I:I)` dans la feuille Ventes
+- Approche 2 : Lire la valeur dans un TCD
+ 
+Dans quel cas chaque approche est-elle préférable ?
+ 
+*Vérifie ton résultat* : Les deux approches devraient donner **546,85 $**. Ta réponse écrite devrait mentionner qu'une formule est utile pour un calcul ponctuel et fixe, tandis qu'un TCD est préférable quand on veut explorer les données sous plusieurs angles sans réécrire de formules.
+ 
+**B.** Marco te dit : *« Je veux voir comment les ventes de chaque catégorie évoluent par mois, par jour de la semaine, et par employé — tout en même temps. »* Explique-lui pourquoi un seul TCD ne peut pas bien représenter trois dimensions simultanément et propose-lui une solution avec plusieurs TCD ou un tableau de bord.
+ 
+*Vérifie ton résultat* : Ta réponse devrait expliquer qu'un TCD a deux axes principaux (lignes et colonnes) — trois dimensions rendent le tableau illisible. La solution est d'utiliser plusieurs TCD (un par combinaison de deux dimensions) dans un tableau de bord, liés par des segments communs.
+ 
+**C.** Nomme une question d'affaires qu'un TCD seul ne peut pas résoudre avec les données actuelles de Chez Marco, et explique quelles données supplémentaires il faudrait collecter.
+ 
+*Vérifie ton résultat* : Plusieurs réponses sont acceptables. Par exemple : « Les promotions sont-elles rentables ? » (il faudrait les prix promotionnels vs réguliers), « Quel est le profit par produit ? » (il faudrait le coût d'achat), ou « À quelle heure vend-on le plus ? » (il faudrait l'heure de chaque transaction). */}

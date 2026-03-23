@@ -1,0 +1,189 @@
+---
+title: Graphiques croisés dynamiques
+description: Créer et configurer des graphiques liés à des tableaux croisés dynamiques dans Excel.
+sidebar:
+  order: 72
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+Un **graphique croisé dynamique** est un graphique lié directement à un TCD. Quand tu modifies le TCD (filtres, champs, regroupement), le graphique se met à jour automatiquement. C'est l'outil idéal pour transformer une analyse chiffrée en représentation visuelle.
+
+<Aside type="tip" title="Graphique croisé dynamique vs graphique standard">
+Un graphique standard est lié à une plage de cellules fixe. Un graphique croisé dynamique est lié à un TCD : il hérite de ses filtres, de ses regroupements et de sa structure. Modifier le TCD modifie le graphique, et vice versa — les boutons de filtre apparaissent directement sur le graphique.
+</Aside>
+
+## Créer un graphique croisé dynamique
+
+Il y a deux façons de créer un graphique croisé dynamique.
+
+<Tabs>
+<TabItem label="À partir d'un TCD existant">
+
+<Steps>
+1. Clique sur une cellule du TCD.
+2. Va dans l'onglet **Analyse du tableau croisé dynamique** (ou **Insertion**).
+3. Clique sur **Graphique croisé dynamique**.
+4. Choisis le type de graphique souhaité.
+5. Clique **OK**.
+</Steps>
+
+Le graphique est automatiquement lié au TCD. Toute modification au TCD (ajout de champ, filtre, regroupement) se reflète dans le graphique.
+
+</TabItem>
+<TabItem label="TCD + graphique en même temps">
+
+<Steps>
+1. Sélectionne une cellule dans tes données sources.
+2. Va dans l'onglet **Insertion** → **Graphique croisé dynamique**.
+3. Excel crée un nouveau TCD et un graphique lié en même temps.
+4. Configure les champs dans le volet du TCD — le graphique suivra.
+</Steps>
+
+</TabItem>
+</Tabs>
+
+## Choisir le bon type de graphique
+
+Le choix du graphique dépend de la question à laquelle tu veux répondre.
+
+| Question d'analyse | Type recommandé | Exemple |
+|---|---|---|
+| Comparer des montants entre catégories | **Histogramme groupé** | Coût total par fournisseur |
+| Voir la composition d'un total | **Histogramme empilé** | Dépenses par logement, ventilées par catégorie |
+| Montrer la proportion d'un tout | **Secteurs (camembert)** | Répartition des dépenses par catégorie |
+| Suivre une évolution dans le temps | **Courbes** | Dépenses mensuelles de janvier à mars |
+| Comparer des valeurs avec des libellés longs | **Barres horizontales** | Coût total par fournisseur (noms complets) |
+
+### Histogramme groupé
+
+L'histogramme groupé place les barres **côte à côte** pour chaque catégorie. Il est idéal pour comparer des valeurs entre groupes.
+
+**Quand l'utiliser** : tu veux comparer directement les valeurs de deux séries ou plus. Par exemple, comparer le coût des matériaux et le coût de la main-d'œuvre pour chaque fournisseur.
+
+**Configuration typique du TCD** :
+- Lignes → Le critère de comparaison (ex. : fournisseur)
+- Valeurs → Deux champs numériques ou plus (ex. : coût matériaux + coût main-d'œuvre)
+
+### Histogramme empilé
+
+L'histogramme empilé superpose les barres pour montrer **la composition** de chaque total. La hauteur totale de la barre représente le grand total.
+
+**Quand l'utiliser** : tu veux voir à la fois le total et sa décomposition. Par exemple, le coût total par logement avec la ventilation urgente / préventive / cosmétique.
+
+**Configuration typique du TCD** :
+- Lignes → La dimension principale (ex. : logement)
+- Colonnes → La dimension de ventilation (ex. : catégorie)
+- Valeurs → Le montant à empiler (ex. : coût total)
+
+<Aside type="tip" title="Empilé 100 %">
+La variante **Histogramme empilé 100 %** normalise chaque barre à 100 %. Elle est utile pour comparer les proportions entre groupes quand les totaux sont très différents. Par exemple, comparer la répartition des catégories d'intervention entre un logement qui coûte 2 000 $ et un autre qui coûte 400 $.
+</Aside>
+
+### Graphique en secteurs (camembert)
+
+Le camembert montre les **parts d'un tout**. Chaque pointe représente une proportion du total.
+
+**Quand l'utiliser** : tu veux visualiser la répartition d'un total entre quelques catégories (idéalement 2 à 6). Par exemple, la proportion des dépenses totales par catégorie d'intervention.
+
+**Configuration typique du TCD** :
+- Lignes → Les catégories (ex. : catégorie d'intervention)
+- Valeurs → Le montant (ex. : coût total, en somme)
+
+<Aside type="caution" title="Limites du camembert">
+Un camembert devient difficile à lire avec plus de 6 ou 7 catégories. Si tu as beaucoup de catégories, préfère un histogramme ou des barres horizontales. Aussi, un camembert ne peut afficher qu'**une seule série de données** — pas de croisement lignes × colonnes.
+</Aside>
+
+### Graphique en courbes
+
+La courbe montre l'**évolution** d'une valeur sur un axe continu (typiquement le temps).
+
+**Quand l'utiliser** : tu veux observer une tendance, une progression ou une saisonnalité. Par exemple, l'évolution des dépenses mensuelles.
+
+**Configuration typique du TCD** :
+- Lignes → La dimension temporelle (ex. : date regroupée par mois)
+- Valeurs → Le montant (ex. : coût total, en somme)
+- Colonnes → (optionnel) Une dimension pour comparer plusieurs courbes (ex. : catégorie)
+
+<Aside type="tip" title="Courbes avec marqueurs">
+La variante **Courbes avec marqueurs** ajoute un point visible à chaque valeur. C'est utile quand tu as peu de points de données (ex. : 3 mois) pour que le graphique ne paraisse pas vide.
+</Aside>
+
+### Barres horizontales
+
+Les barres horizontales sont un histogramme pivoté à 90°. Les catégories sont sur l'axe vertical et les valeurs sur l'axe horizontal.
+
+**Quand l'utiliser** : les libellés des catégories sont longs (noms de fournisseurs, descriptions) et seraient tronqués ou illisibles sur un histogramme vertical.
+
+**Configuration typique du TCD** :
+- Lignes → Les catégories avec libellés longs (ex. : nom du fournisseur)
+- Valeurs → Le montant (ex. : coût total)
+
+## Mise en forme d'un graphique
+
+Une fois le graphique créé, tu peux le personnaliser pour le rendre plus lisible.
+
+### Éléments essentiels
+
+| Élément | Comment l'ajouter | Pourquoi |
+|---|---|---|
+| **Titre du graphique** | Clic sur le titre → taper le texte | Indique ce que le graphique représente |
+| **Étiquettes de données** | Onglet **Création** → **Ajouter un élément de graphique** → **Étiquettes de données** | Affiche les valeurs directement sur les barres ou les pointes |
+| **Légende** | Positionnée automatiquement; déplacer au besoin | Identifie les séries quand il y en a plusieurs |
+| **Format des nombres** | Clic droit sur l'axe → **Format de l'axe** → **Nombre** | Afficher les montants en dollars, les pourcentages, etc. |
+
+<Aside type="caution" title="Étiquettes sur un camembert">
+Sur un camembert, affiche de préférence les étiquettes avec le **nom de la catégorie** et le **pourcentage**. Les valeurs absolues seules sont difficiles à interpréter visuellement sur des pointes de tailles similaires.
+</Aside>
+
+### Styles et couleurs
+
+Excel propose des styles prédéfinis dans l'onglet **Création** → **Styles du graphique**. Pour un rendu professionnel :
+
+- Utilise des couleurs distinctes mais pas criardes.
+- Évite les effets 3D — ils déforment la perception des proportions.
+- Garde un fond blanc ou transparent pour la lisibilité.
+
+## Interaction TCD ↔ graphique
+
+Le lien entre le TCD et son graphique est bidirectionnel.
+
+| Action sur le TCD | Effet sur le graphique |
+|---|---|
+| Ajouter un champ en Colonnes | Nouvelles séries dans le graphique |
+| Filtrer une catégorie | La catégorie disparaît du graphique |
+| Regrouper les dates par trimestre | L'axe horizontal passe aux trimestres |
+| Changer la fonction de synthèse (Somme → Moyenne) | Les valeurs du graphique changent |
+
+| Action sur le graphique | Effet sur le TCD |
+|---|---|
+| Utiliser un bouton de filtre du graphique | Le TCD est filtré aussi |
+| Changer le type de graphique | Aucun effet sur le TCD (données inchangées) |
+
+<Aside type="note" title="Boutons de filtre sur le graphique">
+Les graphiques croisés dynamiques affichent des boutons de filtre directement sur le graphique. Ils sont pratiques pour des présentations interactives. Si tu veux les masquer pour un rendu plus propre (ex. : impression), va dans l'onglet **Analyse** → **Boutons de champ** → désactive-les.
+</Aside>
+
+## Déplacer un graphique
+
+Par défaut, le graphique est inséré dans la même feuille que le TCD. Pour le déplacer :
+
+<Steps>
+1. Clique sur le graphique.
+2. Onglet **Création** → **Déplacer le graphique**.
+3. Choisis **Nouvelle feuille** (le graphique occupe toute la feuille) ou **Objet dans** une feuille existante.
+</Steps>
+
+<Aside type="tip" title="Tableau de bord">
+Pour créer un tableau de bord simple, crée une feuille vide nommée « Tableau de bord » et déplace-y plusieurs graphiques croisés dynamiques provenant de différents TCD. Comme ils sont tous liés à leurs TCD respectifs, ils se mettront à jour quand tu actualises les données.
+</Aside>
+
+## Synthèse : quel graphique pour quelle question ?
+
+| Je veux… | Type de graphique | Exemple |
+|---|---|---|
+| Comparer des valeurs côte à côte | Histogramme groupé | Coût matériaux vs main-d'œuvre par fournisseur |
+| Voir la composition de chaque total | Histogramme empilé | Dépenses par logement ventilées par catégorie |
+| Montrer des proportions | Secteurs (camembert) | Part de chaque catégorie dans les dépenses |
+| Suivre une tendance dans le temps | Courbes (avec marqueurs) | Évolution mensuelle des dépenses |
+| Comparer avec des libellés longs | Barres horizontales | Coût total par nom de fournisseur |

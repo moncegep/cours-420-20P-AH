@@ -1,0 +1,173 @@
+---
+title: Tableaux croisés dynamiques (TCD)
+description: Créer et configurer des tableaux croisés dynamiques dans Excel pour analyser des données.
+sidebar:
+  order: 70
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+Un **tableau croisé dynamique** (TCD) permet de résumer, regrouper et analyser un grand volume de données en quelques clics — sans écrire de formules. Il remplace avantageusement les fonctions comme `SOMME.SI`, `NB.SI` et `MOYENNE.SI` lorsqu'on veut explorer les données sous plusieurs angles.
+
+<Aside type="tip" title="TCD vs formules d'agrégation">
+Un TCD fait en quelques secondes ce qu'une feuille d'analyse manuelle fait avec des dizaines de formules. L'avantage principal : on peut réorganiser l'analyse instantanément en glissant des champs, sans réécrire de formules.
+</Aside>
+
+## Données sources : les conditions préalables
+
+Avant de créer un TCD, les données doivent respecter certaines règles.
+
+| Condition | Détail |
+|---|---|
+| **Une ligne = un enregistrement** | Chaque ligne représente un fait unique (une vente, une intervention, une transaction). |
+| **En-têtes en première ligne** | Chaque colonne a un nom unique et descriptif. |
+| **Pas de lignes vides** | Aucune ligne vide au milieu des données. |
+| **Pas de cellules fusionnées** | Les cellules fusionnées empêchent Excel de lire les données correctement. |
+| **Types cohérents** | Une colonne ne doit pas mélanger texte et nombres. |
+| **Utiliser un Tableau Excel** | Convertir la plage en Tableau (`Ctrl+T`) garantit que le TCD inclura automatiquement les nouvelles lignes ajoutées. |
+
+<Aside type="caution" title="Piège fréquent">
+Si tes données contiennent des lignes vides ou des cellules fusionnées, le TCD ne lira qu'une partie des données sans avertissement. Vérifie toujours la plage détectée par Excel avant de confirmer la création.
+</Aside>
+
+## Créer un tableau croisé dynamique
+
+<Steps>
+1. **Sélectionne une cellule** dans ta plage de données (ou dans ton Tableau Excel).
+2. Va dans l'onglet **Insertion** → **Tableau croisé dynamique**.
+3. Excel détecte automatiquement la plage. Vérifie qu'elle est correcte.
+4. Choisis l'emplacement : **Nouvelle feuille de calcul** (recommandé) ou feuille existante.
+5. Clique **OK**. Le volet **Champs de tableau croisé dynamique** apparaît à droite.
+</Steps>
+
+<Aside type="note" title="Raccourci">
+Si tes données sont dans un Tableau Excel nommé (ex. : `Travaux`), le TCD utilisera ce nom comme source. Cela garantit que le TCD se mettra à jour automatiquement quand tu ajouteras des lignes au Tableau.
+</Aside>
+
+## Les quatre zones du TCD
+
+Le volet des champs contient la liste des colonnes de tes données et quatre zones où tu peux les glisser.
+
+| Zone | Rôle | Exemple concret |
+|---|---|---|
+| **Lignes** | Catégories affichées en rangées | Les régions, les logements, les fournisseurs |
+| **Colonnes** | Catégories affichées en colonnes | Les mois, les catégories d'intervention |
+| **Valeurs** | Données numériques à résumer | Le montant, les heures, le coût total |
+| **Filtres** | Critères pour filtrer l'ensemble du TCD | L'année, la catégorie, le fournisseur |
+
+### Comment lire un TCD
+
+Un TCD répond toujours à une question du type :
+
+> **« Quel est le [résumé] des [valeurs] par [lignes] et par [colonnes] ? »**
+
+Par exemple : *« Quel est le **total** des **coûts** par **logement** et par **mois** ? »*
+
+- **Lignes** → No logement
+- **Colonnes** → Mois
+- **Valeurs** → Coût total (Somme)
+
+<Aside type="tip" title="Glisser-déposer">
+Tu peux déplacer un champ d'une zone à l'autre en tout temps. Par exemple, déplacer « Catégorie » de Lignes vers Colonnes réorganise instantanément le tableau sans perdre de données.
+</Aside>
+
+## Paramètres des champs de valeurs
+
+Par défaut, Excel applique **Somme** pour les nombres et **NB** (comptage) pour le texte. Tu peux changer cette fonction de synthèse.
+
+### Changer la fonction de synthèse
+
+<Steps>
+1. Clique sur le champ dans la zone **Valeurs** (ex. : « Somme de Coût total »).
+2. Choisis **Paramètres des champs de valeurs…**
+3. Sous l'onglet **Synthèse par**, sélectionne la fonction voulue.
+</Steps>
+
+| Fonction | Résultat | Cas d'utilisation |
+|---|---|---|
+| **Somme** | Total des valeurs | Coût total par logement |
+| **Nombre** (NB) | Nombre d'entrées | Combien d'interventions par catégorie |
+| **Moyenne** | Moyenne arithmétique | Coût moyen d'une intervention |
+| **Min** / **Max** | Valeur minimale ou maximale | Intervention la plus coûteuse par fournisseur |
+
+<Aside type="note" title="NB vs NBVAL">
+Dans un TCD, la fonction **Nombre** compte les cellules contenant des nombres. Si tu veux compter toutes les entrées (y compris du texte), utilise **NB** sur un champ texte comme « No intervention » ou « Description ».
+</Aside>
+
+### Afficher les valeurs en pourcentage
+
+En plus de la fonction de synthèse, tu peux changer la façon dont les valeurs sont **affichées**.
+
+<Steps>
+1. Ouvre les **Paramètres des champs de valeurs…**
+2. Va à l'onglet **Afficher les valeurs**.
+3. Choisis le mode d'affichage souhaité.
+</Steps>
+
+| Mode d'affichage | Résultat | Exemple |
+|---|---|---|
+| **Aucun calcul** | Valeur brute (par défaut) | 1 250,00 $ |
+| **% du total général** | Proportion par rapport au grand total | 8,3 % |
+| **% du total de la colonne** | Proportion par rapport au total de la colonne | 25,0 % |
+| **% du total de la ligne** | Proportion par rapport au total de la ligne | 40,0 % |
+
+<Aside type="tip" title="Deux champs de valeurs sur la même colonne">
+Tu peux glisser le même champ deux fois dans la zone Valeurs. Par exemple, glisse « Coût total » une première fois pour la **Somme**, puis une deuxième fois pour le **% du total général**. Le TCD affichera les deux colonnes côte à côte.
+</Aside>
+
+## Regroupement de dates
+
+Quand un champ de date est placé dans les Lignes ou les Colonnes, Excel affiche par défaut chaque date individuellement — ce qui est rarement utile. Le regroupement permet d'analyser par mois, trimestre ou année.
+
+### Regrouper un champ de date
+
+<Steps>
+1. Place un champ de date dans la zone **Lignes** (ou Colonnes).
+2. Fais un **clic droit** sur une cellule contenant une date dans le TCD.
+3. Choisis **Grouper…**
+4. Sélectionne le ou les niveaux de regroupement souhaités (Mois, Trimestres, Années).
+5. Clique **OK**.
+</Steps>
+
+<Aside type="caution" title="Erreur fréquente : regroupement impossible">
+Si Excel refuse de regrouper les dates, c'est généralement parce que la colonne contient des cellules vides ou des valeurs textuelles qui ressemblent à des dates mais n'en sont pas. Vérifie que toutes les cellules de la colonne source sont de type Date.
+</Aside>
+
+### Niveaux de regroupement
+
+| Niveau | Résultat | Utile pour… |
+|---|---|---|
+| **Mois** | Janvier, Février, Mars… | Suivi mensuel des dépenses |
+| **Trimestres** | Trim1, Trim2, Trim3, Trim4 | Rapports trimestriels |
+| **Années** | 2025, 2026… | Comparaison annuelle |
+| **Mois + Années** | Les deux niveaux combinés | Quand les données couvrent plus d'un an |
+
+<Aside type="tip" title="Dégrouper">
+Pour revenir aux dates individuelles : clic droit sur le champ regroupé → **Dissocier**.
+</Aside>
+
+## Actualiser un TCD
+
+Un TCD ne se met **pas** à jour automatiquement quand les données sources changent.
+
+| Action | Comment |
+|---|---|
+| **Actualiser manuellement** | Clic droit sur le TCD → **Actualiser** |
+| **Raccourci clavier** | `Alt+F5` (actualise le TCD actif) |
+| **Actualiser tout** | Onglet **Données** → **Actualiser tout** (`Ctrl+Alt+F5`) |
+
+<Aside type="caution" title="Piège classique">
+Si tu ajoutes des lignes à ta plage de données **sans** utiliser un Tableau Excel, le TCD ne les verra pas même après actualisation. Tu devras modifier manuellement la source de données (onglet **Analyse du tableau croisé dynamique** → **Modifier la source de données**). C'est pourquoi il est recommandé de toujours convertir tes données en Tableau Excel (`Ctrl+T`) avant de créer le TCD.
+</Aside>
+
+## Synthèse : formules vs TCD
+
+| Besoin | Avec formules | Avec TCD |
+|---|---|---|
+| Total par catégorie | `=SOMME.SI(…)` | Champ en Lignes + Somme en Valeurs |
+| Comptage par catégorie | `=NB.SI(…)` | Champ en Lignes + Nombre en Valeurs |
+| Moyenne par catégorie | `=MOYENNE.SI(…)` | Champ en Lignes + Moyenne en Valeurs |
+| Analyse croisée (2 dimensions) | Combinaison complexe de formules | Lignes + Colonnes + Valeurs |
+| Changer l'axe d'analyse | Réécrire les formules | Glisser-déposer un champ |
+| Ajouter un filtre global | Ajouter des conditions aux formules | Glisser un champ dans Filtres |
+| Regrouper par mois/trimestre | `MOIS()` + formules conditionnelles | Clic droit → Grouper |
