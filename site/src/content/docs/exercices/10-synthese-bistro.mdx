@@ -1,0 +1,163 @@
+---
+title: "Exercice — Bistro Le Marché"
+description: "Analyse des ventes et des tendances du marché pour optimiser le menu d'été d'un restaurant"
+---
+
+import { Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+**Bistro Le Marché** est un petit restaurant de quartier à Sherbrooke. La propriétaire, Nathalie Grenier, souhaite réviser son menu pour la saison estivale. Elle dispose de ses ventes de l'année 2024 et d'un rapport de sondage mené auprès de 1 000 restaurants québécois sur les tendances estivales en restauration.
+
+Son objectif : **maximiser sa rentabilité estivale** en identifiant les forces et les faiblesses de son menu actuel, puis en le comparant aux tendances du marché.
+
+<Aside type="tip" title="Fichier de départ">
+Le fichier contient trois feuilles :
+- **Menu** — les 15 items de la carte actuelle (prix, coûts, saison)
+- **Ventes** — les ventes mensuelles de 2024 (141 lignes)
+- **Sondage** — les 20 tendances estivales du rapport sectoriel
+</Aside>
+
+---
+
+## Partie 1 — Enrichir les données de ventes
+
+La feuille **Ventes** contient les colonnes `Date`, `IDPlat`, `Quantité` et `Montant`, mais aucune information sur le nom du plat, sa catégorie ou son coût. Tu dois enrichir cette feuille à l'aide de la feuille **Menu** pour rendre les données analysables.
+
+### Question 1
+
+Dans la feuille **Ventes**, ajoute une colonne **NomPlat** qui récupère le nom du plat correspondant à chaque `IDPlat` à partir de la feuille **Menu**.
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+La première ligne de données (IDPlat `B02`) devrait afficher **Café latté**.
+</Aside> */}
+
+### Question 2
+
+De la même façon, ajoute les colonnes suivantes en allant chercher les valeurs dans la feuille **Menu** :
+- **Catégorie**
+- **Coût** (coût des ingrédients par unité)
+- **Saison**
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+Pour la ligne de l'IDPlat `E01` en janvier, tu devrais obtenir : Catégorie = **Entrée**, CoûtIngr = **4,50 $**, Saison = **Quatre saisons**.
+</Aside> */}
+
+### Question 3
+
+Ajoute deux colonnes calculées :
+- **CoûtTotal** — le coût total des ingrédients pour cette ligne de vente
+- **Marge** — le profit réalisé sur cette ligne de vente
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+Pour la ligne de la Bavette de bœuf en janvier (IDPlat `P03`, Quantité 23) : CoûtTotal = **253,00 $**, Marge = **412,85 $**.
+</Aside> */}
+
+### Question 4
+
+Ajoute une colonne **Mois** qui extrait le numéro du mois à partir de la colonne `Date`.
+
+{/* <Aside type="tip" title="Rappel">
+La fonction `MOIS()` retourne un nombre de 1 à 12.
+</Aside> */}
+
+---
+
+## Partie 2 — Analyser les ventes par TCD
+
+Maintenant que tes données sont enrichies, tu vas créer des tableaux croisés dynamiques pour analyser la performance du restaurant sous différents angles.
+
+### Question 5
+
+Crée un TCD qui présente, **pour chaque catégorie** (Entrée, Plat, Dessert, Boisson), la somme des colonnes Quantité, Montant et Marge.
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+La catégorie **Plat** devrait afficher : Quantité = **1 333**, Montant = **29 450,35 $**, Marge = **19 360,60 $**.
+</Aside> */}
+
+**Question 5a** — Quelle catégorie génère le plus de revenus ? Quelle catégorie a le meilleur pourcentage de marge ?
+
+<Aside type="caution" title="Indice">
+Le plus de revenus et le meilleur pourcentage de marge ne correspondent pas à la même catégorie.
+</Aside>
+
+### Question 6
+
+Crée un TCD qui présente le **Montant par mois** (mois en lignes). Ajoute un **graphique croisé dynamique** pour visualiser l'évolution mensuelle des revenus.
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+Le mois le plus rentable est **juin** (5 283,20 $). Le mois le plus faible est **avril** (3 344,65 $).
+</Aside> */}
+
+**Question 6a** — Décris la tendance saisonnière que tu observes dans le graphique. Quels mois forment le pic estival ?
+
+### Question 7
+
+Crée un TCD qui présente la **Marge par NomPlat**, trié en ordre décroissant. Insère un **graphique croisé dynamique** en barres horizontales.
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+Le top 3 par marge totale : **Burger classique** (6 397,30 $), **Filet de saumon grillé** (4 211,20 $), **Bavette de bœuf** (3 590,00 $).
+</Aside> */}
+
+**Question 7a** — Identifie les 3 items les moins rentables de l'année. Parmi ceux-ci, lesquels sont des items d'hiver ?
+
+### Question 8
+
+Crée un TCD croisé avec les **Catégories en lignes** et une colonne calculée ou un regroupement qui distingue les mois d'**été (mai à août)** du **reste de l'année**. Affiche la somme du Montant.
+
+<Aside type="tip" title="Approche suggérée">
+Tu pourrais ajouter une colonne **Période** dans la feuille Ventes (`Été` si le mois est entre 5 et 8, `Reste` sinon) à l'aide d'une formule SI, puis utiliser cette colonne dans ton TCD.
+</Aside>
+
+{/* <Aside type="note" title="Vérifie ton résultat">
+Montant total été : **20 220,15 $** | Montant total reste : **30 669,35 $**.
+</Aside> */}
+
+**Question 8a** — L'été représente 4 mois sur 12 (33 % de l'année). Quel pourcentage du revenu annuel est généré durant cette période ? Que peux-tu en conclure ?
+
+---
+
+## Partie 3 — Croiser avec les tendances du marché
+
+Nathalie veut savoir si son menu est bien aligné avec ce que le marché recommande pour l'été. La feuille **Sondage** contient les tendances estivales identifiées auprès de 1 000 restaurants québécois.
+
+### Question 9
+
+Crée un TCD à partir de la feuille **Sondage** qui affiche, **par catégorie**, le nombre de tendances identifiées et la **popularité moyenne**.
+
+<Aside type="note" title="Vérifie ton résultat">
+La catégorie **Plat** a **6 tendances** identifiées avec une popularité estivale moyenne de **67 %**.
+</Aside>
+
+### Question 10
+
+Compare manuellement les items du menu de Nathalie avec les tendances du sondage. Dans un tableau ou sur une feuille séparée, identifie :
+
+1. Les **forces** — items du menu qui correspondent à une tendance à **forte demande**
+2. Les **lacunes** — tendances à forte demande et en **forte croissance** qui n'ont aucun équivalent au menu
+3. Les **items vulnérables** — items du menu qui sont saisonniers (**Hiver**) et qui n'ont pas d'équivalent estival pour les remplacer
+
+<Aside type="tip" title="Piste de réflexion">
+Compare catégorie par catégorie. Par exemple, le **Burger classique** correspond-il à la tendance **Burger gourmet** du sondage ? Y a-t-il des tendances à forte popularité **et** forte croissance (comme le Poke bowl ou le Smoothie santé) sans équivalent au menu ?
+</Aside>
+
+### Question 11
+
+En te basant sur ton analyse des parties 2 et 3, rédige **3 à 5 recommandations concrètes** pour Nathalie afin d'optimiser son menu pour l'été. Chaque recommandation doit s'appuyer sur des données précises (marge, volume, tendance du marché).
+
+<Aside type="caution" title="Attentes">
+Tes recommandations doivent être justifiées par des chiffres. Par exemple, ne dis pas simplement « ajouter un smoothie » — explique pourquoi en citant la popularité du marché, la croissance, et la marge potentielle comparée aux boissons actuelles.
+</Aside>
+
+## Bonus — Tableau de bord 
+
+### Question 12
+
+Sur une nouvelle feuille nommée **Dashboard**, construis un tableau de bord qui présente à Nathalie un portrait clair de la situation. Inclus au minimum :
+
+- **3 KPI** en haut du tableau de bord (par exemple : revenu annuel total, marge totale, marge estivale en %)
+- **1 graphique** comparant les revenus par catégorie (été vs reste de l'année)
+- **1 graphique** montrant l'évolution mensuelle de la marge
+- **1 tableau synthèse** des recommandations avec les données d'appui
+
+<Aside type="tip" title="Conseil de mise en page">
+Utilise la mise en forme conditionnelle et un agencement clair pour que Nathalie puisse comprendre la situation en un coup d'œil. Pense à un gestionnaire pressé qui veut les chiffres clés sans fouiller dans les données.
+</Aside>

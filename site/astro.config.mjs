@@ -97,6 +97,7 @@ export default defineConfig({
 								{ label: 'Graphiques', slug: 'cours/09-graphiques-croises-dynamiques' },
 								{ label: 'Exercice', slug: 'exercices/09-graphiques' },
 								// { label: 'Exercice de synthèse', slug: 'exercices/09-synthese-tgcd' }
+								{ label: 'Exercice de synthèse', slug: 'exercices/10-synthese-bistro' }
 							]
 						},
 					],
