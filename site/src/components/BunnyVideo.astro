@@ -1,0 +1,74 @@
+---
+interface Props {
+  libraryId: string;
+  videoId: string;
+  title?: string;
+  aspectRatio?: string; // e.g. "16 / 9", "9 / 16", "1 / 1"
+  autoplay?: boolean;
+  muted?: boolean;
+  loop?: boolean;
+  preload?: boolean;
+  playsinline?: boolean;
+  startTime?: string; // e.g. "45", "1m20s", "00:01:20"
+}
+
+const {
+  libraryId,
+  videoId,
+  title = 'Video',
+  aspectRatio = '16 / 9',
+  autoplay = false,
+  muted = false,
+  loop = false,
+  preload = false,
+  playsinline = true,
+  startTime,
+} = Astro.props;
+
+const params = new URLSearchParams({
+  autoplay: String(autoplay),
+  muted: String(muted),
+  loop: String(loop),
+  preload: String(preload),
+  playsinline: String(playsinline),
+});
+
+if (startTime) params.set('t', startTime);
+
+const src = `https://player.mediadelivery.net/embed/${libraryId}/${videoId}?${params.toString()}`;
+---
+
+<div class="bunny-video not-content">
+  <iframe
+    src={src}
+    title={title}
+    loading="lazy"
+    allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+    allowfullscreen
+  />
+</div>
+
+<style>
+  .bunny-video {
+    position: relative;
+    width: 100%;
+    aspect-ratio: var(--aspect-ratio);
+    margin: 1rem 0;
+  }
+
+  .bunny-video iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0.75rem;
+  }
+</style>
+
+<script define:vars={{ aspectRatio }}>
+  document.currentScript?.previousElementSibling?.style.setProperty(
+    '--aspect-ratio',
+    aspectRatio
+  );
+</script>

@@ -5,6 +5,7 @@ sidebar:
   order: 70
 ---
 
+import BunnyVideo from './../../../components/BunnyVideo.astro';
 import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
 
 Un **tableau croisé dynamique** (TCD) permet de résumer, regrouper et analyser un grand volume de données en quelques clics — sans écrire de formules. Il remplace avantageusement les fonctions comme `SOMME.SI`, `NB.SI` et `MOYENNE.SI` lorsqu'on veut explorer les données sous plusieurs angles.
@@ -44,6 +45,17 @@ Si tes données contiennent des lignes vides ou des cellules fusionnées, le TCD
 Si tes données sont dans un Tableau Excel nommé (ex. : `Travaux`), le TCD utilisera ce nom comme source. Cela garantit que le TCD se mettra à jour automatiquement quand tu ajouteras des lignes au Tableau.
 </Aside>
 
+<BunnyVideo
+  libraryId="633788"
+  videoId="ce911b7e-c680-4acd-8576-ef64c2b0e880"
+  title="Introduction aux tableaux croisés"
+  aspectRatio="16 / 9"
+  autoplay={true}
+  loop={true}
+  preload={false}
+  playsinline={true}
+/>
+
 ## Les quatre zones du TCD
 
 Le volet des champs contient la liste des colonnes de tes données et quatre zones où tu peux les glisser.
@@ -54,6 +66,18 @@ Le volet des champs contient la liste des colonnes de tes données et quatre zon
 | **Colonnes** | Catégories affichées en colonnes | Les mois, les catégories d'intervention |
 | **Valeurs** | Données numériques à résumer | Le montant, les heures, le coût total |
 | **Filtres** | Critères pour filtrer l'ensemble du TCD | L'année, la catégorie, le fournisseur |
+
+
+<BunnyVideo
+  libraryId="633788"
+  videoId="7eec6c45-dccb-497f-b50b-bcc6f96f5608"
+  title="Introduction aux tableaux croisés"
+  aspectRatio="16 / 9"
+  autoplay={true}
+  loop={true}
+  preload={false}
+  playsinline={true}
+/>
 
 ### Comment lire un TCD
 
@@ -90,6 +114,17 @@ Par défaut, Excel applique **Somme** pour les nombres et **NB** (comptage) pour
 | **Moyenne** | Moyenne arithmétique | Coût moyen d'une intervention |
 | **Min** / **Max** | Valeur minimale ou maximale | Intervention la plus coûteuse par fournisseur |
 
+<BunnyVideo
+  libraryId="633788"
+  videoId="7f121713-dc46-435d-a95b-177143f761d7"
+  title="Introduction aux tableaux croisés"
+  aspectRatio="16 / 9"
+  autoplay={true}
+  loop={true}
+  preload={false}
+  playsinline={true}
+/>
+
 <Aside type="note" title="NB vs NBVAL">
 Dans un TCD, la fonction **Nombre** compte les cellules contenant des nombres. Si tu veux compter toutes les entrées (y compris du texte), utilise **NB** sur un champ texte comme « No intervention » ou « Description ».
 </Aside>
@@ -110,6 +145,17 @@ En plus de la fonction de synthèse, tu peux changer la façon dont les valeurs 
 | **% du total général** | Proportion par rapport au grand total | 8,3 % |
 | **% du total de la colonne** | Proportion par rapport au total de la colonne | 25,0 % |
 | **% du total de la ligne** | Proportion par rapport au total de la ligne | 40,0 % |
+
+<BunnyVideo
+  libraryId="633788"
+  videoId="f9a19030-c30d-44e3-93cd-04c6e87b4d65"
+  title="Introduction aux tableaux croisés"
+  aspectRatio="16 / 9"
+  autoplay={true}
+  loop={true}
+  preload={false}
+  playsinline={true}
+/>
 
 <Aside type="tip" title="Deux champs de valeurs sur la même colonne">
 Tu peux glisser le même champ deux fois dans la zone Valeurs. Par exemple, glisse « Coût total » une première fois pour la **Somme**, puis une deuxième fois pour le **% du total général**. Le TCD affichera les deux colonnes côte à côte.
