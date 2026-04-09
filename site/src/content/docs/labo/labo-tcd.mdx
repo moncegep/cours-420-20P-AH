@@ -1,0 +1,165 @@
+---
+title: "Exercice de synthèse : Gestion de l'Auberge du Vieux-Port"
+description: Exercice intégrateur combinant modélisation de chiffrier, tableaux croisés dynamiques et graphiques pour la gestion d'un hôtel-boutique.
+sidebar:
+  order: 80
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+L'**Auberge du Vieux-Port** est un hôtel-boutique de 30 chambres situé dans le Vieux-Montréal. La directrice, Nathalie Girard, utilise Excel pour gérer ses réservations, analyser ses revenus et planifier ses investissements.
+
+Le fichier contient cinq feuilles :
+
+- **Réservations** — 70 réservations de janvier à mars 2026, incluant les informations du client, de la chambre, le revenu d'hébergement et le canal de réservation
+- **Chambres** — 30 chambres sur 5 étages, de 4 types (Standard, Supérieure, Suite, Suite Exécutive) avec tarif par nuit et type de vue (Fleuve, Ville, Cour)
+- **Clients** — 25 clients avec leur ville, province et niveau de fidélité (Bronze, Argent, Or, Platine)
+- **Services** — 12 services offerts dans 5 catégories (Restauration, Spa, Stationnement, Minibar, Autre) avec leur prix unitaire
+- **Consommations** — 176 lignes de services consommés pendant les séjours, incluant la description, la catégorie et le montant
+
+<Aside type="note" title="Fichier de départ">
+Télécharge le fichier `hotel_vieux_port.xlsx` sur Léa. Toutes les données et colonnes calculées sont fournies.
+</Aside>
+
+---
+
+## Partie 1 : Tableaux croisés dynamiques — Hébergement
+
+Crée un TCD pour chacune des questions suivantes. Nomme chaque feuille `TCD-1A`, `TCD-1B`, etc.
+
+### 1A. Revenu d'hébergement par type de chambre
+
+**Question** : Quel type de chambre génère le plus de revenus ?
+
+### 1B. Revenu par canal de réservation
+
+**Question** : D'où proviennent les réservations les plus lucratives ?
+
+### 1C. Nombre de réservations par niveau de fidélité
+
+**Question** : Quels niveaux de fidélité génèrent le plus de réservations ?
+
+### 1D. Revenu mensuel par type de chambre
+
+**Question** : Comment les revenus de chaque type de chambre évoluent-ils de mois en mois ?
+
+Construis un TCD croisant les types de chambres (lignes) avec les mois (colonnes).
+
+### 1E. Durée moyenne de séjour par niveau de fidélité
+
+**Question** : Les clients fidèles restent-ils plus longtemps ?
+
+Construis un TCD avec la fidélité en lignes et la **moyenne** du nombre de nuits en valeurs.
+
+### 1F. Répartition des réservations par province et par type de chambre
+
+**Question** : Les clients hors Québec réservent-ils des chambres différentes de ceux du Québec ?
+
+### 1G. Pourcentage du revenu par canal
+
+Crée un TCD montrant la **part en %** de chaque canal dans le revenu total d'hébergement.
+
+### 1H. Revenu par type de vue
+
+**Question** : Les chambres avec vue sur le fleuve génèrent-elles plus de revenus ?
+
+---
+
+## Partie 2 : TCD — Services et consommations
+
+Passe maintenant à la feuille **Consommations** pour analyser les revenus de services.
+
+### 2A. Revenu de services par catégorie
+
+**Question** : Quelle catégorie de service génère le plus de revenus ?
+
+### 2B. Top services les plus consommés
+
+**Question** : Quels services sont les plus populaires en nombre de consommations ?
+
+Construis un TCD avec la description du service en lignes et le **nombre** (comptage) en valeurs. Trie du plus élevé au plus bas.
+
+*Vérifie ton résultat* : Le **Petit-déjeuner buffet** devrait être le service le plus fréquent, suivi du stationnement et des consommations de minibar.
+
+### 2C. Revenu de services par mois
+
+**Question** : Les revenus de services suivent-ils la même tendance que l'hébergement ?
+
+
+### 2D. Revenu moyen de services par catégorie
+
+**Question** : Quel est le montant moyen d'une consommation dans chaque catégorie ?
+
+Construis un TCD avec la catégorie en lignes et la **moyenne** du montant en valeurs.
+
+---
+
+## Partie 3 : Graphiques croisés dynamiques
+
+### 3A. Revenus par type de chambre — Histogramme groupé
+
+À partir des TCDs précédent, crée un **histogramme groupé** montrant le revenu de chaque type de chambre.
+
+### 3B. Répartition des réservations par canal — Camembert
+
+Crée un diagramme approprié montrant la part de chaque canal dans le revenu d'hébergement.
+
+**Mise en forme** :
+- Titre : « Répartition des revenus par canal »
+- Étiquettes avec le nom du canal et le pourcentage
+
+### 3C. Évolution mensuelle des revenus — Courbe
+
+Crée un graphique approprié montrant l'évolution mensuelle du revenu d'hébergement.
+
+**Mise en forme** :
+- Titre : « Évolution mensuelle du revenu d'hébergement »
+- Axe vertical en dollars
+- Marqueurs visibles
+
+*Vérifie ton résultat* : La courbe devrait descendre de janvier (≈ 19 328 $) à mars (≈ 13 911 $). Les trois marqueurs doivent être visibles.
+
+### 3D. Revenus mensuels par type de chambre — Histogramme empilé
+
+À partir des TCDs précédent, crée un diagramme approprié montrant la composition des revenus mensuels par type de chambre.
+
+**Mise en forme** :
+- Titre : « Composition mensuelle des revenus par type de chambre »
+- Légende identifiant les 4 types
+
+### 3E. Revenus de services par catégorie — Barres horizontales
+
+À partir des TCDs précédent, crée un graphique en **barres horizontales**.
+
+**Mise en forme** :
+- Titre : « Revenus de services par catégorie »
+- Étiquettes de données en dollars
+- Barres triées de la catégorie la plus rentable à la moins rentable
+
+---
+
+## Partie 4 — Tableau de bord
+
+### 4A. Indicateurs clés
+
+Crée une feuille nommée **Tableau de bord**. En haut, ajoute les indicateurs suivants, calculés par formules :
+
+| Indicateur | Ce qu'il doit afficher |
+|---|---|
+| Revenu total hébergement | Somme de tous les revenus de chambres |
+| Revenu total services | Somme de tous les revenus de services |
+| Revenu total combiné | Hébergement + Services |
+| Nombre de réservations | Le nombre total de réservations |
+| Durée moyenne de séjour | Moyenne du nombre de nuits |
+| Taux d'occupation estimé | Nb total de nuits vendues ÷ (30 chambres × 90 jours) × 100 |
+
+<Aside type="note" title="Taux d'occupation">
+Le taux d'occupation est faible car l'auberge a 30 chambres sur 90 jours (2 700 nuits-chambres possibles) mais seulement 70 réservations totalisant ~227 nuits. 
+C'est cohérent avec un hôtel-boutique en basse saison hivernale.
+</Aside>
+
+### 4B. Graphiques
+
+Ajoute au tableau de bord **trois graphiques** parmi ceux créés à la Partie 3. Dispose-les de manière lisible sous les indicateurs.
