@@ -28,6 +28,8 @@ Télécharge le fichier `hotel_vieux_port.xlsx` sur Léa. Toutes les données et
 ## Partie 1 : Tableaux croisés dynamiques — Hébergement
 
 Crée un TCD pour chacune des questions suivantes. Nomme chaque feuille `TCD-1A`, `TCD-1B`, etc.
+Indique sous le tableau la réponse à la question. Tu es libre également de surligner des valeurs 
+dans le tableau.
 
 ### 1A. Revenu d'hébergement par type de chambre
 
@@ -35,7 +37,7 @@ Crée un TCD pour chacune des questions suivantes. Nomme chaque feuille `TCD-1A`
 
 ### 1B. Revenu par canal de réservation
 
-**Question** : D'où proviennent les réservations les plus lucratives ?
+**Question** : D'où proviennent les réservations qui génèrent le plus de revenus ?
 
 ### 1C. Nombre de réservations par niveau de fidélité
 
@@ -45,23 +47,15 @@ Crée un TCD pour chacune des questions suivantes. Nomme chaque feuille `TCD-1A`
 
 **Question** : Comment les revenus de chaque type de chambre évoluent-ils de mois en mois ?
 
-Construis un TCD croisant les types de chambres (lignes) avec les mois (colonnes).
-
 ### 1E. Durée moyenne de séjour par niveau de fidélité
 
 **Question** : Les clients fidèles restent-ils plus longtemps ?
 
-Construis un TCD avec la fidélité en lignes et la **moyenne** du nombre de nuits en valeurs.
-
-### 1F. Répartition des réservations par province et par type de chambre
-
-**Question** : Les clients hors Québec réservent-ils des chambres différentes de ceux du Québec ?
-
-### 1G. Pourcentage du revenu par canal
+### 1F. Pourcentage du revenu par canal
 
 Crée un TCD montrant la **part en %** de chaque canal dans le revenu total d'hébergement.
 
-### 1H. Revenu par type de vue
+### 1G. Revenu par type de vue
 
 **Question** : Les chambres avec vue sur le fleuve génèrent-elles plus de revenus ?
 
@@ -77,30 +71,28 @@ Passe maintenant à la feuille **Consommations** pour analyser les revenus de se
 
 ### 2B. Top services les plus consommés
 
-**Question** : Quels services sont les plus populaires en nombre de consommations ?
-
-Construis un TCD avec la description du service en lignes et le **nombre** (comptage) en valeurs. Trie du plus élevé au plus bas.
+**Question** : Quels services sont les plus populaires en nombre de consommations ? Trie les valeurs du plus élevé au plus bas.
 
 ### 2C. Revenu de services par mois
 
 **Question** : Les revenus de services suivent-ils la même tendance que l'hébergement ?
 
-
 ### 2D. Revenu moyen de services par catégorie
 
 **Question** : Quel est le montant moyen d'une consommation dans chaque catégorie ?
-
-Construis un TCD avec la catégorie en lignes et la **moyenne** du montant en valeurs.
 
 ---
 
 ## Partie 3 : Graphiques croisés dynamiques
 
-### 3A. Revenus par type de chambre — Histogramme groupé
+En utilisant les tableaux croisés créés précédemment, crée les graphiques croisés appropriés pour illustrer chacun de ces cas.
+Tu peux, si nécessaire, créer un nouveau tableau croisé dynamique.
 
-À partir des TCDs précédent, crée un **histogramme groupé** montrant le revenu de chaque type de chambre.
+### 3A. Revenus par type de chambre
 
-### 3B. Répartition des réservations par canal — Camembert
+Crée un **histogramme groupé** montrant le revenu de chaque type de chambre.
+
+### 3B. Répartition des réservations par canal
 
 Crée un diagramme approprié montrant la part de chaque canal dans le revenu d'hébergement.
 
@@ -108,7 +100,7 @@ Crée un diagramme approprié montrant la part de chaque canal dans le revenu d'
 - Titre : « Répartition des revenus par canal »
 - Étiquettes avec le nom du canal et le pourcentage
 
-### 3C. Évolution mensuelle des revenus — Courbe
+### 3C. Évolution mensuelle des revenus 
 
 Crée un graphique approprié montrant l'évolution mensuelle du revenu d'hébergement.
 
@@ -117,17 +109,17 @@ Crée un graphique approprié montrant l'évolution mensuelle du revenu d'héber
 - Axe vertical en dollars
 - Marqueurs visibles
 
-### 3D. Revenus mensuels par type de chambre — Histogramme empilé
+### 3D. Revenus mensuels par type de chambre 
 
-À partir des TCDs précédent, crée un diagramme approprié montrant la composition des revenus mensuels par type de chambre.
+Crée un diagramme approprié montrant la composition des revenus mensuels par type de chambre.
 
 **Mise en forme** :
 - Titre : « Composition mensuelle des revenus par type de chambre »
 - Légende identifiant les 4 types
 
-### 3E. Revenus de services par catégorie — Barres horizontales
+### 3E. Revenus de services par catégorie 
 
-À partir des TCDs précédent, crée un graphique en **barres horizontales**.
+Crée un graphique en **barres horizontales**.
 
 **Mise en forme** :
 - Titre : « Revenus de services par catégorie »
@@ -136,7 +128,7 @@ Crée un graphique approprié montrant l'évolution mensuelle du revenu d'héber
 
 ---
 
-## Partie 4 — Tableau de bord
+## Partie 4 : Tableau de bord
 
 ### 4A. Indicateurs clés
 
@@ -149,7 +141,7 @@ Crée une feuille nommée **Tableau de bord**. En haut, ajoute les indicateurs s
 | Revenu total combiné | Hébergement + Services |
 | Nombre de réservations | Le nombre total de réservations |
 | Durée moyenne de séjour | Moyenne du nombre de nuits |
-| Taux d'occupation estimé | Nb total de nuits vendues ÷ (30 chambres × 90 jours) × 100 |
+| Taux d'occupation estimé | Nb total de nuits vendues ÷ (Nombre de chambres × 90 jours) |
 
 <Aside type="note" title="Taux d'occupation">
 Le taux d'occupation est faible car l'auberge a 30 chambres sur 90 jours (2 700 nuits-chambres possibles) mais seulement 70 réservations totalisant ~227 nuits. 
