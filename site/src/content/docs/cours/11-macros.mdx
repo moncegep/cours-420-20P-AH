@@ -1,0 +1,381 @@
+---
+title: Les macros
+description: Automatiser des tâches répétitives avec Excel
+sidebar:
+  order: 8
+---
+
+import { Tabs, TabItem, Aside, Steps, Card, CardGrid } from '@astrojs/starlight/components';
+import FluxDiagram from './../../../components/FluxDiagram';
+import CustomCardGrid from './../../../components/CustomCardGrid.astro';
+import CustomCard from './../../../components/CustomCard.astro';
+
+## Le problème : les tâches répétitives
+
+Dans un contexte professionnel, une grande partie du travail avec Excel consiste à **refaire les mêmes opérations**, 
+semaine après semaine, sur des données différentes.
+
+#### Quelques situations typiques
+
+<CustomCardGrid cols={2}>
+  <CustomCard shadow="0 0 4px -1px #d5d5d5" title="Mise en forme de rapports">
+    Chaque lundi matin, Émilie reçoit un fichier CSV des ventes de la semaine. Elle doit toujours :
+    - Mettre les en-têtes en gras et en bleu
+    - Figer la première ligne
+    - Appliquer le format monétaire sur la colonne des montants
+    - Ajouter une ligne de totaux
+
+    Cela lui prend **15 à 20 minutes** à chaque fois.
+  </CustomCard>
+
+  <CustomCard shadow="0 0 4px -1px #d5d5d5" title="Génération de factures">
+    Marc doit produire une facture PDF pour chaque client actif à la fin du mois. Il copie un gabarit, remplace les informations, ajuste la mise en page, et enregistre sous un nom précis.
+
+    Avec une cinquantaine de clients, c'est **plusieurs heures** de travail mensuel.
+  </CustomCard>
+
+  <CustomCard shadow="0 0 4px -1px #d5d5d5" title="Actualisation de tableaux croisés">
+    Chaque semaine, Sarah importe de nouvelles données de ventes, supprime les anciennes, actualise trois tableaux croisés dynamiques, et exporte les résultats dans un autre onglet.
+
+    Une séquence de **12 étapes identiques** à chaque fois.
+  </CustomCard>
+
+  <CustomCard shadow="0 0 4px -1px #d5d5d5" title="Nettoyage de données">
+    Chez *Les Têtes Fromagères*, les données reçues des fournisseurs sont mal formatées : majuscules incohérentes, espaces en trop, codes de produits à normaliser.
+
+    Le même travail de nettoyage recommence à **chaque nouvelle livraison de données**.
+  </CustomCard>
+</CustomCardGrid>
+
+<Aside type="caution" title="Le coût caché de la répétition">
+Ces tâches semblent banales prises individuellement, mais cumulées sur une année, elles représentent des dizaines d'heures de travail à faible valeur ajoutée — sans compter les risques d'**erreurs humaines** qui s'accumulent à force de manipulations manuelles.
+</Aside>
+
+## Dans un monde idéal…
+
+![Meme - The Office](./../../../assets/meme_the_office_ideal_world.gif)
+
+Imaginez que vous puissiez **décrire une séquence d'actions une seule fois**, et qu'Excel la reproduise ensuite à la demande, en un clic, aussi souvent que nécessaire — sans erreur, sans fatigue.
+
+Vous lui diriez :
+
+> *« Prends ce fichier. Mets les en-têtes en gras bleu. Fige la première ligne. Applique le format monétaire sur la colonne D. Ajoute une ligne de totaux. »*
+
+Et Excel exécuterait exactement ça, chaque fois, instantanément.
+
+**Ce monde idéal existe.** Il s'appelle les **macros**.
+
+---
+
+## Les macros
+
+<Aside type="tip" title="Définition">
+Une **macro** est une séquence d'instructions enregistrée, que l'on peut rejouer à volonté pour automatiser des tâches répétitives dans Excel.
+</Aside>
+
+Une macro peut être créée de deux façons :
+
+| Méthode | Description | Pour qui |
+|---|---|---|
+| **Enregistrement** | Excel observe vos actions et les transcrit automatiquement | Débutants, tâches simples |
+| **Écriture manuelle** | On écrit les instructions directement en code | Utilisateurs avancés, logique complexe |
+
+### Un clin d'œil à la programmation
+
+Avec les macros, vous franchissez une frontière importante : vous entrez dans l'univers de la **programmation**.
+
+Quand vous enregistrez une macro, Excel transcrit vos clics en un **langage de programmation** — un code qu'il peut relire et exécuter. Vous n'avez pas à l'écrire vous-même au départ, mais vous pouvez le consulter, le comprendre, et éventuellement le modifier.
+
+C'est une belle porte d'entrée vers des concepts que l'on retrouve dans tous les langages de programmation : **séquences d'instructions, variables, conditions, boucles**.
+
+<Aside type="note" title="Le langage derrière les macros : VBA">
+Les macros Excel sont écrites en **VBA** (*Visual Basic for Applications*), un langage de programmation développé par Microsoft dans les années 1990.
+
+VBA est un **langage interprété**, propre à l'écosystème Microsoft Office. Il permet de contrôler non seulement Excel, mais aussi Word, Outlook et Access.
+
+Chaque macro enregistrée génère du code VBA que l'on peut consulter dans l'**éditeur Visual Basic** (`Alt + F11`). Pour ce cours, nous n'écrirons pas de VBA à la main — mais y jeter un œil vous permettra de mieux comprendre ce qui se passe sous le capot.
+
+```vb
+' Exemple de code VBA généré par l'enregistreur
+Sub MettreEnForme()
+    Range("A1:E1").Font.Bold = True
+    Range("A1:E1").Font.Color = RGB(0, 70, 127)
+    ActiveSheet.Rows(1).AutoFit
+End Sub
+```
+</Aside>
+
+### Flux général d'une macro
+
+<FluxDiagram
+  titre="Flux de création d'une macro"
+  steps={[
+    {
+      titre: "Planifier",
+      desc: "Lister les étapes exactes à enregistrer. Identifier les pièges potentiels.",
+      note: {
+        type: "tip",
+        text: "Faites un essai à la main avant d'enregistrer — repérez les détours inutiles."
+      }
+    },
+    {
+      titre: "Configurer",
+      desc: "Activer l'onglet Développeur. Choisir entre références absolues ou relatives.",
+      note: {
+        type: "warn",
+        text: "Décidez maintenant : références absolues (mêmes cellules) ou relatives (s'adapte à la cellule active) ?"
+      }
+    },
+    {
+      titre: "Enregistrer",
+      tag: "clé",
+      desc: "Développeur → Enregistrer une macro. Nommer, assigner un raccourci, effectuer les actions lentement."
+    },
+    {
+      titre: "Arrêter",
+      desc: "Développeur → Arrêter l'enregistrement. Vérifier que toutes les actions ont été capturées."
+    },
+    {
+      titre: "Tester",
+      desc: "Lancer via Alt+F8 ou le raccourci clavier. Vérifier le résultat attendu.",
+      note: {
+        type: "tip",
+        text: "Utilisez Ctrl+Z pour annuler si le résultat n'est pas celui attendu."
+      }
+    },
+    {
+      titre: "Sauvegarder",
+      desc: "Enregistrer le classeur au format .xlsm (Classeur Excel prenant en charge les macros).",
+      note: {
+        type: "warn",
+        text: "Enregistrer en .xlsx supprime toutes les macros sans avertissement préalable."
+      }
+    }
+  ]}
+  client:load
+/>
+
+---
+
+## Créer votre première macro
+
+Nous allons créer une macro qui **met en forme l'en-tête d'un tableau** : gras, couleur de fond, et texte centré.
+
+### Préparation
+
+Avant d'enregistrer une macro, quelques règles d'or :
+
+- **Planifiez** exactement les étapes que vous voulez enregistrer
+- **Travaillez lentement** — chaque clic et chaque touche est capturé
+- **Évitez les détours** — les erreurs et les corrections s'enregistrent aussi
+
+### Enregistrement
+
+<Steps>
+1. **Activez l'onglet Développeur**
+
+   Si l'onglet *Développeur* n'est pas visible dans le ruban :
+   - Clic droit sur le ruban → *Personnaliser le ruban*
+   - Cochez **Développeur** dans la colonne de droite → OK
+
+2. **Démarrez l'enregistrement**
+
+   Onglet *Développeur* → **Enregistrer une macro**
+
+   Dans la boîte de dialogue :
+   - **Nom** : `MettreEnFormeEnTete` *(pas d'espaces, pas d'accents)*
+   - **Touche de raccourci** : `Ctrl + Maj + M` *(par exemple)*
+   - **Enregistrer dans** : Ce classeur
+   - **Description** : Met en forme la ligne d'en-tête du tableau actif
+   - Cliquez **OK** — l'enregistrement commence
+
+3. **Effectuez les actions**
+
+   Sélectionnez la ligne 1 (clic sur le numéro de ligne), puis :
+   - Appliquez le **Gras** (`Ctrl + G`)
+   - Choisissez une **couleur de fond** (bleu foncé : `1B3A6B`)
+   - Changez la **couleur du texte** en blanc
+   - Cliquez sur **Centrer** dans le ruban
+
+4. **Arrêtez l'enregistrement**
+
+   Onglet *Développeur* → **Arrêter l'enregistrement**
+
+5. **Testez la macro**
+
+   Ouvrez un nouvel onglet avec un tableau quelconque, sélectionnez une cellule, puis lancez la macro :
+   - Via `Alt + F8` → sélectionnez `MettreEnFormeEnTete` → **Exécuter**
+   - Ou directement avec `Ctrl + Maj + M`
+</Steps>
+
+### Voir le code généré
+
+<Tabs>
+  <TabItem label="Accéder à l'éditeur VBA">
+    Appuyez sur `Alt + F11` pour ouvrir l'éditeur Visual Basic.
+
+    Dans le panneau de gauche (*Explorateur de projets*), cherchez :
+    ```
+    VBAProject (votre_fichier.xlsm)
+      └── Modules
+            └── Module1
+    ```
+
+    Double-cliquez sur `Module1` pour voir le code de votre macro.
+  </TabItem>
+  <TabItem label="Code typique généré">
+    ```vb
+    Sub MettreEnFormeEnTete()
+    '
+    ' MettreEnFormeEnTete Macro
+    ' Met en forme la ligne d'en-tête du tableau actif
+    '
+    ' Raccourci clavier: Ctrl+Maj+M
+    '
+        Rows("1:1").Select
+        Selection.Font.Bold = True
+        With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .Color = 1784091   ' bleu foncé
+            .TintAndShade = 0
+        End With
+        With Selection.Font
+            .Color = -1         ' blanc
+            .TintAndShade = 0
+        End With
+        With Selection
+            .HorizontalAlignment = xlCenter
+        End With
+    End Sub
+    ```
+  </TabItem>
+  <TabItem label="Ce qu'on peut y lire">
+    Même sans connaître VBA, on peut déjà déchiffrer :
+    - `Rows("1:1").Select` → sélectionne la ligne 1
+    - `Selection.Font.Bold = True` → applique le gras
+    - `.Color = 1784091` → définit une couleur (en code numérique)
+    - `xlCenter` → correspond à l'alignement centré
+
+    Chaque action que vous avez effectuée a été **traduite en une ou plusieurs lignes de code**.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Format XLSM obligatoire">
+Un classeur contenant des macros **doit être enregistré au format `.xlsm`** (Classeur Excel prenant en charge les macros). Si vous enregistrez en `.xlsx`, les macros sont supprimées. Excel vous avertira à la fermeture du fichier.
+</Aside>
+
+---
+
+## Application : un exemple avec les notions vues
+
+Voici un scénario qui combine les macros avec des fonctions et mises en forme vues dans ce cours.
+
+### Contexte
+
+La comptable de la **Menuiserie Abitibi** gère un fichier de suivi des commandes. Chaque semaine, elle reçoit de nouvelles données et doit :
+
+1. Appliquer la mise en forme conditionnelle sur le statut des commandes
+2. Calculer le montant TPS/TVQ pour les nouvelles lignes
+3. Actualiser le tableau croisé dynamique
+4. Mettre en forme l'en-tête
+
+Elle veut regrouper toutes ces étapes en **une seule macro**.
+
+#### Structure du fichier
+
+| Colonne | Contenu |
+|---|---|
+| A | No. commande |
+| B | Client |
+| C | Date commande |
+| D | Montant HT |
+| E | TPS (5%) |
+| F | TVQ (9,975%) |
+| G | Total TTC |
+| H | Statut (`En cours`, `Livré`, `Annulé`) |
+
+La feuille `Résumé` contient un tableau croisé dynamique basé sur ces données.
+
+### Étapes de la macro
+
+<Steps>
+    1. **Avant d'enregistrer**, préparez le fichier avec quelques lignes de données test.
+
+    2. **Démarrez l'enregistrement** : `Développeur` → `Enregistrer une macro` → nom : `ActualiserCommandes`
+
+    3. **Calculez TPS/TVQ** sur la dernière ligne vide :
+       - En E2 : `=D2*0,05`
+       - En F2 : `=D2*0,09975`
+       - En G2 : `=D2+E2+F2`
+       - Copiez vers le bas jusqu'à la dernière ligne de données
+
+    4. **Appliquez la mise en forme conditionnelle** sur la colonne H :
+       - `En cours` → fond jaune
+       - `Livré` → fond vert
+       - `Annulé` → fond rouge, texte barré
+
+    5. **Allez sur la feuille Résumé**, clic droit sur le tableau croisé → **Actualiser**
+
+    6. **Revenez sur la feuille principale**, mettez en forme l'en-tête (ligne 1)
+
+    7. **Arrêtez l'enregistrement**
+</Steps>
+
+### Conseils et pièges
+
+#### Références absolues vs relatives
+
+Par défaut, l'enregistreur utilise des **références absolues** (ex. `Range("D2")`). Si vos données changent de taille chaque semaine, c'est problématique.
+
+Pour enregistrer avec des **références relatives** (qui s'adaptent à la cellule active) :
+- Activez *Développeur* → **Utiliser les références relatives** avant d'enregistrer
+
+#### Mise en forme conditionnelle et macros
+
+Si la mise en forme conditionnelle est déjà en place, inutile de la recréer à chaque fois. Votre macro peut simplement **actualiser les données** — la mise en forme se mettra à jour automatiquement.
+
+#### Actualisation du TCD
+
+L'actualisation d'un tableau croisé dynamique s'enregistre bien. Vérifiez simplement que la **plage de données source** englobe toujours vos nouvelles lignes (utiliser un Tableau structuré règle ce problème élégamment).
+
+
+## Et après ? En route vers les agents
+
+Les macros sont une première forme d'automatisation : vous définissez une séquence fixe, et Excel l'exécute.
+
+Mais cette automatisation a ses limites : une macro ne **réfléchit pas**. Elle rejoue aveuglément la même séquence, quelle que soit la situation.
+
+Depuis quelques années, une nouvelle génération d'outils repousse ces limites : les **agents IA**.
+
+<CustomCardGrid cols={2}>
+  <CustomCard title="Agents IA dans Excel">
+    Microsoft intègre **Copilot** directement dans Excel. Au lieu d'enregistrer des macros, vous pouvez décrire ce que vous voulez faire en langage naturel :
+
+    > *« Surligne en rouge toutes les commandes en retard de plus de 7 jours. »*
+
+    L'agent génère et exécute les instructions sans que vous ayez à les enregistrer manuellement.
+  </CustomCard>
+
+  <CustomCard title="Automatisation multi-applications">
+    Des outils comme **Power Automate** (Microsoft) ou **Zapier** permettent de créer des flux automatisés qui impliquent plusieurs applications à la fois :
+
+    - Un formulaire reçu par courriel → données insérées dans Excel → rapport généré → envoi automatique au gestionnaire
+
+    C'est de l'automatisation **au-delà d'un seul fichier**.
+  </CustomCard>
+</CustomCardGrid>
+
+<Aside type="note" title="Les macros restent fondamentales">
+Même dans un monde opéré par des agents IA, comprendre les macros reste précieux : elles te donnent un contrôle précis sur ce qu'Excel fait, une compréhension de la logique d'automatisation, et une base pour interpréter ou corriger ce que génèrent les outils d'IA.
+
+**Un professionnel qui comprend les macros fera un meilleur usage des agents IA** qu'un qui s'en remet aveuglément à ces derniers.
+</Aside>
+
+---
+
+## Ressources complémentaires
+
+- [Documentation Microsoft : Afficher l'onglet Développeur](https://support.microsoft.com/fr-fr/office/afficher-l-onglet-d%C3%A9veloppeur-e1192344-5e56-4d45-931b-e5fd9bea2d45)
+- [Documentation Microsoft : Automatiser des tâches avec l'enregistreur de macro](https://support.microsoft.com/fr-fr/office/automatiser-des-t%C3%A2ches-avec-l-enregistreur-de-macro-974ef220-f716-4e01-b015-3ea70e64937b)
+- [Documentation Microsoft : Créer une macro](https://support.microsoft.com/fr-fr/office/d%C3%A9marrage-rapide-cr%C3%A9er-une-macro-741130ca-080d-49f5-9471-1e5fb3d581a8)

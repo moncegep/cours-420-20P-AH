@@ -100,6 +100,12 @@ export default defineConfig({
 								{ label: 'Exercice de synthèse', slug: 'exercices/10-synthese-bistro' }
 							]
 						},
+						{
+							label: 'Semaine 10',
+							items: [
+								{ label: 'Macros', slug: 'cours/11-macros' }
+							]
+						},
 					],
 				},
 				{
