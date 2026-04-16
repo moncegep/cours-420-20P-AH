@@ -1,0 +1,266 @@
+---
+title: Introduction à VBA
+description: Le langage derrière les macros Excel — notions de base dans un contexte pharmacie
+sidebar:
+  order: 9
+---
+
+import { Aside, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+
+Quand vous enregistrez une macro, Excel ne mémorise pas vos clics — il les traduit en **code**. Ce code s'appelle du **VBA** (*Visual Basic for Applications*). Vous n'avez pas à l'écrire pour utiliser des macros simples, mais savoir le lire et en modifier quelques lignes change complètement ce que vous pouvez faire.
+
+Cette page vous montre les instructions VBA les plus utiles, illustrées dans un contexte de gestion de pharmacie.
+
+---
+
+## VBA en bref
+
+VBA est le langage de programmation embarqué dans toute la suite Microsoft Office depuis 1993. Il vous donne accès à **tout ce qu'Excel peut faire**, mais par le code plutôt que par la souris.
+
+### Structure de base
+
+Toute macro VBA a la même forme :
+
+```vb
+Sub NomDeLaMacro()
+    ' Instructions ici
+    ' Les lignes commençant par ' sont des commentaires — ignorés à l'exécution
+End Sub
+```
+
+- `Sub` ouvre la macro, `End Sub` la ferme
+- Le nom ne peut pas contenir d'espaces ni d'accents
+- Tout ce qui est entre les deux s'exécute dans l'ordre, ligne par ligne
+
+{/* <Aside type="tip" title="Ouvrir l'éditeur VBA">
+  `Alt + F11` ouvre l'éditeur Visual Basic depuis n'importe quelle feuille Excel.
+  Vous pouvez y lire, modifier ou écrire des macros directement.
+</Aside> */}
+
+---
+
+## Instructions de base
+
+Les exemples suivants utilisent un fichier d'inventaire de pharmacie.
+Le principe dans chaque cas : **une action, une ligne**.
+
+---
+
+### 1. Afficher un message
+
+```vb
+Sub BonjourPharmacie()
+    MsgBox "Bienvenue dans le système de pharmacie !"
+End Sub
+```
+
+`MsgBox` affiche une boîte de dialogue avec le texte fourni. Utile pour confirmer qu'une macro s'est exécutée, avertir l'utilisateur, ou afficher un résultat.
+
+| Ce qu'on apprend | |
+|---|---|
+| `Sub … End Sub` | Délimite toute macro |
+| `MsgBox "texte"` | Affiche un message à l'écran |
+
+---
+
+### 2. Sélectionner une cellule
+
+```vb
+Sub AllerStock()
+    Range("F2").Select
+End Sub
+```
+
+`Range("F2")` désigne la cellule F2. `.Select` la sélectionne — comme si vous cliquiez dessus.
+
+<Aside type="note" title="La notation Range">
+  `Range("A1")` désigne une cellule. `Range("A1:D10")` désigne une plage.
+  C'est la façon standard de pointer vers des données en VBA.
+</Aside>
+
+---
+
+### 3. Écrire du texte automatiquement
+
+```vb
+Sub EcrireTitre()
+    Range("A1").Value = "Inventaire Pharmacie"
+End Sub
+```
+
+`.Value` est la propriété qui contient la valeur d'une cellule.
+Écrire `Range("A1").Value = "quelque chose"` place ce texte dans la cellule — sans clic, sans curseur.
+
+```vb
+' Variantes utiles
+Range("A1").Value = "Inventaire Pharmacie"   ' texte
+Range("B2").Value = 42                       ' nombre
+Range("C3").Value = Date                     ' date du jour
+```
+
+---
+
+### 4. Effacer des données
+
+```vb
+Sub EffacerStock()
+    Range("A2:A20").ClearContents
+End Sub
+```
+
+`.ClearContents` supprime les valeurs d'une plage sans toucher à la mise en forme (contrairement à `Delete` qui supprime tout).
+
+| Méthode | Effet |
+|---|---|
+| `.ClearContents` | Supprime les valeurs uniquement |
+| `.ClearFormats` | Supprime la mise en forme uniquement |
+| `.Clear` | Supprime valeurs et mise en forme |
+
+---
+
+### 5. Changer la couleur d'une cellule
+
+```vb
+Sub ColorerAlerte()
+    Range("F2").Interior.Color = RGB(255, 0, 0)
+End Sub
+```
+
+`.Interior.Color` accède au fond de la cellule. `RGB(rouge, vert, bleu)` définit une couleur par ses composantes, chacune entre 0 et 255.
+
+```vb
+' Couleurs utiles
+RGB(255, 0, 0)      ' rouge vif
+RGB(255, 165, 0)    ' orange
+RGB(0, 176, 80)     ' vert Excel
+RGB(255, 255, 255)  ' blanc (effacer la couleur)
+```
+
+---
+
+### 6. Copier une valeur
+
+```vb
+Sub CopierPrix()
+    Range("E2").Value = Range("E3").Value
+End Sub
+```
+
+En lisant `Range("E3").Value` et en l'assignant à `Range("E2").Value`, on transfère la valeur d'une cellule à une autre — sans passer par le presse-papier.
+
+<Aside type="tip" title="Différence avec Copier-Coller">
+  Cette méthode ne copie que la **valeur**, pas la formule ni la mise en forme.
+  C'est souvent exactement ce qu'on veut dans une automatisation.
+</Aside>
+
+---
+
+### 7. Prendre une décision selon la valeur du stock
+
+Voici une macro un peu plus complète qui combine plusieurs instructions vues précédemment :
+
+```vb
+Sub VerifierStockSimple()
+
+    ' Étape 1 : écrire "Commander" ou "OK" selon le stock
+    If Range("F2").Value < 20 Then
+        Range("K2").Value = "Commander"
+    Else
+        Range("K2").Value = "OK"
+    End If
+
+    ' Étape 2 : colorier la cellule si le stock est faible
+    If Range("F2").Value < 20 Then
+        Range("K2").Interior.Color = RGB(255, 0, 0)
+    End If
+
+End Sub
+```
+
+<Tabs>
+  <TabItem label="Ce que fait la macro">
+    1. Elle lit la valeur de la cellule F2 (le stock)
+    2. Si cette valeur est inférieure à 20, elle écrit `"Commander"` en K2
+    3. Sinon, elle écrit `"OK"`
+    4. Elle colorie K2 en rouge si le stock est faible
+
+    Résultat : en un clic, toutes les colonnes de statut et de couleur sont mises à jour.
+  </TabItem>
+  <TabItem label="Structure If…Then…Else">
+    ```vb
+    If [condition] Then
+        ' Instructions si la condition est vraie
+    Else
+        ' Instructions si la condition est fausse
+    End If
+    ```
+
+    La structure `If…Then…Else` est un pilier de tous les langages de programmation.
+    En VBA, elle permet de prendre des décisions selon les données du tableur.
+  </TabItem>
+  <TabItem label="Aller plus loin">
+    On pourrait étendre cette macro pour parcourir toutes les lignes du stock
+    plutôt qu'une seule — c'est là qu'intervient la boucle `For…Next` :
+
+    ```vb
+    ' Exemple (notion avancée)
+    Dim i As Integer
+    For i = 2 To 50
+        If Cells(i, 6).Value < 20 Then
+            Cells(i, 11).Value = "Commander"
+            Cells(i, 11).Interior.Color = RGB(255, 0, 0)
+        Else
+            Cells(i, 11).Value = "OK"
+            Cells(i, 11).Interior.Color = RGB(255, 255, 255)
+        End If
+    Next i
+    ```
+
+    `Cells(ligne, colonne)` est une notation alternative à `Range("A1")`,
+    pratique quand la ligne varie dans une boucle.
+  </TabItem>
+</Tabs>
+
+---
+
+## Récapitulatif des instructions vues
+
+| Instruction | Ce qu'elle fait | Exemple |
+|---|---|---|
+| `MsgBox "texte"` | Affiche un message | `MsgBox "Mise à jour terminée"` |
+| `Range("A1").Select` | Sélectionne une cellule | `Range("F2").Select` |
+| `Range("A1").Value = …` | Écrit une valeur | `Range("A1").Value = "Inventaire"` |
+| `Range("A1:A20").ClearContents` | Efface les valeurs | `Range("A2:A20").ClearContents` |
+| `Range("A1").Interior.Color = RGB(…)` | Change le fond | `RGB(255, 0, 0)` pour rouge |
+| `If … Then … Else … End If` | Décision conditionnelle | Si stock < 20 → "Commander" |
+
+---
+
+## Et après VBA ? Office Scripts
+
+VBA fonctionne très bien pour Excel de bureau. 
+Mais si vous travaillez dans **Excel 365 en ligne** (navigateur ou SharePoint), VBA n'est pas disponible.
+
+Microsoft propose une alternative moderne : **Office Scripts**.
+
+```ts
+// Équivalent Office Scripts de notre macro VBA
+function main(workbook: ExcelScript.Workbook) {
+  const feuille = workbook.getActiveWorksheet();
+  const stock   = feuille.getRange("F2").getValue() as number;
+
+  if (stock < 20) {
+    feuille.getRange("K2").setValue("Commander");
+    feuille.getRange("K2").getFormat().getFill().setColor("#FF0000");
+  } else {
+    feuille.getRange("K2").setValue("OK");
+    feuille.getRange("K2").getFormat().getFill().setColor("#FFFFFF");
+  }
+}
+```
+
+<Aside type="note" title="Pour ce cours">
+  Nous travaillons avec Excel de bureau — VBA est donc notre outil. Office Scripts est mentionné ici pour que vous sachiez qu'il existe et dans quels contextes il prend le relais.
+
+  La logique est identique : on désigne des cellules, on lit ou on écrit des valeurs, on pose des conditions. Seule la syntaxe change.
+</Aside>

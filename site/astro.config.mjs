@@ -103,7 +103,8 @@ export default defineConfig({
 						{
 							label: 'Semaine 10',
 							items: [
-								{ label: 'Macros', slug: 'cours/11-macros' }
+								{ label: 'Macros', slug: 'cours/11-macros' },
+								{ label: 'Intro à VBA', slug: 'cours/12-vba' },
 							]
 						},
 					],

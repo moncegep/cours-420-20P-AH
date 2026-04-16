@@ -610,7 +610,7 @@ export default function ExcelFormulaTester() {
               type="text"
               value={intention}
               onChange={(e) => setIntention(e.target.value)}
-              placeholder='Ex: « Additionner les ventes supérieures à 100$ » ou « Trouver le nom de l'employé avec l'ID en A1 »'
+              placeholder="Ex: « Additionner les ventes supérieures à 100$ » ou « Trouver le nom de l'employé avec l'ID en A1 »"
               style={{
                 width: "100%", boxSizing: "border-box",
                 background: "#0a1018", border: "1px solid #1e304844",
