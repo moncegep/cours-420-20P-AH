@@ -1,0 +1,229 @@
+---
+title: "Exercice — Macros : Gestion de l'inventaire pharmacie"
+description: Transformer, mettre en forme, visualiser et sécuriser les données de trois pharmacies à l'aide de macros VBA
+sidebar:
+  order: 10
+---
+
+import { Aside, Steps, Tabs, TabItem, Card, CardGrid } from '@astrojs/starlight/components';
+import FluxDiagram from './../../../components/FluxDiagram';
+
+## Mise en contexte
+
+Vous travaillez comme technicien·ne en informatique pour un regroupement de trois pharmacies québécoises. 
+Chaque succursale vous a transmis son inventaire de produits sous forme brute — une seule colonne de données CSV dans Excel, sans mise en forme ni structure.
+
+Votre mandat : **automatiser entièrement le traitement de ces données à l'aide de macros VBA**, 
+de façon à ce que la procédure puisse être relancée à chaque réception de nouvelles données.
+
+Le fichier de départ contient trois feuilles :
+
+| Feuille | Succursale |
+|---|---|
+| `Laval` | Pharmacie Laval-des-Rapides |
+| `VieuxPort` | Pharmacie du Vieux-Port |
+| `Beauce` | Pharmacie Beauce-Centre |
+
+Dans chacune, les données brutes se trouvent dans la **colonne A**, à partir de la ligne 1, sous la forme :
+
+```
+ID_Produit,Nom_Produit,Categorie,Fournisseur,Prix_Unitaire,Quantite_Stock,...
+PL001,Paracétamol 500 mg,Antalgiques,PharmaPlus,4.99,12,...
+```
+
+<FluxDiagram
+  titre="Vue d'ensemble de l'exercice"
+  steps={[
+    { titre: "Macro 1 — Transformation", desc: "Découper les données brutes en colonnes structurées", tag: "étape 1" },
+    { titre: "Macro 2 — Mise en forme", desc: "Appliquer en-têtes, formats, alignements et totaux", tag: "étape 2" },
+    { titre: "Macro 3 — Graphique", desc: "Générer un graphique de stock par catégorie", tag: "étape 3" },
+    { titre: "Macro 4 — Signature", desc: "Inscrire le nom, la date", tag: "étape 4" },
+  ]}
+  client:load
+/>
+
+---
+
+## Macro 1 — Transformation des données
+
+### Objectif
+
+Convertir les données brutes de la colonne A en un tableau structuré : une ligne par produit, une colonne par champ.
+
+L'approche à utiliser est l'outil **Convertir** d'Excel (`Données → Convertir`). L'objectif de cette macro est d'enregistrer et d'automatiser cette opération.
+
+### Étape préalable : Enregistrer l'opération
+
+Avant d'écrire quoi que ce soit, utilisez l'**enregistreur de macros** pendant que vous effectuez la conversion manuellement sur la feuille `Laval` :
+
+<Steps>
+1. Démarrer l'enregistrement (`Développeur → Enregistrer une macro`, nom : `TransformerDonnees`)
+2. Sélectionner toute la colonne A
+3. Aller dans `Données → Convertir`
+4. Choisir **Délimité**, puis **Virgule** comme séparateur
+5. Terminer l'assistant et appliquer
+6. Arrêter l'enregistrement
+</Steps>
+
+Examinez ensuite le code généré dans l'éditeur VBA (`Alt + F11`). Vous verrez apparaître un appel à `TextToColumns` — c'est l'instruction qui effectue la conversion.
+
+### Travail demandé
+
+La macro s'exécute sur la feuille active. Vous la lancerez manuellement une fois par feuille, en vous positionnant sur chacune avant l'exécution.
+
+#### Colonnes attendues après transformation
+
+| Colonne | En-tête | Type |
+|---|---|---|
+| A | ID_Produit | Texte |
+| B | Nom_Produit | Texte |
+| C | Categorie | Texte |
+| D | Fournisseur | Texte |
+| E | Prix_Unitaire | Nombre |
+| F | Quantite_Stock | Entier |
+| G | Seuil_Alerte | Entier |
+| H | Date_Expiration | Date |
+| I | Lot | Texte |
+| J | Ordonnance_Requise | Texte |
+
+{/* <Aside type="caution" title="Point de vigilance">
+La macro enregistrée cible probablement une plage fixe comme `Range("A1:A21")`. Remplacez-la par une référence dynamique qui s'adapte au nombre de lignes réel, en cas de nouvelles données à l'avenir.
+</Aside> */}
+
+---
+
+## Macro 2 — Mise en forme
+
+### Objectif
+
+Appliquer une mise en forme professionnelle et lisible au tableau structuré de chaque feuille. Cette macro s'exécute après la Macro 1.
+
+### Travail demandé
+
+Créer une macro `MettreEnForme` qui applique les éléments suivants :
+
+#### 2.1 En-tête
+
+- Police en **gras**
+- Fond coloré (couleur au choix, cohérente entre les trois feuilles)
+- Texte centré
+- Hauteur de ligne augmentée (ex. : 22 pts)
+
+#### 2.2 Formats de colonnes
+
+| Colonne | Format à appliquer |
+|---|---|
+| E — Prix_Unitaire | Monétaire avec 2 décimales (`#,##0.00 $`) |
+| F — Quantite_Stock | Nombre entier sans décimale |
+| G — Seuil_Alerte | Nombre entier sans décimale |
+| H — Date_Expiration | Date courte (`yyyy-mm-dd`) |
+
+#### 2.3 Alignement
+
+| Zone | Alignement |
+|---|---|
+| Colonnes A, I, J | Centré horizontalement |
+| Colonnes B, C, D | Aligné à gauche |
+| Colonnes E, F, G | Aligné à droite |
+
+#### 2.4 Ligne de synthèse
+
+Sous la dernière ligne de données, ajouter une ligne de synthèse contenant :
+
+- **Colonne E** : la moyenne des prix unitaires (`AVERAGE`)
+- **Colonne F** : le total du stock (`SUM`)
+
+Cette ligne doit être mise en évidence (fond, bordure ou style distinct).
+
+<Aside type="tip" title="Trouver la dernière ligne">
+```vb
+Dim derniereLigne As Long
+derniereLigne = Cells(Rows.Count, 1).End(xlUp).Row
+```
+Cette instruction remonte depuis le bas de la colonne A pour trouver la dernière cellule occupée.
+</Aside>
+
+---
+
+## Macro 3 — Création de graphique 
+
+### Objectif
+
+Générer automatiquement un graphique de stock par catégorie à partir d'une zone de données préparée à l'avance.
+
+### Préparatifs
+
+> 👉 **À faire avant d'enregistrer la macro**
+
+Dans chaque feuille, créer une petite zone de données en colonnes L et M :
+
+| Colonne L | Colonne M |
+|---|---|
+| `=UNIQUE(C2:C21)` en L1 | `Quantite_Stock` (en-tête) en M1 |
+| Catégories déversées automatiquement | `=SUMIF($C$2:$C$21,L2,$F$2:$F$21)` en M2, copiée vers le bas |
+
+Cette zone servira de **source de données** pour le graphique.
+
+### Travail demandé
+
+Créer une macro `CreerGraphique` qui :
+
+<Steps>
+1. Sélectionne la zone `L1:M{dernière ligne des catégories}`
+2. Insère un graphique de type **Histogramme groupé**
+3. Le positionne à droite du tableau (à partir de la colonne N environ)
+{/* 4. Lui donne un titre indiquant le nom de la feuille active (ex. : `"Stock — Laval"`) */}
+</Steps>
+
+<Aside type="tip" title="Enregistrer d'abord, adapter ensuite">
+Créez le graphique manuellement une première fois pendant que l'enregistreur tourne. Le code généré contiendra l'appel à `Shapes.AddChart2`.
+</Aside>
+
+---
+
+## Macro 4 — Signature (Bonus)
+
+### Objectif
+
+Certifier que le traitement a été effectué en inscrivant le nom du technicien et la date.
+
+### Travail demandé
+
+Créer une macro `Signer` qui effectue les opérations suivantes **sur la feuille `Laval`** (feuille index 1) :
+
+Dans une zone clairement délimitée sous le tableau (laisser 2 lignes vides après la synthèse) :
+
+| Cellule | Contenu |
+|---|---|
+| Colonne A | `Traité par :` (texte en gras) |
+| Colonne B | Le nom saisi par l'utilisateur via une boîte de saisie |
+| Colonne A (ligne suivante) | `Date de traitement :` (texte en gras) |
+| Colonne B (ligne suivante) | La date du jour (format `yyyy-mm-dd`) |
+
+La boîte de saisie doit utiliser `InputBox` :
+
+```vb
+Dim nomTechnicien As String
+nomTechnicien = InputBox("Entrez votre nom complet :", "Signature")
+```
+
+{/* #### 4.2 Verrouillage
+
+Après avoir inscrit la signature :
+
+1. Protéger chaque feuille contre la modification avec un mot de passe (`"pharmacie2025"`)
+2. Le mot de passe doit être le même pour les trois feuilles
+3. Afficher un message de confirmation à la fin : `"Classeur signé et verrouillé avec succès."`
+
+<Aside type="caution" title="Pour déverrouiller lors des tests">
+```vb
+' Déverrouiller une feuille pour les tests
+Worksheets("Laval").Unprotect Password:="pharmacie2025"
+```
+Vous pouvez créer une macro `DeverrouillerClasseur` pour les besoins de l'exercice.
+</Aside>
+*/}
+
+<Aside type="note" title="Ordre d'exécution">
+Les macros doivent être exécutées dans l'ordre : **Macro 1 → Macro 2 → Macro 3 → Macro 4**.
+</Aside> 

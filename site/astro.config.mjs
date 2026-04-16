@@ -105,6 +105,9 @@ export default defineConfig({
 							items: [
 								{ label: 'Macros', slug: 'cours/11-macros' },
 								{ label: 'Intro à VBA', slug: 'cours/12-vba' },
+								{ label: "Exercices", items: [
+									{ label: "Gestion de l'inventaire pharmacie", slug: 'exercices/11-exercices-macros' },
+								]},
 							]
 						},
 					],
