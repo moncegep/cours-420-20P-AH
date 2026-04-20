@@ -110,6 +110,12 @@ export default defineConfig({
 								]},
 							]
 						},
+						{
+							label: 'Semaine 11',
+							items: [
+								{ label: 'Validation de données', slug: 'cours/13-validation' },
+							]
+						},
 					],
 				},
 				{

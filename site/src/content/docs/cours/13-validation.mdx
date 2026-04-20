@@ -1,0 +1,433 @@
+---
+title: Validation des données
+description: Règles de validation, listes déroulantes, messages d'erreur personnalisés et détection des doublons — avec automatisation par macros enregistrées
+sidebar:
+  order: 51
+---
+
+import { Aside, Steps, Badge, Tabs, TabItem } from '@astrojs/starlight/components';
+
+Une feuille de calcul n'est fiable que si les données qu'elle contient sont **correctes dès la saisie**. La validation des données te permet d'imposer des règles directement dans les cellules — avant même qu'une erreur puisse se propager dans tes formules ou tes tableaux croisés dynamiques.
+
+---
+
+## Pourquoi valider à la source ?
+
+Imagine que tu gères la **liste des employés** de **Constructions Bédard**, une PME de Trois-Rivières. Plusieurs personnes ont accès au fichier et y saisissent des données : heures travaillées, département, statut d'emploi, date d'embauche.
+
+Sans aucune contrainte, voici ce qui arrive inévitablement :
+
+| Problème | Exemple concret | Conséquence |
+|---|---|---|
+| Valeur hors plage | Heures travaillées : `–12` ou `312` | Calcul de paie erroné |
+| Texte libre incohérent | Département : `rh`, `RH`, `Ressources humaines`, `R.H.` | TCD illisible, regroupements impossibles |
+| Format de date invalide | Date d'embauche : `15-03-24` ou `mars 2024` | Erreurs dans les calculs d'ancienneté |
+| Doublon de code employé | Deux lignes avec `EMP-047` | Données dupliquées, rapports faussés |
+
+<Aside type="caution" title="Principe fondamental">
+**Nettoyer des données corrompues coûte toujours plus cher que de les valider à l'entrée.** Une règle de validation mal placée cause un inconvénient de quelques secondes ; des données mal saisies pendant six mois causent des jours de travail de correction.
+</Aside>
+
+---
+
+## Les règles de validation
+
+La validation des données se configure via **Données → Validation des données**. Pour chaque cellule ou plage, tu définis ce qui est autorisé.
+
+### Types de règles disponibles
+
+<Tabs>
+<TabItem label="Nombre entier">
+
+Autorise uniquement des nombres entiers dans un intervalle défini.
+
+**Configuration :**
+- Autoriser : *Nombre entier*
+- Données : *compris entre*
+- Minimum : `0` — Maximum : `60`
+
+**Cas d'usage typiques :**
+- Heures travaillées par semaine
+- Quantité commandée
+- Nombre de jours de vacances
+
+**Exemple — Constructions Bédard :**
+La colonne `Heures_sem` doit accepter uniquement des entiers entre `0` et `60`. Toute valeur en dehors de cet intervalle sera bloquée selon le style d'alerte choisi.
+
+</TabItem>
+<TabItem label="Décimal">
+
+Autorise des nombres réels (avec décimales) dans un intervalle.
+
+**Configuration :**
+- Autoriser : *Décimal*
+- Données : *supérieur ou égal à*
+- Minimum : `0`
+
+**Cas d'usage typiques :**
+- Taux horaire
+- Montant d'une dépense
+- Pourcentage de complétion (`0` à `1`, ou `0` à `100`)
+
+</TabItem>
+<TabItem label="Liste">
+
+Restreint la saisie à un ensemble de valeurs prédéfinies. C'est la base des **listes déroulantes** — voir la section suivante.
+
+**Configuration :**
+- Autoriser : *Liste*
+- Source : soit une liste séparée par des points-virgules, soit une plage de cellules
+
+**Cas d'usage typiques :**
+- Département, statut, province, type de contrat
+- Toute donnée catégorielle répétée
+
+</TabItem>
+<TabItem label="Date">
+
+Limite les saisies à des dates valides dans un intervalle.
+
+**Configuration :**
+- Autoriser : *Date*
+- Données : *inférieure ou égale à*
+- Date de fin : `=AUJOURDHUI()`
+
+Cela empêche de saisir une date d'embauche dans le futur.
+
+**Autres cas d'usage :**
+- Date de livraison ne pouvant pas être avant la date de commande
+- Période de validité d'un contrat
+
+</TabItem>
+<TabItem label="Longueur du texte">
+
+Contrôle le nombre de caractères d'une cellule texte.
+
+**Configuration :**
+- Autoriser : *Longueur du texte*
+- Données : *égale à*
+- Longueur : `7`
+
+**Cas d'usage typiques :**
+- Code postal canadien : exactement 7 caractères (`G1A 1A1`)
+- Numéro d'employé : format fixe (`EMP-047` = 7 caractères)
+- Code de produit normalisé
+
+</TabItem>
+<TabItem label="Personnalisée">
+
+Utilise une **formule Excel** pour définir la règle. C'est le type le plus puissant.
+
+**Configuration :**
+- Autoriser : *Personnalisée*
+- Formule : une expression qui retourne VRAI ou FAUX
+
+**Exemples de formules utiles :**
+
+| Règle souhaitée | Formule à saisir |
+|---|---|
+| La cellule doit commencer par `EMP-` | `=GAUCHE(A2;4)="EMP-"` |
+| La valeur doit être unique dans la colonne | `=NB.SI($A$2:$A$200;A2)=1` |
+| Le total de deux colonnes ne dépasse pas 100 | `=B2+C2<=100` |
+| La date est dans le mois en cours | `=MOIS(A2)=MOIS(AUJOURDHUI())` |
+
+<Aside type="tip" title="Réinvestissement">
+Tu reconnais ici des fonctions déjà vues : `GAUCHE`, `NB.SI`, `MOIS`, `AUJOURDHUI`. La validation personnalisée n'est rien d'autre qu'une formule Excel réutilisée comme critère de contrôle.
+</Aside>
+
+</TabItem>
+</Tabs>
+
+---
+
+## Les listes déroulantes
+
+Les listes déroulantes sont le type de validation le plus utilisé en entreprise. Elles éliminent les fautes de frappe, standardisent les catégories et rendent la saisie plus rapide.
+
+### Source directe vs plage nommée
+
+<Tabs>
+<TabItem label="Source directe (liste fixe)">
+
+Tu saisis les valeurs directement dans le champ « Source », séparées par des **points-virgules** :
+
+```
+Temps plein;Temps partiel;Contractuel;Stagiaire
+```
+
+**Avantages :** Simple, rapide, aucune cellule supplémentaire nécessaire.
+
+**Inconvénients :** Si la liste change, tu dois modifier chaque cellule validée manuellement.
+
+**À utiliser quand :** La liste est courte, stable et universelle (ex. : Oui/Non, provinces canadiennes).
+
+</TabItem>
+<TabItem label="Plage nommée (recommandée)">
+
+Tu crées d'abord une table de référence dans une feuille dédiée, puis tu **nommes la plage** et tu la références dans la validation.
+
+<Steps>
+1. Crée une feuille nommée `Listes`.
+
+2. Dans cette feuille, entre tes valeurs dans une colonne :
+
+   | A |
+   |---|
+   | Informatique |
+   | Comptabilité |
+   | RH |
+   | Production |
+   | Ventes |
+
+3. Sélectionne la plage `A1:A5`.
+
+4. Dans la **zone Nom** (en haut à gauche de la barre de formule), tape `ListeDépartements` et appuie sur **Entrée**.
+
+5. Dans ta feuille principale, sélectionne la colonne `Département`, ouvre **Données → Validation des données**, choisis *Liste*, et dans Source :
+   ```
+   =ListeDépartements
+   ```
+</Steps>
+
+**Avantage clé :** Pour ajouter un département, tu modifies uniquement la feuille `Listes` — toutes les cellules liées se mettent à jour automatiquement.
+
+</TabItem>
+<TabItem label="Liste en cascade">
+
+Une liste déroulante dont le contenu **dépend de la sélection d'une autre liste**. Exemple classique : Province → Ville.
+
+**Principe :**
+
+1. Tu crées une plage nommée pour chaque province (ex. : `QC`, `ON`, `BC`), contenant les villes correspondantes.
+2. La liste déroulante de la colonne Ville utilise la formule :
+   ```
+   =INDIRECT(C2)
+   ```
+   où `C2` contient le code de province sélectionné.
+
+<Aside type="tip" title="Comment ça fonctionne">
+`INDIRECT` interprète le contenu d'une cellule comme un nom de plage. Si `C2` contient `QC`, Excel cherche une plage nommée `QC` et l'utilise comme source de la liste. La valeur dans `C2` doit correspondre **exactement** au nom de la plage nommée — majuscules et accents inclus.
+</Aside>
+
+</TabItem>
+</Tabs>
+
+---
+
+## Messages d'erreur personnalisés
+
+Par défaut, Excel affiche un message générique quand une règle est violée. Tu peux le remplacer par un message **clair et contextualisé** pour l'utilisateur.
+
+### Configuration
+
+Dans **Données → Validation des données → onglet Alerte d'erreur** :
+
+| Champ | Rôle |
+|---|---|
+| **Style** | Détermine le comportement (voir ci-dessous) |
+| **Titre** | Titre de la boîte de dialogue |
+| **Message d'erreur** | Explication et instruction pour l'utilisateur |
+
+### Les trois styles d'alerte
+
+| Style | Icône | Comportement | À utiliser pour |
+|---|---|---|---|
+| **Arrêt** <Badge text="Stop" variant="danger" /> | 🚫 | Bloque complètement la saisie invalide | Règles critiques — code employé, montant négatif |
+| **Avertissement** <Badge text="Attention" variant="caution" /> | ⚠️ | Avertit, mais l'utilisateur peut forcer la valeur | Règles importantes avec exceptions possibles |
+| **Informations** <Badge text="Info" variant="note" /> | ℹ️ | Informe seulement — la valeur est acceptée quand même | Conseils de saisie, rappels de format |
+
+### Exemples de messages bien rédigés
+
+<Aside type="tip" title="Rédaction des messages">
+Un bon message d'erreur répond à trois questions : **Qu'est-ce qui ne va pas ? Quelle est la règle ? Comment corriger ?**
+</Aside>
+
+**Heures travaillées — style Arrêt :**
+> **Titre :** Valeur non valide
+>
+> **Message :** Le nombre d'heures doit être un entier entre 0 et 60. Vérifie qu'il ne s'agit pas d'une valeur décimale ou hors plage.
+
+**Date d'embauche — style Avertissement :**
+> **Titre :** Date inhabituelle
+>
+> **Message :** La date saisie est dans le futur. C'est possible pour une embauche planifiée, mais vérifie qu'il ne s'agit pas d'une erreur de frappe.
+
+**Code employé — style Arrêt :**
+> **Titre :** Format de code invalide
+>
+> **Message :** Le code employé doit comporter exactement 7 caractères (ex. : EMP-042). Assure-toi d'inclure le tiret.
+
+### Message d'invite (facultatif mais utile)
+
+L'onglet **Message de saisie** affiche une bulle d'information dès que l'utilisateur clique sur la cellule — *avant* qu'il ne saisisse quoi que ce soit. C'est idéal pour des instructions préventives.
+
+> **Titre :** Format attendu
+>
+> **Message :** Saisir le code au format EMP-XXX (ex. : EMP-042).
+
+---
+
+## Identifier et gérer les doublons
+
+Les doublons sont une source fréquente d'erreurs dans les fichiers partagés. Excel t'offre plusieurs façons de les repérer.
+
+### Mise en forme conditionnelle
+
+La méthode la plus visuelle : **Accueil → Mise en forme conditionnelle → Règles de mise en surbrillance des cellules → Valeurs en double**.
+
+Excel colorie automatiquement toutes les cellules qui apparaissent plus d'une fois dans la plage sélectionnée.
+
+<Aside type="caution" title="Limite à connaître">
+Cette méthode colorie **toutes** les occurrences d'une valeur dupliquée — y compris la première. Elle révèle qu'il y a un problème, mais pas laquelle des occurrences est la « bonne ». Pour éliminer les doublons, tu devras ensuite faire un choix manuel ou utiliser **Données → Supprimer les doublons**.
+</Aside>
+
+### Formule NB.SI pour détecter les doublons
+
+Pour plus de contrôle, ajoute une colonne de vérification avec `NB.SI` :
+
+```excel
+=NB.SI($A$2:$A$200; A2)
+```
+
+Cette formule compte combien de fois la valeur de `A2` apparaît dans toute la colonne. Un résultat de `1` signifie que la valeur est unique ; `2` ou plus indique un doublon.
+
+**Variante — signaler uniquement à partir de la 2e occurrence :**
+
+```excel
+=NB.SI($A$2:A2; A2)
+```
+
+En utilisant une plage **semi-absolue** (début fixe `$A$2`, fin relative `A2`), la formule ne compte que les occurrences *jusqu'à la ligne courante*. Elle retourne `1` pour la première apparition, `2` pour la deuxième, etc. — ce qui te permet d'identifier précisément les lignes redondantes sans marquer la ligne originale.
+
+### Supprimer les doublons
+
+**Données → Supprimer les doublons** te permet de choisir sur quelles colonnes baser la comparaison. Excel supprime les lignes en double et t'indique combien ont été retirées.
+
+<Aside type="caution" title="Sauvegarder avant">
+La suppression est **irréversible** (sauf `Ctrl + Z` immédiatement après). Travaille toujours sur une copie ou sauvegarde avant d'utiliser cette fonction sur des données de production.
+</Aside>
+
+---
+
+## Automatiser avec des macros enregistrées
+
+L'enregistreur de macros peut capturer toutes les manipulations vues jusqu'ici — appliquer des règles de validation, colorier des doublons, encercler les anomalies — et les rejouer en un seul clic. C'est particulièrement utile quand tu reçois régulièrement le même type de fichier à préparer.
+
+### Exemple 1 : appliquer les règles de validation en un clic
+
+#### Mise en contexte
+
+Tu reçois chaque lundi un nouvel export pour **Constructions Bédard**. La structure est toujours identique, mais l'export brut ne contient aucune règle de validation. Tu veux une macro qui les applique d'un coup sur l'ensemble des colonnes.
+
+**Fichier :** `employes_bédard.xlsx` (fourni) — feuille `Employés` :
+
+| A | B | C | D | E | F |
+|---|---|---|---|---|---|
+| Code_emp | Nom | Département | Statut | Heures_sem | Date_embauche |
+
+**Règles à appliquer :**
+
+| Colonne | Règle | Style d'erreur |
+|---|---|---|
+| `Code_emp` (A) | Longueur de texte = 7 | Arrêt |
+| `Département` (C) | Liste : `=ListeDépartements` | Arrêt |
+| `Statut` (D) | Liste : `Temps plein;Temps partiel;Contractuel;Stagiaire` | Arrêt |
+| `Heures_sem` (E) | Entier entre 0 et 60 | Arrêt |
+| `Date_embauche` (F) | Date ≤ aujourd'hui | Avertissement |
+
+#### Procédure
+
+<Steps>
+1. Assure-toi que la feuille `Listes` existe et que la plage nommée `ListeDépartements` est définie.
+
+2. Lance l'enregistrement :
+   - Nom : `AppliquerValidation`
+   - Raccourci : `Ctrl + Maj + V`
+
+3. Sélectionne **A2:A200**, puis configure la règle *Longueur du texte = 7* avec son message d'erreur.
+
+4. Répète pour chaque colonne selon le tableau.
+
+5. Clique sur **A2** pour repositionner le curseur.
+
+6. Arrête l'enregistrement.
+</Steps>
+
+<Aside type="tip" title="Tester la macro">
+Pour vérifier que la macro fonctionne bien : supprime manuellement les règles d'une colonne (**Données → Validation → Effacer tout**), puis exécute `Ctrl + Maj + V`. Les règles doivent revenir immédiatement.
+</Aside>
+
+---
+
+### Exemple 2 : colorier les doublons par macro
+
+#### Mise en contexte
+
+Des doublons se sont glissés dans la colonne `Code_emp` au fil des mises à jour. Tu veux une macro qui les signale visuellement d'un seul clic, sans refaire la manipulation de mise en forme conditionnelle à chaque vérification.
+
+#### Procédure
+
+<Steps>
+1. Lance l'enregistrement :
+   - Nom : `ColorierDoublons`
+   - Raccourci : `Ctrl + Maj + D`
+
+2. Sélectionne la plage **A2:A200**.
+
+3. Applique : **Accueil → Mise en forme conditionnelle → Règles de mise en surbrillance → Valeurs en double** → couleur **Remplissage orange, texte foncé**.
+
+4. Clique sur **A2**.
+
+5. Arrête l'enregistrement.
+</Steps>
+
+<Aside type="tip" title="Macro complémentaire">
+Enregistre aussi une macro `EffacerDoublons` qui supprime la mise en forme conditionnelle de la plage (**Accueil → Mise en forme conditionnelle → Effacer les règles → des cellules sélectionnées**). Tu pourras ainsi réinitialiser l'affichage avant chaque nouvel audit.
+</Aside>
+
+---
+
+### Exemple 3 : auditer un import existant
+
+#### Mise en contexte
+
+La validation des données **empêche les nouvelles saisies invalides** — mais elle ne signale pas les valeurs déjà présentes avant l'application des règles. Pour auditer un fichier reçu, Excel offre une fonction méconnue : **Entourer les données non valides**. Elle encercle en rouge toutes les cellules qui violent les règles en place.
+
+#### Procédure
+
+<Steps>
+1. Lance l'enregistrement :
+   - Nom : `AuditValidation`
+   - Raccourci : `Ctrl + Maj + U`
+
+2. Exécute d'abord `AppliquerValidation` via son raccourci `Ctrl + Maj + V`
+   *(tu peux déclencher une macro depuis une autre pendant l'enregistrement)*.
+
+3. Va dans **Données → petite flèche sous « Validation des données »** → clique sur **Entourer les données non valides**.
+
+4. Arrête l'enregistrement.
+</Steps>
+
+En exécutant `AuditValidation` sur un fichier fraîchement importé, tu obtiens en quelques secondes une vue complète de toutes les cellules non conformes, encerclées en rouge.
+
+<Aside type="note" title="Effacer les cercles après correction">
+Une fois les corrections apportées, enregistre une dernière macro `EffacerCercles` qui exécute **Données → Validation des données → Effacer les cercles de validation**. Tu auras ainsi un jeu de quatre macros complémentaires qui couvrent l'ensemble du cycle de validation.
+</Aside>
+
+---
+
+{/* ## Récapitulatif
+
+| Outil | Ce qu'il fait | Quand l'utiliser |
+|---|---|---|
+| **Validation — liste** | Restreint la saisie à des valeurs prédéfinies | Toute donnée catégorielle : département, statut, province |
+| **Validation — nombre** | Impose un intervalle numérique | Heures, quantités, pourcentages |
+| **Validation — date** | Impose une plage de dates valides | Dates d'embauche, de livraison, d'échéance |
+| **Validation — personnalisée** | Règle basée sur une formule Excel | Unicité, format de texte, règles croisées entre colonnes |
+| **Message d'erreur** | Explique la règle à l'utilisateur | Toujours — un message générique n'aide personne |
+| **NB.SI doublon** | Colonne de vérification des doublons | Audit manuel, identification de la 1re vs 2e occurrence |
+| **MFC valeurs en double** | Coloriage visuel immédiat | Revue rapide avant nettoyage |
+| **Entourer données non valides** | Encercle les cellules qui violent les règles | Audit d'un fichier reçu sans validation préalable |
+| **Macro `AppliquerValidation`** | Applique toutes les règles en un clic | Fichiers récurrents avec structure fixe |
+| **Macro `ColorierDoublons`** | Met en évidence les doublons instantanément | Fichiers partagés, imports de systèmes ERP |
+| **Macro `AuditValidation`** | Encercle toutes les anomalies d'un coup | Contrôle qualité sur un import complet | */}
