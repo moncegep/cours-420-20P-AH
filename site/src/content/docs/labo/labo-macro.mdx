@@ -1,28 +1,26 @@
 ---
 title: "Labo 3 : Macros et validation de données"
 description: "Préparer un fichier de suivi Uber/Uber Eats pour les impôts à l'aide de macros enregistrées, de règles de validation et de mise en forme conditionnelle dynamique."
-sidebar:
-  order: 20
-  badge:
-    text: Labo
-    variant: danger
 ---
 
 import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
 
 ## Mise en contexte
 
-Tu veux aider un travailleur autonome qui fait de la livraison et du transport de passagers via **Uber** et **Uber Eats** à 
-préparer ses données financières pour produire sa déclaration de revenus.
+Tu veux aider un travailleur autonome qui fait de la livraison et du transport de
+passagers via **Uber** et **Uber Eats** à préparer ses données financières pour 
+produire sa déclaration de revenus.
 
-Le fichier Excel contient un mélange de courses (revenus) et de dépenses déductibles accumulées au fil de l'année.
-Toutefois, comme c'est un suivi manuel, les données sont pleines d'incohérences : catégories mal orthographiées, montants saisis en texte, espaces superflus, etc.
+Le fichier Excel contient un mélange de courses (revenus) et de dépenses déductibles
+accumulées au fil de l'année. Toutefois, comme c'est un suivi manuel, les données sont
+pleines d'incohérences : catégories mal orthographiées, montants saisis en texte, espaces superflus, etc.
 
-Tu vas nettoyer ces données, les protéger contre les futures erreurs de saisie, créer un outil de filtrage visuel dynamique, 
-et produire un graphique permettant de visualiser l'évolution des revenus et dépenses.
+Tu vas nettoyer ces données, les protéger contre les futures erreurs de saisie, 
+créer un outil de filtrage visuel dynamique, et produire un graphique permettant
+de visualiser l'évolution des revenus et dépenses.
 
 <Aside type="note" title="Fichier de départ">
-  Ouvre le fichier **labo_uber_impots.xlsx** disponible sur Léa. Il contient trois feuilles visibles :
+  Ouvre le fichier **labo_uber_impots.xlsx** (Labo - Uber impot) disponible sur Léa. Il contient trois feuilles visibles :
   - **Données** — 120 lignes de transactions (revenus et dépenses) pour l'année 2025
   - **Test** — 25 lignes d'un autre chauffeur pour tester tes macros
   - **Contrôle** — cellules de saisie pour le filtrage dynamique (Tache 3)
@@ -72,20 +70,22 @@ Le fichier contient des données brutes avec des montants saisis en texte et un 
 Tu vas **enregistrer deux macros pour automatiser le nettoyage**.
  
 <Aside type="caution" title="Avant de commencer">
-  Sauvegarde ton fichier en format **.xlsm** (Classeur Excel prenant en charge les macros) avant d'enregistrer ta première macro. Sinon, tes macros seront perdues à la sauvegarde.
+  Sauvegarde ton fichier en format **.xlsm** (Classeur Excel prenant en charge les macros)
+  avant d'enregistrer ta première macro. Sinon, tes macros seront perdues à la sauvegarde.
 </Aside>
 
 ### Macro 1 — `Nettoyer_Montants`
  
-Certains montants (colonne F) ont été saisis en texte au lieu de nombres. Tu trouveras des valeurs comme `45,50 $`, `$12.00` ou `26.25` (avec un point décimal anglais).
+Certains montants (colonne F) ont été saisis en texte au lieu de nombres. 
+Tu trouveras des valeurs comme `45,50 $`, `$12.00` ou `26.25` (avec un point décimal anglais).
 Cette macro consiste à nettoyer les données entrer dans la colonne de Montant (colonne F)
 
 #### Étapes de la macro
  
 <Steps>
-1. **Retire les symboles** : `$` → *(vide)*
-2. **Convertis les points décimaux** anglais en virgules: `.` → `,` 
-3. **Convertis la colonne en format *Monétaire***
+1. **Retirer les symboles** : `$` → *(vide)*
+2. **Remplacer les points décimaux** par des virgules: `.` → `,` 
+3. **Convertir la colonne en format *Nombre***, avec deux décimales
 </Steps>
 
 ### Macro 2 — `Normaliser_Donnees`
@@ -95,9 +95,9 @@ Cette macro applique une mise en forme et une organisation standardisées.
 #### Étapes de la macro
 
 <Steps>
-1. **Formate les colonnes** 
-2. **Trie** les données par date croissante (colonne A).
-3. **Applique un filtre automatique** sur la ligne d'en-tête (onglet Données → Filtrer).
+1. **Changer le format des colonnes (voir plus bas)** 
+2. **Trier** les données par date croissante (colonne A).
+3. **Appliquer un filtre automatique** sur la ligne d'en-tête (onglet Données → Filtrer).
 </Steps>
 
 #### Format des colonnes
@@ -137,7 +137,8 @@ données existantes qui ne sont pas conformes.
  
 ## Tache 3 : Surbrillance dynamique
  
-Tu vas créer un outil de filtrage visuel qui met en surbrillance les lignes de la feuille **Données** selon des critères choisis par l'utilisateur sur la feuille **Contrôle**.
+Tu vas créer un outil de filtrage visuel qui met en surbrillance les lignes de la
+feuille **Données** selon des critères choisis par l'utilisateur sur la feuille **Contrôle**.
  
 ### Cellules de contrôle
  
@@ -145,7 +146,7 @@ La feuille **Contrôle** contient déjà deux cellules de saisie :
  
 | Cellule | Rôle | Exemple |
 |---------|------|---------|
-| **B3** | Service à filtrer | `Uber Eats` |
+| **B3** | Service à repérer | `Uber Eats` |
 | **B5** | Catégorie à examiner | `Essence` |
  
 L'utilisateur peut laisser une cellule **vide** pour ignorer ce critère.
@@ -159,14 +160,16 @@ Tu dois créer **une règle de MFC** sur toute la plage de données (A2:G121) en
 L'application de cette règle colore toute la ligne en bleu pâle **si la ligne correspond au service ET à la catégorie sélectionnés**. 
 Si une cellule de contrôle est vide, ce critère est ignoré.
 
-La formule devrait prendre la forme suivante:
+La formule devrait prendre la forme (générique) suivante:
 ```
-=ET(OU(...); OU(...))
+=ET(OU(Données_Service = Controle_Service); OU(Données_Categorie = Controle_Categorie))
 ```
    
 <Aside type="tip" title='Comment vérifier si une cellule est vide'>
-  Pour vérifier si une cellule est vide, tu peux la comparer à une chaîne vide : `B2=""` retourne VRAI si B2 est vide.
+Pour vérifier si une cellule est vide, tu peux la comparer à une chaîne vide : 
+`B2=""` retourne VRAI si B2 est vide.
 </Aside>
+
 ---
  
 ## Tache 4 : Graphique par macro
@@ -178,13 +181,13 @@ puis enregistrer une macro qui génère un graphique directement sur la feuille 
 
 Utilise la colonne H pour les revenus et la colonne I pour les dépenses.
 - En **H1**, inscris l'en-tête `Revenus` et en **I1**, inscris `Dépenses`.
-- **Conseil:** Utilise la formule `SI` pour distinguer *Revenus* et *Dépense*
+- Utilise la formule `SI` pour distinguer, sur la ligne, un montant de type *Revenu* et un montant *Dépense*
+- Pour une ligne de type *Revenu*: la colonne `H` aurant le montant de la ligne et la colonne `I` sera vide.
+- Pour une ligne de type *Dépense*: la colonne `H` sera vide et la colonne `I` aurant le montant de la ligne.
 
 ### Macro de graphique
 
 La macro vise uniquement la génération du graphique (en assumant les préparatifs).
-
-
 
 #### Étapes de la macro
 
@@ -195,6 +198,7 @@ La macro vise uniquement la génération du graphique (en assumant les préparat
 </Steps>
 
 <Aside type="tip" title="Choix du type de graphique">
-  Un graphique en courbes fonctionne bien pour des données chronologiques. Les barres groupées sont aussi une option, mais avec 120 lignes, les barres seront très étroites.
+Un graphique en courbes fonctionne bien pour des données chronologiques. 
+Les barres groupées sont aussi une option, mais avec 120 lignes, les barres seront très étroites.
 </Aside>
 ---
