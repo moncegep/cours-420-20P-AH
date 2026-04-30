@@ -116,6 +116,12 @@ export default defineConfig({
 								{ label: 'Validation de données', slug: 'cours/13-validation' },
 							]
 						},
+						{
+							label: 'Semaine 12',
+							items: [
+								{ label: 'Consolidation de données', slug: 'cours/14-consolidation' },
+							]
+						}
 					],
 				},
 				{

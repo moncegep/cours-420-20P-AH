@@ -1,0 +1,258 @@
+---
+title: "Exercice — Marché du miel québécois"
+description: Importer 5 catalogues de producteurs de miel, valider les données, comparer les prix et consolider l'offre du marché québécois.
+---
+
+import { Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+**Marchés Bio Québec** est une coopérative de marchés publics qui souhaite référencer les meilleurs producteurs de miel de la province. Le directeur des achats, Jean-Sébastien Côté, a demandé à cinq producteurs québécois leur catalogue de produits afin de comparer leur offre, valider la cohérence des prix et bâtir un portrait du marché.
+
+Chaque producteur a transmis son catalogue dans un fichier texte généré par son propre système de gestion. Les fichiers ont des structures légèrement différentes, mais ils utilisent tous le **point-virgule** comme séparateur et la **virgule** comme séparateur décimal.
+
+Les cinq producteurs sont disponibles sur Moodle :
+
+| Fichier | Producteur | Région |
+|---|---|---|
+| `miel_lacsaintjean.txt` | Miellerie du Lac-Saint-Jean | Saguenay–Lac-Saint-Jean |
+| `miel_cantonsdelest.txt` | Rucher des Cantons-de-l'Est | Estrie |
+| `miel_beaucenature.txt` | Apiculture Beauce-Nature | Chaudière-Appalaches |
+| `miel_iledorleans.txt` | Miellerie de l'Île d'Orléans | Capitale-Nationale |
+| `miel_laurentides.txt` | Rucher des Laurentides | Laurentides |
+
+Chaque fichier contient **30 produits** sur 5 colonnes : `Code`, `Designation`, `Prix_unitaire`, `Format`, `Categorie`.
+
+<Aside type="caution">
+Aucun fichier n'est « propre » à 100 %. Chacun a des bannières d'en-tête et des pieds de page de longueurs différentes — et certains contiennent des erreurs de saisie volontaires que tu auras pour mission de repérer.
+</Aside>
+
+---
+
+## Partie 1 — Importation via Power Query <Badge text="~30 min" variant="note" />
+
+### Objectif
+
+Importer les cinq fichiers dans un seul classeur Excel, chaque producteur sur sa propre feuille. Comme les fichiers contiennent des bannières et des pieds de page, l'importation **doit passer par Power Query** (option *Transformer les données*).
+
+### Travail à réaliser
+
+<Steps>
+1. Crée un nouveau classeur nommé `marche_miel_quebec.xlsx`.
+2. Pour chaque fichier, va dans **Données > Obtenir des données > À partir d'un fichier > À partir d'un fichier texte/CSV**.
+3. Choisis le délimiteur **Point-virgule** dans l'aperçu, puis clique sur **Transformer les données**.
+4. Dans Power Query, applique les transformations nécessaires :
+   - **Supprimer les premières lignes** (la bannière d'en-tête — le nombre varie d'un fichier à l'autre).
+   - **Utiliser la première ligne comme en-têtes**.
+   - **Supprimer les dernières lignes** (le pied de page).
+   - **Modifier le type** de la colonne `Prix_unitaire` en *Nombre décimal* avec les paramètres régionaux **Français (Canada)**, pour que la virgule soit interprétée comme séparateur décimal.
+   - Filtrer ou supprimer toute ligne vide qui resterait au milieu de la table.
+5. Charge la table dans une feuille du classeur. Renomme la feuille selon le producteur (`Lac-Saint-Jean`, `Cantons`, `Beauce`, `Île d'Orléans`, `Laurentides`).
+6. Répète pour les quatre autres fichiers.
+</Steps>
+
+<Aside type="tip">
+Les bannières d'en-tête varient en longueur entre les fichiers (de 3 à 7 lignes selon le producteur). Compte attentivement le nombre de lignes à supprimer dans chaque cas — l'aperçu Power Query t'aide à cibler la bonne ligne d'en-tête.
+</Aside>
+
+### Vérifie ton résultat
+
+Chaque feuille doit contenir exactement **30 lignes** de données et **5 colonnes**. Le classeur compte donc **150 produits** au total, répartis sur 5 feuilles.
+
+Pour vérifier que les types sont corrects, sélectionne n'importe quelle cellule de la colonne `Prix_unitaire` : Excel doit afficher la valeur alignée à droite (signe d'un nombre) et non à gauche (signe d'un texte).
+
+---
+
+## Partie 2 — Validation des données <Badge text="~25 min" variant="caution" />
+
+### Objectif
+
+Avant toute analyse, il faut vérifier la qualité des données. Les fichiers transmis par les producteurs contiennent quelques erreurs de saisie. Ton rôle est de les repérer et de les corriger.
+
+### Travail à réaliser
+
+Sur chaque feuille, fais les vérifications suivantes et corrige directement la valeur fautive (en notant les corrections dans une nouvelle feuille `Journal des corrections`).
+
+**Vérification A — Prix aberrants**
+
+Sur chaque feuille, applique une **mise en forme conditionnelle** sur la colonne `Prix_unitaire` qui surligne les valeurs supérieures à 100 $. Les produits de miel artisanaux ont rarement un prix unitaire à trois chiffres — toute valeur surlignée mérite une vérification.
+
+**Vérification B — Catégories incohérentes**
+
+Sur chaque feuille, crée un petit tableau récapitulatif (à partir de la colonne H par exemple) qui liste toutes les catégories distinctes de cette feuille, avec leur nombre d'occurrences. Utilise une formule comme :
+
+```excel
+=NB.SI(plage_categorie; cellule_categorie)
+```
+
+Ou plus simplement, utilise un tableau croisé dynamique sur la colonne `Categorie` pour visualiser les catégories distinctes. Toute catégorie qui n'apparaît qu'une seule fois mérite un examen attentif — c'est souvent le signe d'une faute de frappe.
+
+### Vérifie ton résultat
+
+Tu devrais trouver **trois anomalies au total** dans l'ensemble des cinq fichiers :
+
+1. **Rucher des Cantons-de-l'Est, code RDC-016** — l'Hydromel cuvée spéciale est facturé **650,00 $** la bouteille de 1,5 L. C'est manifestement une erreur de saisie : le prix correct est **65,00 $** (un zéro a été ajouté par erreur).
+
+2. **Apiculture Beauce-Nature** — le produit *Pain de cire d'abeille (Bloc 1 kg)* a une catégorie qui contient un **espace de fin** : `Cire et bougies ` au lieu de `Cire et bougies`. Cet espace est invisible à l'œil mais Excel considère qu'il s'agit de deux catégories distinctes lors d'un regroupement.
+
+3. **Rucher des Laurentides** — le produit *Crème de nuit au miel* est classé dans la catégorie `Cosmétique` (singulier), alors que toutes les autres crèmes sont dans `Cosmétiques` (pluriel). C'est une faute de frappe qui crée également une catégorie fantôme.
+
+Corrige les trois erreurs et note-les dans la feuille `Journal des corrections` avec trois colonnes : *Producteur*, *Code produit*, *Correction effectuée*.
+
+<Aside type="caution">
+La vérification B est particulièrement importante : un seul caractère qui diffère (un espace, un accent, le pluriel) crée une catégorie distincte aux yeux d'Excel. La consolidation produirait alors deux lignes au lieu d'une, faussant l'analyse.
+</Aside>
+
+---
+
+## Partie 3 — Sous-totaux par catégorie (Lac-Saint-Jean) <Badge text="~20 min" variant="note" />
+
+### Objectif
+
+Analyser la gamme de la **Miellerie du Lac-Saint-Jean** en regroupant ses produits par catégorie pour visualiser sa diversité d'offre.
+
+### Travail à réaliser
+
+<Steps>
+1. Sur la feuille **Lac-Saint-Jean**, convertis le tableau en plage ordinaire si ce n'est pas déjà fait (clic droit > **Tableau > Convertir en plage**).
+2. Trie les données par `Categorie`, puis par `Designation` à l'intérieur de chaque catégorie.
+3. Applique l'outil **Sous-total** (Données > Plan > Sous-total) :
+   - **À chaque changement de** : `Categorie`
+   - **Utiliser la fonction** : `Somme`
+   - **Ajouter un sous-total à** : `Prix_unitaire`
+4. Ajoute un deuxième passage de sous-totaux pour obtenir aussi le **nombre** de produits par catégorie (décoche *Remplacer les sous-totaux existants*).
+</Steps>
+
+### Vérifie ton résultat
+
+Le total général de la colonne `Prix_unitaire` pour le Lac-Saint-Jean est de **482,15 $** (somme des 30 prix). Quelques sous-totaux à vérifier :
+
+| Catégorie | Nb produits | Somme des prix |
+|---|:-:|--:|
+| Miel liquide | 7 | 93,65 $ |
+| Cire et bougies | 3 | 49,20 $ |
+| Hydromel et boissons | 2 | 48,50 $ |
+| Coffrets cadeaux | 2 | 87,65 $ |
+| Produits de la ruche | 3 | 73,70 $ |
+
+La catégorie **Miel liquide** est la plus diversifiée chez ce producteur — cohérent avec sa spécialisation régionale dans le miel de bleuets.
+
+---
+
+## Partie 4 — Comparaison de prix entre producteurs <Badge text="~25 min" variant="note" />
+
+### Objectif
+
+Identifier qui propose les meilleurs prix sur les produits que plusieurs producteurs offrent en commun.
+
+### Travail à réaliser
+
+Crée une nouvelle feuille **Comparaison prix**. Construis un tableau qui présente, pour chaque produit commun, le prix de chaque producteur. La structure suggérée :
+
+| Produit | Format | Lac-Saint-Jean | Cantons | Beauce | Île d'Orléans | Laurentides | Min | Max |
+|---|---|---|---|---|---|---|---|---|
+
+Pour récupérer le prix d'un produit donné dans une feuille spécifique, utilise `RECHERCHEV` ou `INDEX`/`EQUIV`. Par exemple, pour récupérer le prix du miel de fleurs sauvages 500 g chez le Lac-Saint-Jean :
+
+```excel
+=RECHERCHEV("Miel de fleurs sauvages";'Lac-Saint-Jean'!B:C;2;FAUX)
+```
+
+<Aside type="tip">
+Comme certains producteurs n'offrent pas tous les produits communs, prévois un `SIERREUR` autour de tes `RECHERCHEV` pour afficher une cellule vide ou un tiret à la place du `#N/A`.
+</Aside>
+
+Construis le tableau pour les **11 produits communs** suivants (présents dans au moins trois producteurs) :
+
+- Miel de fleurs sauvages (500g)
+- Miel de trèfle (500g)
+- Miel crémeux nature (500g)
+- Miel en rayon (cadre 350g)
+- Pollen séché (100g)
+- Propolis teinture (30ml)
+- Cire d'abeille brute (250g)
+- Bonbons au miel (sachet 150g)
+- Savon au miel (pain 100g)
+- Baume à lèvres miel (tube 5g)
+- Bougie cire d'abeille (unité)
+
+Calcule pour chaque ligne le **prix minimum** et le **prix maximum** observé entre les producteurs.
+
+### Vérifie ton résultat
+
+Quelques résultats clés :
+
+| Produit | Prix min | Prix max | Écart |
+|---|--:|--:|--:|
+| Miel de trèfle 500g | 8,75 $ (Beauce) | 11,50 $ (Île d'Orléans) | 2,75 $ |
+| Miel crémeux nature 500g | 10,25 $ (Beauce) | 12,90 $ (Île d'Orléans) | 2,65 $ |
+| Miel de fleurs sauvages 500g | 9,50 $ (Beauce) | 11,80 $ (Île d'Orléans) | 2,30 $ |
+| Bonbons au miel 150g | 5,75 $ (Beauce) | 7,50 $ (Île d'Orléans) | 1,75 $ |
+
+**Apiculture Beauce-Nature** propose systématiquement les prix les plus compétitifs sur les produits standards. **La Miellerie de l'Île d'Orléans** se positionne quant à elle en haut de gamme — cohérent avec son marché touristique.
+
+---
+
+## Partie 5 — Consolidation du marché <Badge text="~20 min" variant="note" />
+
+### Objectif
+
+Construire un tableau global qui présente, pour chaque catégorie de produits, le nombre total de références offertes par l'ensemble du marché québécois échantillonné.
+
+### Préparation
+
+Sur chacune des cinq feuilles de producteurs, crée un petit tableau résumé `Categorie / Nb_produits` (par exemple à partir de la cellule J1). Utilise `NB.SI` pour compter le nombre de produits de chaque catégorie.
+
+### Travail à réaliser
+
+<Steps>
+1. Crée une nouvelle feuille **Bilan marché**.
+2. Utilise l'outil **Consolider** (Données > Outils de données > Consolider) pour combiner les cinq tableaux résumés.
+3. Choisis la fonction **Somme**.
+4. Coche **Colonne de gauche** pour faire la consolidation par étiquette — c'est essentiel ici, car les producteurs n'offrent pas tous les mêmes catégories.
+</Steps>
+
+### Vérifie ton résultat
+
+**Le tableau consolidé doit comporter exactement 10 catégories** (toutes les catégories distinctes du marché, après correction des anomalies de la Partie 2). Si tu en obtiens 11 ou 12, c'est que les corrections n'ont pas été faites correctement — les variantes `Cosmétique` / `Cosmétiques` ou `Cire et bougies ` / `Cire et bougies` apparaissent comme des lignes distinctes.
+
+Voici le total des produits par catégorie sur l'ensemble du marché échantillonné :
+
+| Catégorie | Nb références | Présent chez |
+|---|:-:|:-:|
+| Miel liquide | 32 | 5 / 5 |
+| Confiseries | 21 | 5 / 5 |
+| Cosmétiques | 21 | 5 / 5 |
+| Miel crémeux | 14 | 5 / 5 |
+| Cire et bougies | 13 | 5 / 5 |
+| Produits de la ruche | 12 | 5 / 5 |
+| Accessoires | 11 | 5 / 5 |
+| Hydromel et boissons | 11 | 4 / 5 |
+| Coffrets cadeaux | 10 | 5 / 5 |
+| Miel en rayon | 5 | 5 / 5 |
+
+**Total réseau : 150 références** (5 producteurs × 30 produits).
+
+La catégorie **Hydromel et boissons** est la moins répandue — un seul producteur (Apiculture Beauce-Nature) ne l'offre pas. Les **miels liquides** dominent l'offre, ce qui n'a rien d'étonnant : c'est le produit cœur de ce marché.
+
+---
+
+## Partie 6 — Questions d'analyse
+
+Réponds aux questions suivantes sur la feuille **Bilan marché**.
+
+**6A.** Si Marchés Bio Québec veut référencer **un seul producteur** pour ses produits standards (miels liquides, miels crémeux, accessoires de base), lequel recommanderais-tu et pourquoi ? Appuie ta réponse sur le tableau de comparaison de la Partie 4.
+
+*Vérifie ton résultat* — Apiculture Beauce-Nature offre les prix les plus bas sur la majorité des produits communs (miel de trèfle, miel de fleurs sauvages, miel crémeux nature, bonbons au miel). C'est le producteur le mieux positionné sur le segment standard. À noter cependant : la Beauce n'offre **pas d'hydromel**, donc s'il faut couvrir cette catégorie, un second producteur sera nécessaire.
+
+**6B.** L'erreur de saisie sur le code RDC-016 (650,00 $ au lieu de 65,00 $) aurait quel impact si elle n'était pas corrigée avant l'analyse de la Partie 4 ?
+
+*Vérifie ton résultat* — Le RDC-016 (Hydromel cuvée spéciale) ne fait pas partie des 11 produits communs, donc la comparaison de prix ne serait pas affectée. **Mais** si on avait calculé le prix moyen d'une bouteille d'hydromel chez Cantons (8 hydromels offerts), la moyenne aurait été tirée vers le haut artificiellement (la moyenne sans erreur est environ 28 $, avec l'erreur elle saute à 102 $). Cela illustre pourquoi la **validation doit toujours précéder l'analyse**.
+
+**6C.** Les anomalies de catégories (`Cire et bougies ` avec espace, `Cosmétique` au singulier) auraient eu un impact concret sur quelle étape de l'analyse ? Explique.
+
+*Vérifie ton résultat* — Sur la **consolidation de la Partie 5**. Excel aurait produit un tableau avec 12 lignes au lieu de 10, séparant `Cire et bougies` de `Cire et bougies ` et `Cosmétiques` de `Cosmétique`. Le bilan du marché aurait été faussé : la catégorie *Cosmétiques* aurait affiché 20 produits au lieu de 21, et une ligne *Cosmétique* fantôme avec 1 seul produit serait apparue. Cette situation est un classique du nettoyage de données — c'est exactement le genre de tâche que **Power Query peut automatiser** : on peut y ajouter une étape *Supprimer les espaces* sur la colonne et standardiser les valeurs avant le chargement.
+
+**6D.** Marchés Bio Québec souhaite recevoir les catalogues mis à jour chaque trimestre des cinq producteurs. Comment ton classeur peut-il être conçu pour minimiser le travail répétitif à chaque mise à jour ?
+
+*Vérifie ton résultat* — En passant **toutes les importations par Power Query**, les transformations (suppression des bannières, conversion de types, nettoyage des espaces) sont enregistrées une fois pour toutes. Lorsque les nouveaux fichiers arrivent (au même emplacement et avec le même nom), il suffit de cliquer sur **Données > Actualiser tout** : Power Query rejouera toutes les étapes automatiquement. Le tableau de comparaison de prix et le bilan consolidé se mettront à jour en cascade. Le travail trimestriel passe de plusieurs heures à quelques minutes.

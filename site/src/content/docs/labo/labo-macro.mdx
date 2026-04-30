@@ -1,0 +1,200 @@
+---
+title: "Labo 3 : Macros et validation de données"
+description: "Préparer un fichier de suivi Uber/Uber Eats pour les impôts à l'aide de macros enregistrées, de règles de validation et de mise en forme conditionnelle dynamique."
+sidebar:
+  order: 20
+  badge:
+    text: Labo
+    variant: danger
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+Tu veux aider un travailleur autonome qui fait de la livraison et du transport de passagers via **Uber** et **Uber Eats** à 
+préparer ses données financières pour produire sa déclaration de revenus.
+
+Le fichier Excel contient un mélange de courses (revenus) et de dépenses déductibles accumulées au fil de l'année.
+Toutefois, comme c'est un suivi manuel, les données sont pleines d'incohérences : catégories mal orthographiées, montants saisis en texte, espaces superflus, etc.
+
+Tu vas nettoyer ces données, les protéger contre les futures erreurs de saisie, créer un outil de filtrage visuel dynamique, 
+et produire un graphique permettant de visualiser l'évolution des revenus et dépenses.
+
+<Aside type="note" title="Fichier de départ">
+  Ouvre le fichier **labo_uber_impots.xlsx** disponible sur Léa. Il contient trois feuilles visibles :
+  - **Données** — 120 lignes de transactions (revenus et dépenses) pour l'année 2025
+  - **Test** — 25 lignes d'un autre chauffeur pour tester tes macros
+  - **Contrôle** — cellules de saisie pour le filtrage dynamique (Tache 3)
+</Aside>
+
+### Structure des données
+
+Chaque ligne contient les colonnes suivantes :
+
+| Colonne | Contenu |
+|---------|---------|
+| **A — Date** | Date de la transaction |
+| **B — Service** | `Uber` ou `Uber Eats` |
+| **C — Type** | `Revenu` ou `Dépense` |
+| **D — Catégorie** | Nature de la transaction (voir liste ci-dessous) |
+| **E — Description** | Texte libre décrivant la transaction |
+| **F — Montant** | Montant en dollars |
+| **G — Kilométrage** | Km parcourus (courses seulement) |
+
+### Catégories
+
+Il y a **10 catégories valides** au total: **3 pour les revenus** et **7 pour les dépenses**.
+Tu vas les utiliser pour valider les données (après l'étape de normalisation)
+
+#### Revenus
+
+- **Course** : transport de passagers (Uber)
+- **Livraison** : livraison de nourriture (Uber Eats)
+- **Pourboire** : pourboires reçus (les deux services)
+
+#### Dépenses
+
+- **Essence** : carburant
+- **Entretien** : mécanique, pneus, inspection
+- **Assurance auto** : prime d'assurance mensuelle
+- **Cellulaire** : forfait téléphonique
+- **Frais de plateforme** : commissions Uber
+- **Lavage** : nettoyage du véhicule
+- **Stationnement** : frais de stationnement
+
+---
+
+
+## Tache 1 : Macros de nettoyage
+ 
+Le fichier contient des données brutes avec des montants saisis en texte et un formatage incohérent. 
+Tu vas **enregistrer deux macros pour automatiser le nettoyage**.
+ 
+<Aside type="caution" title="Avant de commencer">
+  Sauvegarde ton fichier en format **.xlsm** (Classeur Excel prenant en charge les macros) avant d'enregistrer ta première macro. Sinon, tes macros seront perdues à la sauvegarde.
+</Aside>
+
+### Macro 1 — `Nettoyer_Montants`
+ 
+Certains montants (colonne F) ont été saisis en texte au lieu de nombres. Tu trouveras des valeurs comme `45,50 $`, `$12.00` ou `26.25` (avec un point décimal anglais).
+Cette macro consiste à nettoyer les données entrer dans la colonne de Montant (colonne F)
+
+#### Étapes de la macro
+ 
+<Steps>
+1. **Retire les symboles** : `$` → *(vide)*
+2. **Convertis les points décimaux** anglais en virgules: `.` → `,` 
+3. **Convertis la colonne en format *Monétaire***
+</Steps>
+
+### Macro 2 — `Normaliser_Donnees`
+ 
+Cette macro applique une mise en forme et une organisation standardisées.
+
+#### Étapes de la macro
+
+<Steps>
+1. **Formate les colonnes** 
+2. **Trie** les données par date croissante (colonne A).
+3. **Applique un filtre automatique** sur la ligne d'en-tête (onglet Données → Filtrer).
+</Steps>
+
+#### Format des colonnes
+
+- Colonne A : format Date
+- Colonne F : format Monétaire, 2 décimales
+- Colonne G : format Nombre, 0 décimale
+
+
+<Aside type='tip' title='Teste tes macros'>
+Passe à la feuille **Test** et exécute tes deux macros.  
+Vérifie que les montants sont bien convertis en nombres et que les données sont triées et formatées correctement.
+</Aside>
+ 
+---
+ 
+## Tache 2 : Validation de données
+ 
+Tu vas ajouter des règles de validation pour empêcher les futures erreurs de saisie, 
+puis utiliser ces règles pour **détecter** (entourer les données non valides) les 
+données existantes qui ne sont pas conformes. 
+ 
+### Règles de validation
+
+- Les dates doivent être comprises entre le 1er janvier 2025 et le 31 décembre 2025
+- Les seules services admis sont : `Uber` et `Uber Eats`
+  - Message d'erreur : *« Seuls Uber et Uber Eats sont acceptés. »*
+- Le tableau ne supporte que deux types d'entrée : `Revenu` et `Dépense`
+   - Message d'erreur : *« Seuls Revenu et Dépense sont acceptés. »*
+- Les catégories sont controlées et limitées par la liste se trouvant dans la feuille **Contrôle**
+- Les montants doivent être supérieur à 0.
+   - Message d'erreur : *« Le montant doit être un nombre positif. »*
+- Le Kilométrage doit être compris entre 0 et 500.
+
+---
+ 
+ 
+## Tache 3 : Surbrillance dynamique
+ 
+Tu vas créer un outil de filtrage visuel qui met en surbrillance les lignes de la feuille **Données** selon des critères choisis par l'utilisateur sur la feuille **Contrôle**.
+ 
+### Cellules de contrôle
+ 
+La feuille **Contrôle** contient déjà deux cellules de saisie :
+ 
+| Cellule | Rôle | Exemple |
+|---------|------|---------|
+| **B3** | Service à filtrer | `Uber Eats` |
+| **B5** | Catégorie à examiner | `Essence` |
+ 
+L'utilisateur peut laisser une cellule **vide** pour ignorer ce critère.
+ 
+### Règles de mise en forme conditionnelle
+ 
+Tu dois créer **une règle de MFC** sur toute la plage de données (A2:G121) en utilisant une formule personnalisée.
+
+#### Règle : Surbrillance bleue 
+
+L'application de cette règle colore toute la ligne en bleu pâle **si la ligne correspond au service ET à la catégorie sélectionnés**. 
+Si une cellule de contrôle est vide, ce critère est ignoré.
+
+La formule devrait prendre la forme suivante:
+```
+=ET(OU(...); OU(...))
+```
+   
+<Aside type="tip" title='Comment vérifier si une cellule contient une valeur?'>
+  Pour vérifier si une cellule contient une valeur, tu peux la comparer à une chaîne vide : `F2<>""` retourne VRAI si une date est saisie.
+</Aside>
+---
+ 
+## Tache 4 : Graphique par macro
+ 
+Finalement, tu vas préparer deux colonnes auxiliaires pour séparer les revenus et les dépenses, 
+puis enregistrer une macro qui génère un graphique directement sur la feuille **Données**.
+
+### Préparatifs 
+
+Utilise la colonne H pour les revenus et la colonne I pour les dépenses.
+- En **H1**, inscris l'en-tête `Revenus` et en **I1**, inscris `Dépenses`.
+- **Conseil:** Utilise la formule `SI` pour distinguer *Revenus* et *Dépense*
+
+### Macro de graphique
+
+La macro vise uniquement la génération du graphique (en assumant les préparatifs).
+
+
+
+#### Étapes de la macro
+
+<Steps>
+1. **Sélectionne** les colonnes A (dates), H (revenus) et I (dépenses) — incluant les en-têtes et toutes les lignes de données.
+2. **Insère** le graphique de ton choix
+3. Optionnellement, donne lui un titre et personnalise le style
+</Steps>
+
+<Aside type="tip" title="Choix du type de graphique">
+  Un graphique en courbes fonctionne bien pour des données chronologiques. Les barres groupées sont aussi une option, mais avec 120 lignes, les barres seront très étroites.
+</Aside>
+---
