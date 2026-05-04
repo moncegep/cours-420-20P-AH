@@ -5,13 +5,19 @@ description: Importer des données externes, structurer avec des sous-totaux et 
 
 import { Aside, Steps, Tabs, TabItem, Badge } from '@astrojs/starlight/components';
 
-Dans un contexte d'entreprise, les données ne se trouvent pas toujours dans le bon classeur, ni dans le bon format. Cette section présente les outils Excel qui te permettent d'**importer**, de **structurer** et de **regrouper** des données provenant de sources variées, ainsi que de **consolider** l'information dispersée sur plusieurs feuilles.
+Dans un contexte d'entreprise, les données ne se trouvent pas toujours dans le 
+bon classeur, ni dans le bon format. Cette section présente les outils Excel qui 
+te permettent d'**importer**, de **structurer** et de **regrouper** des données 
+provenant de sources variées, ainsi que de **consolider** l'information dispersée
+sur plusieurs feuilles.
 
 ---
 
 ## Importation de données externes
 
-Excel peut se connecter à différentes sources de données sans que tu aies à copier-coller quoi que ce soit. Cette connexion est souvent dynamique : si la source change, tu peux actualiser les données en un clic.
+Excel peut se connecter à différentes sources de données sans que tu aies à 
+copier-coller quoi que ce soit. Cette connexion est souvent dynamique : 
+si la source change, tu peux actualiser les données en un clic.
 
 <Aside type="tip">
 Toutes les importations passent par l'onglet **Données** > groupe **Obtenir et transformer des données** (ou **Récupérer des données** selon ta version d'Excel).
@@ -20,7 +26,9 @@ Toutes les importations passent par l'onglet **Données** > groupe **Obtenir et 
 <Tabs>
 <TabItem label="Fichier CSV ou texte">
 
-Un fichier CSV (*Comma-Separated Values*) ou texte (`.txt`) contient des données brutes séparées par un délimiteur : virgule, point-virgule, tabulation, etc. C'est le format d'exportation universel des logiciels de gestion (ERP, CRM, logiciels comptables).
+Un fichier CSV (*Comma-Separated Values*) ou texte (`.txt`) contient des données 
+brutes séparées par un délimiteur : virgule, point-virgule, tabulation, etc. C'est 
+le format d'exportation universel des logiciels de gestion (ERP, CRM, logiciels comptables).
 
 <Steps>
 1. Va dans **Données** > **Obtenir des données** > **À partir d'un fichier** > **À partir d'un fichier texte/CSV**.
@@ -52,12 +60,15 @@ Il est possible de récupérer les données d'un autre classeur Excel (`.xlsx`) 
 Pour importer plusieurs feuilles à la fois, coche **Sélectionner plusieurs éléments** en haut du Navigateur.
 </Aside>
 
-Comme pour le CSV, les données importées restent liées au fichier source. Un clic sur **Actualiser tout** suffit pour refléter les modifications faites dans le classeur source.
+Comme pour le CSV, les données importées restent liées au fichier source. Un clic 
+sur **Actualiser tout** suffit pour refléter les modifications faites dans le classeur source.
 
 </TabItem>
 <TabItem label="Données web">
 
-Excel peut extraire des tableaux directement depuis une page web. C'est utile pour récupérer des données publiques : taux de change, statistiques de l'ISQ, données ouvertes du gouvernement du Québec, etc.
+Excel peut extraire des tableaux directement depuis une page web. C'est utile 
+pour récupérer des données publiques : taux de change, statistiques de l'ISQ, 
+données ouvertes du gouvernement du Québec, etc.
 
 <Steps>
 1. Va dans **Données** > **Obtenir des données** > **À partir d'autres sources** > **À partir du web**.
@@ -67,10 +78,13 @@ Excel peut extraire des tableaux directement depuis une page web. C'est utile po
 </Steps>
 
 <Aside type="caution">
-L'importation web fonctionne bien avec les pages qui contiennent des tableaux HTML bien structurés (ex. : Wikipédia, sites gouvernementaux). Les sites à contenu dynamique chargé par JavaScript peuvent poser problème.
+L'importation web fonctionne bien avec les pages qui contiennent des tableaux HTML 
+bien structurés (ex. : Wikipédia, sites gouvernementaux). Les sites à contenu dynamique 
+chargé par JavaScript peuvent poser problème.
 </Aside>
 
-Les données web peuvent être configurées pour se mettre à jour automatiquement. Clique droit sur le tableau importé > **Propriétés de la connexion** pour ajuster la fréquence d'actualisation.
+Les données web peuvent être configurées pour se mettre à jour automatiquement. 
+Clique droit sur le tableau importé > **Propriétés de la connexion** pour ajuster la fréquence d'actualisation.
 
 </TabItem>
 </Tabs>
@@ -111,7 +125,9 @@ Pour supprimer tous les sous-totaux : **Données** > **Plan** > **Sous-total** >
 
 ### Grouper et dégrouper manuellement
 
-Le **regroupement manuel** permet de réduire ou de développer des sections de lignes ou de colonnes que tu définis toi-même — pratique pour masquer temporairement des données détaillées sans les supprimer.
+Le **regroupement manuel** permet de réduire ou de développer des sections de 
+lignes ou de colonnes que tu définis toi-même — pratique pour masquer temporairement 
+des données détaillées sans les supprimer.
 
 **Regrouper des lignes :**
 
@@ -124,14 +140,18 @@ Le **regroupement manuel** permet de réduire ou de développer des sections de 
 Pour dégrouper : sélectionne les lignes regroupées > **Données** > **Plan** > **Dégrouper**.
 
 <Aside type="tip">
-Le groupement fonctionne aussi sur des **colonnes**. C'est utile pour masquer des colonnes de calculs intermédiaires dans un rapport final, tout en les conservant pour d'éventuels ajustements.
+Le groupement fonctionne aussi sur des **colonnes**. C'est utile pour masquer des 
+colonnes de calculs intermédiaires dans un rapport final, tout en les conservant 
+pour d'éventuels ajustements.
 </Aside>
 
 ---
 
 ## Consolidation de données
 
-La **consolidation** permet de combiner des données numériques provenant de **plusieurs feuilles** en un seul tableau récapitulatif. C'est l'outil idéal pour agréger des rapports mensuels, des budgets par département ou des résultats par succursale qui partagent la même structure.
+La **consolidation** permet de combiner des données numériques provenant de **plusieurs feuilles** 
+en un seul tableau récapitulatif. C'est l'outil idéal pour agréger des rapports mensuels, des budgets 
+par département ou des résultats par succursale qui partagent la même structure.
 
 ### Conditions préalables
 
@@ -164,20 +184,24 @@ Si les lignes ou les colonnes ne sont pas dans le même ordre sur toutes les feu
 </Steps>
 
 <Aside type="tip">
-Coche **Lier aux données source** pour que le tableau consolidé se mette à jour automatiquement si les feuilles sources changent. Des lignes masquées seront insérées pour maintenir le lien — tu peux les afficher en dépliant les groupes dans le plan à gauche de la feuille.
+Coche **Lier aux données source** pour que le tableau consolidé se mette à jour 
+automatiquement si les feuilles sources changent. Des lignes masquées seront insérées 
+pour maintenir le lien — tu peux les afficher en dépliant les groupes dans le plan à gauche de la feuille.
 </Aside>
 
 ---
 
-## Ouverture sur Power Query et SQL
+## Pour aller plus loin: Power Query et SQL
 
-<Badge text="Pour aller plus loin" variant="note" />
-
-Les outils vus jusqu'ici sont amplement suffisants pour la plupart des tâches courantes. Mais dans les entreprises, les données proviennent souvent de systèmes beaucoup plus volumineux ou complexes. Deux technologies dominent ce domaine : **Power Query** et **SQL**.
+Les outils vus jusqu'ici sont amplement suffisants pour la plupart des tâches courantes. 
+Mais dans les entreprises, les données proviennent souvent de systèmes beaucoup plus 
+volumineux ou complexes. Deux technologies dominent ce domaine : **Power Query** et **SQL**.
 
 ### Power Query
 
-Power Query est l'outil de transformation de données intégré à Excel (et à Power BI). Chaque fois que tu as cliqué sur **Transformer les données** lors d'une importation, tu entrais dans Power Query sans nécessairement le savoir.
+Power Query est l'outil de transformation de données intégré à Excel (et à Power BI). 
+Chaque fois que tu as cliqué sur **Transformer les données** lors d'une importation, 
+tu entrais dans Power Query sans nécessairement le savoir.
 
 Ce qu'il permet de faire :
 
@@ -190,9 +214,12 @@ Ce qu'il permet de faire :
 
 ### SQL
 
-**SQL** (*Structured Query Language*) est le langage universel pour interroger des **bases de données relationnelles** — les systèmes utilisés par la plupart des ERP, logiciels RH et plateformes de commerce en ligne.
+**SQL** (*Structured Query Language*) est le langage universel pour interroger des 
+**bases de données relationnelles** — les systèmes utilisés par la plupart des ERP, 
+logiciels RH et plateformes de commerce en ligne.
 
-Plutôt que d'exporter des données dans Excel pour les analyser, SQL permet d'**interroger directement la base de données** et de n'extraire que ce dont on a besoin.
+Plutôt que d'exporter des données dans Excel pour les analyser, SQL permet 
+d'**interroger directement la base de données** et de n'extraire que ce dont on a besoin.
 
 Exemple de requête SQL typique :
 
@@ -204,19 +231,14 @@ GROUP BY departement
 ORDER BY masse_salariale DESC;
 ```
 
-Cette requête retourne la masse salariale active par département, triée en ordre décroissant — l'équivalent d'un tableau croisé dynamique, mais exécuté directement sur la base de données.
+Cette requête retourne la masse salariale active par département, triée en ordre décroissant — 
+l'équivalent d'un tableau croisé dynamique, mais exécuté directement sur la base de données.
 
 <Aside type="note">
-Excel peut se connecter à des bases de données SQL via **Données** > **Obtenir des données** > **À partir d'une base de données**. C'est une porte d'entrée vers l'analyse de données à plus grande échelle, sans quitter l'environnement Excel.
+Excel peut se connecter à des bases de données SQL via **Données** > **Obtenir des données** > **À partir d'une base de données**. 
+C'est une porte d'entrée vers l'analyse de données à plus grande échelle, sans quitter l'environnement Excel.
 </Aside>
 
-### Pourquoi s'y intéresser en gestion ?
-
-| Contexte | Excel suffit | Power Query / SQL utile |
-|----------|:-----------:|:----------------------:|
-| Quelques centaines de lignes | ✅ | — |
-| Milliers de lignes, sources multiples | Difficile | ✅ |
-| Données en temps réel depuis un ERP | ❌ | ✅ |
-| Rapport reproductible chaque mois | Fastidieux | ✅ |
-
-En tant que futur·e gestionnaire, tu n'auras peut-être pas à écrire du SQL toi-même — mais comprendre ce que ces outils font te permettra de collaborer efficacement avec les équipes TI et d'analyser des données à une échelle qu'Excel seul ne peut pas atteindre.
+En tant que futur·e gestionnaire, tu n'auras peut-être pas à écrire du SQL toi-même, 
+mais comprendre ce que ces outils font te permettra de collaborer efficacement avec 
+les équipes TI et d'analyser des données à une échelle qu'Excel seul ne peut pas atteindre.

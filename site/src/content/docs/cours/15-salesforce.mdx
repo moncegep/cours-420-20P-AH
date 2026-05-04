@@ -1,0 +1,276 @@
+---
+title: Introduction aux CRM et à Salesforce
+description: Comprendre le rôle d'un CRM en entreprise, découvrir Salesforce et exporter des données vers Excel.
+---
+
+import { Image } from 'astro:assets';
+import crmImage from '../../../assets/crm_cycle.png';
+import { Aside, Steps, Badge, Tabs, TabItem } from '@astrojs/starlight/components';
+
+## Qu'est-ce qu'un CRM?
+
+![Les composantes d'un CRM](https://wp.sfdcdigital.com/en-ca/wp-content/uploads/sites/8/2025/03/CRM_header_Mar25.jpg)
+
+Un **CRM** (*Customer Relationship Management* — gestion de la relation client) est un logiciel qui centralise toutes les interactions entre une entreprise et ses clients, actuels ou potentiels.
+
+Concrètement, un CRM permet de :
+
+- **Suivre les communications** : courriels, appels, rencontres, notes — tout est consigné au même endroit.
+- **Gérer le pipeline de ventes** : chaque occasion d'affaires (*opportunité*) progresse à travers des étapes définies, de la prospection à la conclusion.
+- **Segmenter la clientèle** : regrouper les clients par industrie, région, volume d'achat ou tout autre critère pertinent.
+- **Produire des rapports** : tableaux de bord, prévisions de revenus, taux de conversion, performance des représentants.
+
+<Aside type="tip" title="Pourquoi ça te concerne?">
+Même si tu ne travailles pas directement en vente, la majorité des postes en administration, en comptabilité ou en marketing interagissent avec un CRM au quotidien. Savoir naviguer dans ces outils et en extraire des données est une compétence recherchée.
+</Aside>
+
+### Le CRM dans le cycle de gestion
+
+Pense au parcours d'un client avec une entreprise québécoise typique :
+
+<Image height={600} src={crmImage} alt="Les composantes d'un CRM" />
+
+1. **Prospection** — Un *lead* (piste) est identifié : une entreprise qui a visité le site web, rempli un formulaire ou été référée.
+2. **Qualification** — On évalue si cette piste a un réel potentiel : budget suffisant? Besoin réel? Pouvoir décisionnel?
+3. **Proposition** — Une offre de service ou une soumission est préparée.
+4. **Négociation** — Échanges sur les prix, les conditions, les délais.
+5. **Conclusion** — La vente est conclue (ou perdue — le CRM enregistre les deux).
+6. **Service après-vente** — Suivi, renouvellements, ventes additionnelles.
+
+Le CRM accompagne **chacune** de ces étapes. Sans CRM, ces informations se retrouvent dispersées dans des courriels, des fichiers Excel individuels, des Post-it et la mémoire des employés — un cauchemar organisationnel.
+
+---
+
+## CRM, ERP et outils spécialisés : les distinguer
+
+En entreprise, tu croiseras plusieurs types de logiciels de gestion. Il est important de comprendre leurs rôles respectifs et comment ils se complètent.
+
+### Le CRM: Orienté vers le client
+
+Le CRM gère la **relation externe** : clients, prospects, partenaires commerciaux. Son objectif est d'augmenter les ventes et d'améliorer la satisfaction client.
+
+**Exemples** : Salesforce, HubSpot, Zoho CRM, Microsoft Dynamics 365 (module CRM).
+
+### L'ERP: Orienté vers les opérations internes
+
+Un **ERP** (*Enterprise Resource Planning* — progiciel de gestion intégré) gère les **processus internes** de l'entreprise : comptabilité, inventaire, achats, production, ressources humaines, paie.
+
+**Exemples** : SAP, Oracle NetSuite, Microsoft Dynamics 365 (module ERP), Sage.
+
+<Aside type="note" title="CRM ≠ ERP">
+La confusion est fréquente parce que certains éditeurs (comme Microsoft avec Dynamics 365) offrent les deux sous un même toit. Retiens la distinction fondamentale : le CRM regarde **vers l'extérieur** (le client), l'ERP regarde **vers l'intérieur** (les opérations).
+</Aside>
+
+### Autres outils spécialisés
+
+| Catégorie | Fonction principale | Exemples |
+|---|---|---|
+| Automatisation marketing | Campagnes courriel, pages d'atterrissage, scoring de leads | Mailchimp, ActiveCampaign |
+| Gestion de projets | Planification, suivi des tâches, collaboration | Asana, Monday.com, MS Project |
+| Service à la clientèle | Billets de support, base de connaissances, clavardage | Zendesk, Freshdesk |
+| Comptabilité | Facturation, grand livre, états financiers | QuickBooks, Sage 50, Acomba |
+| BI (*Business Intelligence*) | Tableaux de bord analytiques, exploration de données | Power BI, Tableau |
+
+### Comment ces outils s'interconnectent
+
+Dans une entreprise bien outillée, les données circulent entre les systèmes. Par exemple :
+
+- Un **lead** capté par l'outil de **marketing** est transféré au **CRM** pour le suivi commercial.
+- Quand la vente est conclue dans le **CRM**, une commande est créée dans l'**ERP** pour la facturation et la livraison.
+- Les données de l'ERP et du CRM alimentent l'outil de **BI** pour produire des tableaux de bord décisionnels.
+
+C'est dans cette logique d'interconnexion qu'Excel joue un rôle crucial : il sert souvent de **passerelle** pour exporter, transformer et analyser les données provenant de ces différents systèmes.
+
+---
+
+## Vue d'ensemble de Salesforce
+
+Salesforce est le CRM le plus utilisé au monde. Il fonctionne entièrement sur le web (rien à installer).
+
+### Pourquoi Salesforce?
+
+1. **Part de marché** : Salesforce domine le marché mondial du CRM. Connaître cet outil est un atout concret sur un CV.
+2. **Infonuagique** (*cloud*) : Tout est hébergé en ligne. Tu y accèdes depuis n'importe quel poste avec un navigateur.
+3. **Personnalisation** : L'interface, les champs, les processus — presque tout est configurable sans programmation.
+4. **Écosystème** : Des milliers d'applications complémentaires sont disponibles sur l'AppExchange (la « boutique » de Salesforce).
+
+### Éditions et environnement de pratique
+
+Salesforce offre plusieurs éditions payantes (Essentials, Professional, Enterprise, Unlimited). Pour ce cours, on utilise un environnement gratuit appelé **Trailhead Playground** — un environnement de démonstration complet fourni par Salesforce pour l'apprentissage.
+
+<Aside type="caution" title="Compte Trailhead">
+Tu dois créer un compte gratuit sur [trailhead.salesforce.com](https://trailhead.salesforce.com) pour obtenir ton Playground. Suis les instructions fournies séparément pour la création du compte.
+</Aside>
+
+---
+
+## Navigation dans l'interface Salesforce
+
+L'interface de Salesforce s'appelle **Lightning Experience**. Voici les éléments principaux à repérer.
+
+### La barre de navigation supérieure
+
+C'est ta barre de menu principale. Elle contient des **onglets** qui donnent accès aux différents objets : Comptes, Contacts, Opportunités, Leads, Rapports, etc.
+
+- Tu peux **personnaliser** les onglets affichés en cliquant sur le crayon (✏️) à droite de la barre.
+- Le **lanceur d'applications** (icône en grille, en haut à gauche) te permet d'accéder à toutes les applications disponibles.
+
+### La barre de recherche globale
+
+Située en haut au centre, elle permet de chercher **n'importe quel enregistrement** dans Salesforce — un contact, un compte, une opportunité — par nom, courriel, numéro de téléphone, etc.
+
+### Les vues de liste
+
+Quand tu cliques sur un onglet (par exemple *Contacts*), tu arrives sur une **vue de liste** qui affiche les enregistrements sous forme de tableau. Tu peux :
+
+- Changer de vue (« Tous les contacts », « Mes contacts », « Contacts récents »).
+- Créer tes propres vues filtrées.
+- Trier par colonne en cliquant sur l'en-tête.
+
+### La page de détail d'un enregistrement
+
+En cliquant sur un enregistrement, tu accèdes à sa **page de détail**, qui contient :
+
+- Les **champs** de l'enregistrement (nom, téléphone, adresse, etc.) dans la section supérieure.
+- L'**historique des activités** (appels, courriels, tâches) dans le fil chronologique.
+- Les **enregistrements associés** : par exemple, sur la page d'un Compte, tu verras ses Contacts et ses Opportunités.
+
+<Aside type="tip" title="Raccourci utile">
+Tu peux modifier un champ directement depuis la page de détail en cliquant sur l'icône de crayon à côté de la valeur — pas besoin d'ouvrir un formulaire complet.
+</Aside>
+
+---
+
+## Les objets standard de Salesforce
+
+Dans Salesforce, les données sont organisées en **objets**. Chaque objet est comparable à une table dans une base de données — ou, pour faire le pont avec ce que tu connais, à une **feuille dans un classeur Excel** où chaque ligne est un enregistrement et chaque colonne est un champ.
+
+Les quatre objets standard les plus importants sont les suivants.
+
+### Leads (Pistes)
+
+Un lead est un **contact non qualifié** — quelqu'un qui a manifesté un intérêt mais qui n'est pas encore un client potentiel confirmé.
+
+| Champ | Description | Exemple |
+|---|---|---|
+| Nom | Prénom et nom de la personne | Marie-Ève Tremblay |
+| Société | Entreprise du lead | Constructions Beauce Inc. |
+| Statut | Où en est le lead dans le processus | Nouveau, Contacté, Qualifié |
+| Source | Comment le lead a été obtenu | Site web, Salon commercial, Référence |
+
+Quand un lead est qualifié, on le **convertit**. Cette conversion crée automatiquement un Compte, un Contact et (optionnellement) une Opportunité.
+
+### Comptes (Accounts)
+
+Un compte représente une **organisation** — un client, un fournisseur, un partenaire ou toute autre entreprise avec laquelle on fait affaire.
+
+| Champ | Description | Exemple |
+|---|---|---|
+| Nom du compte | Raison sociale | Épicerie Chez Marco |
+| Industrie | Secteur d'activité | Commerce de détail |
+| Téléphone | Numéro principal | 418-555-0123 |
+| Adresse de facturation | Adresse officielle | 245, rue Saint-Jean, Québec |
+
+### Contacts
+
+Un contact est une **personne** associée à un compte. Un compte peut avoir plusieurs contacts (le directeur des achats, la comptable, le président…).
+
+| Champ | Description | Exemple |
+|---|---|---|
+| Nom | Prénom et nom | Jean-Philippe Gagnon |
+| Compte | Entreprise associée | Épicerie Chez Marco |
+| Titre | Poste occupé | Directeur des achats |
+| Courriel | Adresse courriel | jp.gagnon@chezmarco.ca |
+
+<Aside type="note" title="Relation Compte-Contact">
+C'est une relation **un-à-plusieurs** : un compte a plusieurs contacts, mais un contact appartient à un seul compte. Si tu connais les bases de données relationnelles, c'est exactement le même principe.
+</Aside>
+
+### Opportunités
+
+Une opportunité représente une **vente potentielle** — un deal en cours de négociation.
+
+| Champ | Description | Exemple |
+|---|---|---|
+| Nom | Description de l'opportunité | Contrat entretien 2026 |
+| Compte | Client visé | Constructions Beauce Inc. |
+| Montant | Valeur estimée de la vente | 45 000 $ |
+| Date de clôture | Date prévue de conclusion | 2026-06-15 |
+| Étape | Phase dans le pipeline | Proposition, Négociation, Conclue gagnée |
+| Probabilité | Chance estimée de gagner | 60 % |
+
+### Résumé des relations entre objets
+
+```
+Lead (non qualifié)
+  │
+  ▼  [Conversion]
+  ├── Compte (l'entreprise)
+  │     ├── Contact (la personne)
+  │     └── Opportunité (la vente potentielle)
+```
+
+Un lead vit seul. Une fois converti, il « éclate » en trois objets reliés entre eux. Cette structure relationnelle est fondamentale pour comprendre comment Salesforce organise l'information.
+
+---
+
+## Exporter des données Salesforce vers Excel
+
+L'une des compétences les plus utiles au quotidien est de **sortir les données de Salesforce** pour les analyser dans Excel. Deux méthodes principales s'offrent à toi.
+
+### Méthode 1 : Exporter une vue de liste
+
+C'est la méthode la plus simple et la plus rapide.
+
+<Steps>
+1. Navigue vers l'onglet de l'objet voulu (ex. : *Contacts*).
+2. Sélectionne ou crée la **vue de liste** contenant les données désirées.
+3. Clique sur l'icône d'engrenage (⚙️) en haut à droite de la liste.
+4. Choisis **Exporter**.
+5. Sélectionne le format **.xlsx** (classeur Excel).
+6. Clique sur **Exporter**.
+</Steps>
+
+<Aside type="caution" title="Limite importante">
+L'export de vue de liste est limité aux **colonnes visibles** dans la vue. Si tu as besoin de champs supplémentaires, ajoute-les à la vue **avant** d'exporter, ou utilise un rapport.
+</Aside>
+
+### Méthode 2 : Créer un rapport et l'exporter
+
+Les rapports offrent beaucoup plus de flexibilité : filtres avancés, regroupements, champs de plusieurs objets, formules résumées.
+
+<Steps>
+1. Clique sur l'onglet **Rapports**.
+2. Clique sur **Nouveau rapport**.
+3. Choisis le **type de rapport** (ex. : *Comptes avec contacts*, *Opportunités*).
+4. Configure les **colonnes**, les **filtres** et les **regroupements** selon tes besoins.
+5. Clique sur **Exécuter** pour vérifier les résultats.
+6. Clique sur la flèche à côté de **Enregistrer** → **Exporter**.
+7. Choisis le format **Détails uniquement (.xlsx)** ou **Formaté (.xlsx)**.
+</Steps>
+
+<Tabs>
+<TabItem label="Détails uniquement">
+Exporte les données brutes, sans regroupement ni sous-totaux. C'est le format idéal si tu veux ensuite créer tes propres TCD, graphiques ou analyses dans Excel.
+</TabItem>
+<TabItem label="Formaté">
+Conserve les regroupements et sous-totaux du rapport Salesforce. Utile pour un envoi rapide à un gestionnaire, mais moins pratique pour du travail analytique dans Excel (les lignes de sous-totaux se mélangent aux données).
+</TabItem>
+</Tabs>
+
+<Aside type="tip" title="Quel format choisir?">
+Dans la majorité des cas, choisis **Détails uniquement**. Tu importes les données brutes dans Excel et tu construis tes propres analyses avec les outils que tu connais déjà : TCD, SOMME.SI, graphiques, etc. C'est exactement le pont entre Salesforce et Excel que ce cours vise à développer.
+</Aside>
+
+### Après l'exportation : bonnes pratiques Excel
+
+Une fois le fichier `.xlsx` ouvert dans Excel, quelques vérifications s'imposent avant de commencer ton analyse :
+
+- **Vérifier les types de données** : les dates sont-elles reconnues comme des dates? Les montants comme des nombres? Salesforce exporte parfois des valeurs en format texte.
+- **Supprimer les colonnes inutiles** : l'export inclut souvent des identifiants internes (ID Salesforce) dont tu n'as pas besoin.
+- **Renommer les en-têtes** : les noms de colonnes exportés correspondent aux noms techniques des champs dans Salesforce — ils ne sont pas toujours clairs.
+- **Mettre en forme comme un tableau structuré** : sélectionne tes données et utilise **Insertion** → **Tableau** (Ctrl+T) pour bénéficier des filtres automatiques et d'une référence structurée.
+
+<Aside type="note" title="Lien avec les modules précédents">
+Le nettoyage de données après importation reprend exactement les techniques vues dans le module sur l'importation et la consolidation : vérification des types, suppression des espaces parasites avec `SUPPRESPACE`, conversion avec `VALEUR`, etc.
+</Aside>
