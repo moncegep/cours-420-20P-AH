@@ -120,7 +120,8 @@ export default defineConfig({
 							label: 'Semaine 13',
 							items: [
 								{ label: 'Consolidation de données', slug: 'cours/14-consolidation' },
-								{ label: 'Introduction à Salesforce', slug: 'cours/15-salesforce' }
+								{ label: 'Introduction à Salesforce', slug: 'cours/15-salesforce' },
+								{ label: "Exercices Salesforce", slug: 'exercices/12-exercices-salesforce' },
 							]
 						}
 					],

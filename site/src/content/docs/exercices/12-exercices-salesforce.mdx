@@ -1,5 +1,5 @@
 ---
-title: "Exercice — Migration CRM : Distributions Boréale"
+title: "Exercice : Migration CRM"
 description: "Importer, nettoyer, consolider et analyser des données d'entreprise en préparation d'une migration vers Salesforce."
 ---
 
@@ -21,12 +21,7 @@ L'ancien système a exporté les données dans **quatre fichiers CSV** :
 | `leads_boreale.csv` | Pistes captées lors d'événements | Leads |
 | `opportunites_boreale.csv` | Ventes en cours de négociation | Opportunités |
 
-Ton mandat : **ouvrir ces fichiers dans Excel, nettoyer les données, les consolider, produire une analyse avec des TCD**, puis préparer les fichiers pour l'importation dans Salesforce.
-
-<Aside type="tip" title="Compétences visées">
-Cet exercice met en pratique l'importation de fichiers CSV, le nettoyage de données (SUPPRESPACE, formats, doublons), 
-la consolidation multi-feuilles, les tableaux croisés dynamiques et les graphiques croisés dynamiques.
-</Aside>
+Ton mandat : **ouvrir ces fichiers dans Excel, nettoyer les données, les consolider, puis préparer les fichiers pour l'importation dans Salesforce.
 
 ---
 
@@ -55,7 +50,7 @@ la consolidation multi-feuilles, les tableaux croisés dynamiques et les graphiq
 Si les accents s'affichent mal (Ã© au lieu de é), change l'**Origine du fichier** à **65001 : Unicode (UTF-8)** dans la fenêtre d'importation.
 </Aside>
 
-**Vérifie ton résultat** : tu devrais avoir un classeur avec 4 feuilles contenant respectivement 15, 20, 12 et 15 lignes de données (sans compter les en-têtes).
+{/* **Vérifie ton résultat** : tu devrais avoir un classeur avec 4 feuilles contenant respectivement 15, 20, 12 et 15 lignes de données (sans compter les en-têtes). */}
 
 ---
 
@@ -80,7 +75,7 @@ Les données exportées de l'ancien système contiennent plusieurs problèmes co
 4. **Vérifie les données manquantes** : deux comptes n'ont pas de site web. C'est acceptable — laisse les cellules vides.
 </Steps>
 
-**Vérifie ton résultat** : la feuille Comptes devrait maintenant contenir **14 lignes** de données (le doublon Transport Saguenay Express a été supprimé).
+{/* **Vérifie ton résultat** : la feuille Comptes devrait maintenant contenir **14 lignes** de données (le doublon Transport Saguenay Express a été supprimé). */}
 
 ### 2.2 Feuille Contacts
 
@@ -101,7 +96,7 @@ Les données exportées de l'ancien système contiennent plusieurs problèmes co
 4. **Repère le contact sans courriel** (Daniel Lapointe). Note-le, mais ne supprime pas la ligne — un contact sans courriel reste un contact valide.
 </Steps>
 
-**Vérifie ton résultat** : 20 contacts, tous avec des noms propres (sans espaces parasites) et des téléphones dans un format uniforme.
+{/* **Vérifie ton résultat** : 20 contacts, tous avec des noms propres (sans espaces parasites) et des téléphones dans un format uniforme. */}
 
 ### 2.3 Feuille Leads
 
@@ -117,7 +112,7 @@ Les données exportées de l'ancien système contiennent plusieurs problèmes co
 3. **Note le téléphone manquant** (Josée Lafleur) et la **possible coquille** dans le courriel d'André Tanguay (`microdufford` au lieu de `microdufjord`). Signale ces anomalies dans une note, mais ne les invente pas — tu n'as pas l'information correcte.
 </Steps>
 
-**Vérifie ton résultat** : 11 leads uniques avec des statuts uniformisés.
+{/* **Vérifie ton résultat** : 11 leads uniques avec des statuts uniformisés. */}
 
 ### 2.4 Feuille Opportunités
 
@@ -133,111 +128,11 @@ Les données exportées de l'ancien système contiennent plusieurs problèmes co
 3. **Convertis la colonne `Probabilité (%)` en format pourcentage** : divise les valeurs par 100 si nécessaire et applique le format Pourcentage.
 </Steps>
 
-**Vérifie ton résultat** : 15 opportunités, montant total = **797 000 $**. Si ta somme ne donne pas ce résultat, c'est qu'une valeur est encore en format texte.
+{/* **Vérifie ton résultat** : 15 opportunités, montant total = **797 000 $**. Si ta somme ne donne pas ce résultat, c'est qu'une valeur est encore en format texte. */}
 
 ---
 
-## Partie 3 : Consolidation
-
-Crée une nouvelle feuille nommée **Tableau de bord** qui consolide les informations clés des quatre feuilles.
-
-<Steps>
-1. **En-tête du tableau de bord** : en A1, inscris « Distributions Boréale — Tableau de bord migration CRM ». Fusionne les cellules A1:D1, applique un style de titre (gras, taille 14).
-
-2. **Section Inventaire des données** (à partir de la ligne 3) — Crée un petit tableau récapitulatif avec des formules qui comptent dynamiquement les données de chaque feuille :
-
-   | Objet Salesforce | Nombre d'enregistrements |
-   |---|---|
-   | Comptes | *(formule : NBVAL sur la colonne des noms, moins 1 pour l'en-tête)* |
-   | Contacts | *(idem)* |
-   | Leads | *(idem)* |
-   | Opportunités | *(idem)* |
-
-3. **Section Indicateurs financiers** (quelques lignes plus bas) — Calcule les métriques suivantes à partir de la feuille Opportunités, en utilisant des formules (pas de valeurs saisies à la main) :
-
-   | Indicateur | Formule suggérée |
-   |---|---|
-   | Montant total du pipeline | `SOMME()` sur la colonne Montant |
-   | Nombre d'opportunités gagnées | `NB.SI()` sur la colonne Étape = "Conclue gagnée" |
-   | Valeur des opportunités gagnées | `SOMME.SI()` |
-   | Valeur du pipeline actif (excluant les gagnées) | Total moins les gagnées |
-   | Montant moyen par opportunité | `MOYENNE()` |
-
-4. **Section Contacts par compte** — Utilise `NB.SI()` pour compter le nombre de contacts associés à chaque compte. Tu peux le faire dans un petit tableau ou dans une colonne ajoutée à la feuille Comptes.
-</Steps>
-
-**Vérifie tes résultats** :
-
-| Indicateur | Valeur attendue |
-|---|---|
-| Nombre de comptes | 14 |
-| Nombre de contacts | 20 |
-| Nombre de leads | 11 |
-| Nombre d'opportunités | 15 |
-| Montant total du pipeline | 797 000 $ |
-| Opportunités gagnées (nb) | 3 |
-| Valeur des opportunités gagnées | 140 000 $ |
-| Pipeline actif | 657 000 $ |
-| Montant moyen par opportunité | 53 133 $ |
-
----
-
-## Partie 4 : Analyse avec TCD
-
-### 4.1 TCD du pipeline par étape
-
-<Steps>
-1. Sélectionne les données de la feuille **Opportunités** (y compris les en-têtes).
-2. Insère un **tableau croisé dynamique** dans une nouvelle feuille. Nomme cette feuille **TCD-Pipeline**.
-3. Configure le TCD :
-   - **Lignes** : Étape
-   - **Valeurs** : Montant (Somme) **et** Montant (Nombre)
-4. Trie le TCD par montant décroissant.
-</Steps>
-
-**Vérifie ton résultat** :
-
-| Étape | Somme des montants | Nombre |
-|---|---|---|
-| Proposition | 312 000 $ | 4 |
-| Conclue gagnée | 140 000 $ | 3 |
-| Négociation | 135 000 $ | 3 |
-| Prospection | 125 000 $ | 3 |
-| Qualification | 85 000 $ | 2 |
-
-### 4.2 TCD des opportunités par compte
-
-<Steps>
-1. Crée un **deuxième TCD** dans la même feuille (ou une nouvelle).
-2. Configure :
-   - **Lignes** : Compte
-   - **Colonnes** : Étape
-   - **Valeurs** : Montant (Somme)
-3. Ce TCD te donne une vue croisée : combien chaque client représente à chaque étape du pipeline.
-</Steps>
-
-**Vérifie ton résultat** : Épicerie Chez Marco devrait afficher **175 000 $** au total (85 000 $ en Négociation + 90 000 $ Conclue gagnée). Hôtel & Spa des Laurentides devrait afficher **92 000 $** (52 000 $ en Proposition + 40 000 $ en Qualification).
-
-### 4.3 Graphiques croisés dynamiques
-
-<Steps>
-1. À partir du TCD de la section 4.1, insère un **graphique croisé dynamique** de type **histogramme groupé**. Ce graphique montre visuellement la valeur du pipeline à chaque étape.
-
-2. À partir du même TCD, crée un **graphique en secteurs** (camembert) montrant la répartition des montants par étape. Ajoute les étiquettes de données en pourcentage.
-
-3. Mets en forme les graphiques :
-   - Ajoute un titre descriptif (ex. : « Pipeline de ventes par étape — Distributions Boréale »).
-   - Applique un style de couleurs cohérent.
-   - Assure-toi que les montants en dollars sont lisibles (pas de décimales inutiles).
-</Steps>
-
-<Aside type="tip" title="Lecture du graphique en secteurs">
-La part « Proposition » devrait dominer le graphique (~39 % du pipeline total). C'est une information utile pour la direction : une grande partie du potentiel de revenus est encore au stade de la soumission.
-</Aside>
-
----
-
-## Partie 5 : Préparation pour Salesforce
+## Partie 3 : Préparation pour Salesforce
 
 Avant d'importer les données dans Salesforce avec le **Data Import Wizard**, les fichiers doivent respecter un format précis.
 
@@ -320,9 +215,8 @@ L'ordre d'importation est crucial à cause des relations entre objets :
 Si tu importes les contacts avant les comptes, Salesforce ne pourra pas créer les liens entre eux.
 </Aside>
 
----
 
-## Résumé des anomalies corrigées
+{/* ## Résumé des anomalies corrigées
 
 Pour référence, voici la liste complète des problèmes présents dans les fichiers originaux :
 
@@ -343,4 +237,4 @@ Pour référence, voici la liste complète des problèmes présents dans les fic
 | Leads | Possible coquille dans courriel (microdufford) | Signalée |
 | Opportunités | Espace initial dans montant ( 45000) | Suppression de l'espace |
 | Opportunités | Symbole $ dans montant (110000 $) | Suppression du symbole |
-| Opportunités | Format de date incohérent (15/06/2026) | Correction au format uniforme |
+| Opportunités | Format de date incohérent (15/06/2026) | Correction au format uniforme | */}
