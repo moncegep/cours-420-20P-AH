@@ -21,7 +21,11 @@ L'ancien système a exporté les données dans **quatre fichiers CSV** :
 | `leads_boreale.csv` | Pistes captées lors d'événements | Leads |
 | `opportunites_boreale.csv` | Ventes en cours de négociation | Opportunités |
 
-Ton mandat : **ouvrir ces fichiers dans Excel, nettoyer les données, les consolider, puis préparer les fichiers pour l'importation dans Salesforce.
+Ton mandat : **ouvrir ces fichiers dans Excel, nettoyer les données, les consolider, puis préparer les fichiers pour l'importation dans Salesforce**.
+
+<Aside type="note" title="Et les opportunités?">
+Le **Data Import Wizard** de Salesforce ne permet pas d'importer les opportunités. Seuls les Comptes, les Contacts et les Leads seront importés dans Salesforce. Le fichier d'opportunités sera nettoyé et analysé dans Excel seulement — les opportunités seront créées manuellement dans Salesforce lors de l'exercice suivant.
+</Aside>
 
 ---
 
@@ -136,9 +140,16 @@ Les données exportées de l'ancien système contiennent plusieurs problèmes co
 
 Avant d'importer les données dans Salesforce avec le **Data Import Wizard**, les fichiers doivent respecter un format précis.
 
+<Aside type="caution" title="Objets supportés par le Data Import Wizard">
+Le Data Import Wizard de Salesforce permet d'importer les **Comptes**, les **Contacts**, les **Leads**, les **Solutions** et les **objets personnalisés**. 
+Il ne supporte **pas** les Opportunités, les Cases ni les Campagnes. Pour ces objets, Salesforce offre un autre outil (Data Loader) qui est plus complexe et hors du cadre de ce cours. Tes opportunités resteront dans Excel pour l'analyse — elles seront créées manuellement dans Salesforce plus tard.
+</Aside>
+
 ### 3.1 Correspondance des colonnes
 
-Salesforce utilise des **noms de champs en anglais** dans son importateur. Crée une copie de chaque feuille nettoyée et renomme les colonnes selon la correspondance suivante :
+Le Data Import Wizard utilise des **noms de champs en anglais**. De plus, certains champs sont des **listes de valeurs prédéfinies** (*picklists*) : les valeurs dans ton fichier doivent correspondre exactement à celles configurées dans Salesforce, sinon l'importation échouera.
+
+Crée une copie de chaque feuille nettoyée et renomme les colonnes selon la correspondance suivante :
 
 <Tabs>
 <TabItem label="Comptes">
@@ -150,8 +161,8 @@ Salesforce utilise des **noms de champs en anglais** dans son importateur. Crée
 | Téléphone | Phone |
 | Adresse | Billing Street |
 | Ville | Billing City |
-| Province | Billing State |
-| Code postal | Billing Zip |
+| Province | Billing State/Province |
+| Code postal | Billing Zip/Postal Code |
 | Site web | Website |
 
 </TabItem>
@@ -165,6 +176,11 @@ Salesforce utilise des **noms de champs en anglais** dans son importateur. Crée
 | Titre | Title |
 | Téléphone | Phone |
 | Courriel | Email |
+
+<Aside type="tip" title="Lien Compte-Contact">
+La colonne `Account Name` dans le fichier des contacts doit contenir le **nom exact** du compte tel qu'il apparaît dans le fichier des comptes. 
+C'est ainsi que Salesforce crée automatiquement le lien entre un contact et son entreprise lors de l'importation.
+</Aside>
 
 </TabItem>
 <TabItem label="Leads">
@@ -181,60 +197,69 @@ Salesforce utilise des **noms de champs en anglais** dans son importateur. Crée
 | Statut | Lead Status |
 
 </TabItem>
-<TabItem label="Opportunités">
-
-| Colonne actuelle | Nom Salesforce |
-|---|---|
-| Nom de l'opportunité | Opportunity Name |
-| Compte | Account Name |
-| Montant | Amount |
-| Date de clôture | Close Date |
-| Étape | Stage |
-| Probabilité (%) | Probability (%) |
-
-</TabItem>
 </Tabs>
 
-### 3.2 Exporter en CSV
+### 3.2 Correspondance des valeurs de listes (*picklists*)
 
-<Steps>
-1. Pour chaque feuille renommée, enregistre-la dans un fichier CSV séparé :
-   - **Fichier** → **Enregistrer sous** → Format **CSV UTF-8 (délimité par des virgules) (.csv)**.
-   - Nomme les fichiers : `sf_comptes.csv`, `sf_contacts.csv`, `sf_leads.csv`, `sf_opportunites.csv`.
+Les champs **Lead Status** et **Lead Source** sont des listes de valeurs prédéfinies dans Salesforce. 
+Un Trailhead Playground utilise les valeurs par défaut **en anglais**. Si tu importes une valeur qui n'existe pas dans la liste, Salesforce refusera la ligne.
 
-2. **Important** : Salesforce attend des virgules comme délimiteurs (et non des points-virgules). Le format « CSV UTF-8 » d'Excel utilise la virgule par défaut, même en français.
-</Steps>
+Dans ta copie de la feuille Leads, remplace les valeurs françaises par leurs équivalents Salesforce :
 
-<Aside type="caution" title="Ordre d'importation dans Salesforce">
-L'ordre d'importation est crucial à cause des relations entre objets :
-1. **Comptes** en premier (les autres objets y font référence)
-2. **Contacts** en deuxième (liés aux comptes par `Account Name`)
-3. **Opportunités** en troisième (liées aux comptes)
-4. **Leads** en dernier (ils sont indépendants)
+**Statut du lead → Lead Status** :
 
-Si tu importes les contacts avant les comptes, Salesforce ne pourra pas créer les liens entre eux.
+| Valeur dans ton fichier | Valeur Salesforce |
+|---|---|
+| Nouveau | Open - Not Contacted |
+| Contacté | Working - Contacted |
+| Qualifié | Working - Contacted |
+
+<Aside type="note" title="Perte de nuance">
+Salesforce n'a pas de statut « Qualifié » par défaut — on utilise *Working - Contacted* pour les deux. En entreprise, un administrateur Salesforce ajouterait des valeurs personnalisées à cette liste pour refléter le processus de vente réel. Pour cet exercice, on travaille avec les valeurs par défaut.
 </Aside>
 
+**Source du lead → Lead Source** :
 
-{/* ## Résumé des anomalies corrigées
+| Valeur dans ton fichier | Valeur Salesforce |
+|---|---|
+| Site web | Web |
+| Référence | Partner Referral |
+| Salon commercial | Other |
 
-Pour référence, voici la liste complète des problèmes présents dans les fichiers originaux :
+<Aside type="note" title="Pourquoi « Other »?">
+Salesforce n'a pas de valeur *Trade Show* par défaut dans la liste Lead Source. On utilise *Other* comme valeur de remplacement. Encore une fois, en entreprise, cette liste serait personnalisée pour inclure « Salon commercial ».
+</Aside>
 
-| Fichier | Anomalie | Correction |
-|---|---|---|
-| Comptes | Espace en fin de nom (« Transport Saguenay Express ») | SUPPRESPACE |
-| Comptes | Espace en début de nom (« Électronique Gatineau ») | SUPPRESPACE |
-| Comptes | Doublon (Transport Saguenay Express, lignes A004/A013) | Suppression du doublon |
-| Comptes | Colonne ID_Ancien inutile | Suppression de la colonne |
-| Contacts | Espace en fin de nom (« Dubois ») | SUPPRESPACE |
-| Contacts | Espace en début de nom (« Tremblay ») | SUPPRESPACE |
-| Contacts | Téléphone avec espaces (418 555 1235) | Reformatage |
-| Contacts | Téléphone sans séparateur (8195550149) | Reformatage |
-| Contacts | Courriel manquant (Daniel Lapointe) | Accepté tel quel |
-| Leads | Doublon complet (Amélie Bouchard) | Suppression du doublon |
-| Leads | Casse incohérente du statut (NOUVEAU, nouveau, contacté) | Uniformisation |
-| Leads | Téléphone manquant (Josée Lafleur) | Accepté tel quel |
-| Leads | Possible coquille dans courriel (microdufford) | Signalée |
-| Opportunités | Espace initial dans montant ( 45000) | Suppression de l'espace |
-| Opportunités | Symbole $ dans montant (110000 $) | Suppression du symbole |
-| Opportunités | Format de date incohérent (15/06/2026) | Correction au format uniforme | */}
+### 3.3 Exporter en CSV
+
+<Steps>
+1. Pour chaque feuille préparée (Comptes, Contacts, Leads), enregistre-la dans un fichier CSV séparé :
+   - **Fichier** → **Enregistrer sous** → Format **CSV UTF-8 (délimité par des virgules) (.csv)**.
+   - Nomme les fichiers : `sf_comptes.csv`, `sf_contacts.csv`, `sf_leads.csv`.
+
+2. **Vérifie le délimiteur** dans chaque fichier exporté. Ouvre le CSV dans le **Bloc-notes** (clic droit → Ouvrir avec → Bloc-notes) et regarde si les valeurs sont séparées par des **virgules** (`,`) ou des **points-virgules** (`;`).
+</Steps>
+
+<Aside type="caution" title="Piège fréquent : le séparateur CSV en français">
+Salesforce attend des fichiers CSV délimités par des **virgules** (`,`). 
+Or, Excel en **français** utilise souvent le **point-virgule** (`;`) comme séparateur par défaut — parce que la virgule sert déjà de séparateur décimal en français (ex. : `3,50 $`).
+
+Si tes fichiers utilisent des points-virgules, tu peux utiliser un outil en ligne comme
+[https://onlinetools.com/csv/change-csv-delimiter](https://onlinetools.com/csv/change-csv-delimiter) 
+pour convertir le séparateur de `;` à `,` en quelques clics.
+Cela évite les erreurs possibles liées à une modification manuelle avec *Rechercher et Remplacer*.
+
+Vérifie **toujours** le résultat dans le Bloc-notes avant d'importer dans Salesforce.
+</Aside>
+
+### 3.4 Ordre d'importation dans Salesforce
+
+L'ordre d'importation est crucial à cause des relations entre objets :
+
+<Steps>
+1. **Comptes en premier** — les contacts y font référence via le champ *Account Name*.
+2. **Contacts en deuxième** — lors de l'import, Salesforce associe chaque contact à son compte en cherchant une correspondance exacte sur *Account Name*.
+3. **Leads en dernier** — ils sont indépendants (aucun lien avec les comptes ou contacts).
+</Steps>
+
+Si tu importes les contacts avant les comptes, Salesforce ne pourra pas créer les liens entre eux.
