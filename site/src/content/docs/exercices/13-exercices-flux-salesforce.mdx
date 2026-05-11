@@ -1,0 +1,393 @@
+---
+title: "Exercice : Flux de travail Salesforce"
+description: "Pratiquer les flux typiques dans Salesforce : conversion de leads, suivi d'activités, rapports et tableaux de bord."
+---
+
+import { Tabs, TabItem, Aside, Steps } from '@astrojs/starlight/components';
+
+## Mise en contexte
+
+Tu reprends là où tu as laissé dans l'exercice précédent. Les données de **Distributions Boréale** ont été nettoyées dans Excel et importées dans ton Trailhead Playground : 14 comptes, 20 contacts, 11 leads et 15 opportunités.
+
+La directrice commerciale, **Isabelle Morin**, te demande maintenant de simuler les opérations quotidiennes d'un représentant des ventes dans Salesforce :
+
+1. **Qualifier et convertir** deux pistes prometteuses en clients.
+2. **Documenter les activités** de suivi sur une opportunité.
+3. **Créer des rapports et un tableau de bord** pour la direction.
+
+<Aside type="note" title="Prérequis">
+Tu dois avoir complété l'exercice précédent (importation des données Boréale dans Salesforce). Si ce n'est pas fait, les enregistrements nécessaires ne seront pas dans ton Playground.
+</Aside>
+
+---
+
+## Partie 1 : Flux Prospect → Client 
+
+Ce flux est le cœur du travail commercial dans un CRM. 
+Tu vas faire progresser deux *leads* à travers le processus complet : 
+
+```
+Qualification → Conversion → Gestion de l'opportunité créée
+```
+
+### Scénario A — Christine Gagnon, Boulangerie Artisan
+
+Christine Gagnon a été référée par Pâtisserie Lalonde. Son statut est déjà « Qualifié » dans le système. Après un appel téléphonique concluant, tu es prêt à la convertir en cliente.
+
+#### Étape 1 : Vérifier le lead
+
+<Steps>
+1. Dans la barre de recherche globale, tape **Christine Gagnon** et ouvre sa fiche de lead.
+2. Vérifie les informations : 
+    - Société = *Boulangerie Artisan*
+    - Statut = *Qualifié*
+    - Source = *Référence*
+3. Note la source « Référée par Pâtisserie Lalonde » dans les notes — **ce détail sera utile après la conversion**.
+</Steps>
+
+#### Étape 2 : Convertir le lead
+
+<Steps>
+1. Sur la fiche de Christine Gagnon, clique sur le bouton **Convertir** (en haut à droite de la page, ou dans le menu déroulant ▾).
+2. Dans la fenêtre de conversion, Salesforce propose de créer trois éléments :
+   - **Compte** : Salesforce suggère « Boulangerie Artisan ». Laisse tel quel.
+   - **Contact** : Christine Gagnon. Laisse tel quel.
+   - **Opportunité** : Salesforce propose un nom par défaut. Remplace-le par **Contrat approvisionnement Boulangerie Artisan**.
+3. Clique sur **Convertir**.
+</Steps>
+
+<Aside type="tip" title="Que se passe-t-il lors de la conversion?">
+Salesforce crée automatiquement trois enregistrements liés entre eux : 
+- un Compte (l'entreprise)
+- un Contact (la personne)
+- une Opportunité (la vente potentielle). 
+
+Le lead original est marqué comme « Converti » et ne peut plus être modifié.
+Son historique est conservé mais il disparaît des vues de liste de leads actifs.
+</Aside>
+
+#### Étape 3 : Configurer l'opportunité créée
+
+<Steps>
+1. Après la conversion, Salesforce t'amène sur la page du nouveau compte. Navigue vers l'opportunité **Contrat approvisionnement Boulangerie Artisan** (visible dans la section « Opportunités » du compte, ou via la barre de recherche).
+2. Modifie les champs suivants (clique sur le crayon ✏️ à côté de chaque champ) :
+   - **Montant** : 25 000 $
+   - **Date de clôture** : le dernier jour du mois prochain
+   - **Étape** : Qualification
+3. Enregistre les modifications.
+</Steps>
+
+##### Vérifie ton résultat : 
+
+✅ Onglet **Leads**: Christine Gagnon ne devrait plus apparaître dans la vue « Tous les leads ouverts ».   
+✅ Onglet **Comptes**: « Boulangerie Artisan » devrait exister avec Christine Gagnon comme contact associé.
+
+---
+
+### Scénario B — Simon Blackburn, Auberge du Vieux-Port
+
+Simon Blackburn a été rencontré au salon SIAL. Son statut est « Contacté ». Avant de le convertir, tu dois d'abord le qualifier.
+
+#### Étape 1 : Qualifier le lead
+
+<Steps>
+1. Ouvre la fiche de **Simon Blackburn** via la recherche globale.
+2. Change le **Statut** de *Contacté* à **Qualifié** en cliquant sur le crayon ✏️.
+3. Ajoute une note dans le champ **Description** (ou dans le fil d'activité) :
+
+   > Rencontré au SIAL. L'Auberge du Vieux-Port cherche un fournisseur régulier pour son restaurant et son service de banquets. Volume estimé : 60 000 $/an. Décision prévue d'ici 2 mois. Budget confirmé.
+
+4. Enregistre.
+</Steps>
+
+<Aside type="note" title="Critères de qualification BANT">
+En vente, on utilise souvent le cadre **BANT** pour qualifier un lead :
+- **B**udget — Le prospect a-t-il les moyens?
+- **A**uthority — Parle-t-on au décideur?
+- **N**eed — Y a-t-il un besoin réel?
+- **T**imeline — Y a-t-il une échéance?
+
+La note ci-dessus couvre les quatre critères. C'est ce qu'un représentant documenterait dans Salesforce après un appel de qualification.
+</Aside>
+
+#### Étape 2 : Convertir le lead
+
+<Steps>
+1. Clique sur **Convertir** sur la fiche de Simon Blackburn.
+2. Salesforce propose de créer le compte « Auberge du Vieux-Port ». Laisse tel quel.
+3. Pour l'opportunité, remplace le nom par **Contrat fournisseur Auberge du Vieux-Port 2026**.
+4. Clique sur **Convertir**.
+</Steps>
+
+#### Étape 3 : Configurer et faire progresser l'opportunité
+
+<Steps>
+1. Ouvre l'opportunité **Contrat fournisseur Auberge du Vieux-Port 2026**.
+2. Configure les champs :
+   - **Montant** : 60 000 $
+   - **Date de clôture** : dans 2 mois à partir d'aujourd'hui
+   - **Étape** : Proposition
+3. Enregistre.
+4. Maintenant, simule une progression : change l'**Étape** à **Négociation**. Salesforce met automatiquement à jour la probabilité.
+5. Enregistre à nouveau.
+</Steps>
+
+##### Vérifie ton résultat : 
+
+✅ L'opportunité devrait afficher l'étape « Négociation »  
+✅ Un historique montrant la progression : Qualification → Proposition → Négociation dans la chronologie de l'enregistrement.
+
+---
+
+### Scénario C — Fermer des opportunités
+
+Pour compléter le cycle, tu vas conclure deux opportunités existantes (importées de l'exercice précédent).
+
+<Steps>
+1. Ouvre l'opportunité **Approvisionnement cafétéria** (compte : Technologies Nexar, montant : 28 000 $).
+2. Change l'étape à **Conclue gagnée** (*Closed Won*).
+3. Enregistre. Salesforce fixe automatiquement la probabilité à 100 %.
+
+4. Ouvre l'opportunité **Distribution pharmaceutique Est** (compte : Pharma-Santé Distribution, montant : 95 000 $).
+5. Change l'étape à **Conclue perdue** (*Closed Lost*).
+6. Salesforce te demandera de sélectionner un **motif de perte**. Choisis ou inscris : *Concurrent retenu*.
+7. Enregistre.
+</Steps>
+
+<Aside type="tip" title="Pourquoi documenter les pertes?">
+Une opportunité perdue n'est pas un échec à cacher — c'est de l'information précieuse. En analysant les motifs de perte dans les rapports, la direction peut ajuster sa stratégie commerciale.
+</Aside>
+
+
+##### Vérifie ton résultat : 
+
+✅ Tu devrais maintenant avoir 4 opportunités « Conclue gagnée » (les 3 originales + Approvisionnement cafétéria) et 1 « Conclue perdue ».   
+✅ Le pipeline actif contient les opportunités restantes.
+
+---
+
+## Partie 2 : Suivi et activités
+
+Un CRM ne sert pas qu'à stocker des données — il structure le **travail quotidien** d'un représentant. Dans cette partie, tu vas documenter des activités de suivi sur l'opportunité de l'Auberge du Vieux-Port.
+
+### 2.1 Créer une tâche de suivi
+
+<Steps>
+1. Ouvre l'opportunité **Contrat fournisseur Auberge du Vieux-Port 2026**.
+2. Dans le panneau d'activité (à droite ou en bas, selon ta disposition), clique sur l'onglet **Tâche** (ou **Nouvelle tâche**).
+3. Remplis les champs :
+   - **Sujet** : Envoyer la proposition commerciale
+   - **Date d'échéance** : dans 3 jours ouvrables
+   - **Priorité** : Haute
+   - **Statut** : Non commencée
+4. Enregistre la tâche.
+</Steps>
+
+### 2.2 Consigner un appel
+
+<Steps>
+1. Toujours sur la même opportunité, clique sur **Consigner un appel** (*Log a Call*) dans le panneau d'activité.
+2. Remplis :
+   - **Sujet** : Appel de suivi — détails de la proposition
+   - **Commentaires** :
+
+     > Appelé Simon Blackburn. Il confirme l'intérêt pour un contrat annuel. Demande une proposition détaillée incluant : produits laitiers, charcuteries fines et produits maraîchers bio. Livraison souhaitée 3×/semaine. Veut recevoir la proposition d'ici vendredi.
+
+   - **Nom** : Simon Blackburn (lie l'appel au contact)
+3. Enregistre.
+</Steps>
+
+<Aside type="note" title="Appel vs Tâche">
+Un appel **consigné** (*Log a Call*) est une activité **passée** — tu documentes quelque chose qui a déjà eu lieu. Une **tâche** est une activité **future** — quelque chose à faire. Les deux apparaissent dans le fil d'activité de l'enregistrement, mais dans des sections différentes (Activité passée vs Étapes suivantes).
+</Aside>
+
+### 2.3 Planifier une rencontre (événement)
+
+<Steps>
+1. Sur la fiche de l'opportunité, clique sur **Nouvel événement** (*New Event*) dans le panneau d'activité.
+2. Remplis :
+   - **Sujet** : Présentation de la proposition commerciale
+   - **Date/Heure** : la semaine prochaine, 10 h 00
+   - **Durée** : 1 heure
+   - **Lieu** : Auberge du Vieux-Port — salle de réunion
+   - **Description** :
+
+     > Présentation de la proposition à Simon Blackburn et à la directrice générale. Apporter les échantillons de produits bio. Préparer la grille tarifaire et les conditions de livraison.
+
+   - **Nom** : Simon Blackburn
+3. Enregistre l'événement.
+</Steps>
+
+### 2.4 Marquer une tâche comme terminée
+
+<Steps>
+1. Retourne à la tâche « Envoyer la proposition commerciale » créée à l'étape 2.1.
+2. Change le **Statut** à **Terminée** (*Completed*).
+3. Ajoute un commentaire : « Proposition envoyée par courriel le [date du jour]. Document joint : Proposition_AubergeVP_2026.pdf ».
+4. Enregistre.
+</Steps>
+
+##### Vérifie ton résultat : 
+
+le fil d'activité de l'opportunité « Contrat fournisseur Auberge du Vieux-Port 2026 » devrait afficher, en ordre chronologique inverse :
+
+✅ Tâche terminée — Envoyer la proposition commerciale  
+✅ Événement planifié — Présentation de la proposition commerciale  
+✅ Appel consigné — Appel de suivi  
+✅ *(Plus les activités système liées à la création et aux changements d'étape)*
+
+---
+
+## Partie 3 : Rapports et tableau de bord
+
+La valeur d'un CRM se concrétise quand les données opérationnelles sont transformées en **rapports** et **tableaux de bord** pour guider les décisions. Tu vas créer trois rapports et les assembler dans un tableau de bord.
+
+### 3.1 Rapport : Pipeline par étape
+
+<Steps>
+1. Clique sur l'onglet **Rapports** dans la barre de navigation.
+2. Clique sur **Nouveau rapport**.
+3. Choisis le type de rapport : **Opportunités** (*Opportunities*).
+4. Clique sur **Lancer le rapport** (*Start Report*).
+5. Configure le rapport :
+   - **Colonnes** : Nom de l'opportunité, Compte, Montant, Étape, Date de clôture, Probabilité
+   - **Regroupement** : ajoute un regroupement par **Étape** (*Group Rows* → Stage)
+   - **Filtre** : retire le filtre « Mes opportunités » s'il est présent — tu veux voir **toutes** les opportunités
+6. Dans la section de résumé, ajoute la **Somme** et le **Nombre** sur la colonne Montant.
+7. Clique sur **Exécuter** pour voir le résultat.
+8. Enregistre le rapport sous le nom : **Pipeline par étape — Boréale**.
+</Steps>
+
+<Aside type="tip" title="Filtre « Mes opportunités »">
+Par défaut, Salesforce filtre souvent les rapports pour n'afficher que les enregistrements dont tu es le propriétaire (*My Opportunities*). Dans un Playground, tu es probablement le propriétaire de tout, mais en entreprise, un gestionnaire changerait ce filtre à « Toutes les opportunités » pour voir l'ensemble de l'équipe.
+</Aside>
+
+
+##### Vérifie ton résultat : 
+
+✅ Le rapport devrait montrer les opportunités regroupées par étape.  
+✅ Le total général devrait refléter les changements faits en Partie 1 (ajout de 2 opportunités converties, 1 gagnée, 1 perdue).   
+✅ Compare avec les valeurs de l'exercice précédent pour t'assurer que tout est cohérent.  
+
+
+**Vérifie ton résultat** : 
+
+### 3.2 Rapport : Leads par statut et source
+
+<Steps>
+1. Crée un **nouveau rapport** de type **Leads**.
+2. **Colonnes** : Prénom, Nom, Société, Statut, Source du lead
+3. **Regroupement** : par **Statut**, puis par **Source du lead** (sous-regroupement).
+4. **Filtre** : toutes les dates, tous les leads.
+5. Exécute et enregistre sous le nom : **Leads par statut et source — Boréale**.
+</Steps>
+
+
+##### Vérifie ton résultat : 
+
+✅ les leads convertis (Christine Gagnon et Simon Blackburn) devraient apparaître avec le statut « Converti ».   
+
+### 3.3 Rapport : Opportunités conclues (gagnées vs perdues)
+
+<Steps>
+1. Crée un **nouveau rapport** de type **Opportunités**.
+2. **Colonnes** : Nom de l'opportunité, Compte, Montant, Étape, Date de clôture
+3. **Filtre** : Étape **égale à** *Conclue gagnée* **OU** *Conclue perdue*.
+
+   <Aside type="note" title="Filtres multiples">
+   Dans l'éditeur de rapport, clique sur **Ajouter un filtre** → champ *Étape* → opérateur *égale à* → sélectionne les deux valeurs. Salesforce permet de sélectionner plusieurs valeurs pour un même champ.
+   </Aside>
+
+4. **Regroupement** : par **Étape**.
+5. Ajoute la **Somme** sur Montant.
+6. Exécute et enregistre : **Opportunités conclues — Boréale**.
+</Steps>
+
+
+
+{/* 
+##### Vérifie ton résultat : 
+
+✅ tu devrais voir 4 opportunités « Conclue gagnée » totalisant **168 000 $** (les 140 000 $ originales + 28 000 $ d'Approvisionnement cafétéria) et 1 opportunité « Conclue perdue » de 95 000 $.
+**Vérifie ton résultat** :  */}
+
+### 3.4 Créer un tableau de bord
+
+<Steps>
+1. Clique sur l'onglet **Tableaux de bord** (*Dashboards*).
+2. Clique sur **Nouveau tableau de bord**.
+3. Nomme-le : **Tableau de bord commercial — Boréale**.
+4. Ajoute les composants suivants en cliquant sur **+ Composant** :
+
+   **Composant 1 — Entonnoir de ventes** :
+   - Source : rapport *Pipeline par étape — Boréale*
+   - Type de graphique : **Entonnoir** (*Funnel*)
+   - Axe X / Regroupement : Étape
+   - Mesure : Somme du montant
+
+   **Composant 2 — Répartition des leads** :
+   - Source : rapport *Leads par statut et source — Boréale*
+   - Type de graphique : **Anneau** (*Donut*)
+   - Regroupement : Statut
+   - Mesure : Nombre d'enregistrements
+
+   **Composant 3 — Résultat des ventes** :
+   - Source : rapport *Opportunités conclues — Boréale*
+   - Type de graphique : **Barres horizontales** (*Horizontal Bar*)
+   - Regroupement : Étape
+   - Mesure : Somme du montant
+
+   **Composant 4 — Métrique clé** :
+   - Source : rapport *Pipeline par étape — Boréale*
+   - Type de graphique : **Métrique** (*Metric*)
+   - Mesure : Somme du montant
+   - Ce composant affiche un seul grand nombre — la valeur totale du pipeline.
+
+5. Dispose les composants en grille (2×2 est un bon point de départ).
+6. Clique sur **Enregistrer** puis sur **Terminé**.
+</Steps>
+
+<Aside type="tip" title="Actualisation automatique">
+Un tableau de bord Salesforce reflète les données au moment de son dernier **rafraîchissement**. Clique sur le bouton **Actualiser** (🔄) pour forcer la mise à jour. En entreprise, les tableaux de bord sont souvent configurés pour s'actualiser automatiquement chaque matin.
+</Aside>
+
+{/* **Vérifie ton résultat** : ton tableau de bord devrait afficher quatre composants visuels avec des données cohérentes. L'entonnoir devrait montrer clairement que les étapes « Proposition » et « Conclue gagnée » dominent en valeur. */}
+
+---
+
+## Résumé des flux pratiqués
+
+| Flux | Ce que tu as fait | Objets touchés |
+|---|---|---|
+| **Prospect → Client** | Qualifié 1 lead, converti 2 leads, configuré les opportunités résultantes, fermé 1 opportunité gagnée et 1 perdue | Lead, Compte, Contact, Opportunité |
+| **Suivi et activités** | Créé une tâche, consigné un appel, planifié un événement, complété une tâche | Tâche, Événement, Opportunité |
+| **Rapports et tableau de bord** | Créé 3 rapports avec regroupements et filtres, assemblé un tableau de bord à 4 composants | Rapport, Tableau de bord |
+
+
+{/* ---
+
+## Bonus — Exporter et analyser dans Excel
+
+Pour boucler la boucle avec les compétences Excel du cours, exporte le rapport « Pipeline par étape » vers Excel et pousse l'analyse plus loin.
+
+<Steps>
+1. Ouvre le rapport **Pipeline par étape — Boréale** dans Salesforce.
+2. Clique sur la flèche ▾ à côté de **Enregistrer** → **Exporter** → **Détails uniquement (.xlsx)**.
+3. Ouvre le fichier dans Excel.
+
+4. **Nettoyage** : supprime les colonnes inutiles (identifiants Salesforce, colonnes système) et renomme les en-têtes en français si nécessaire.
+
+5. **TCD — Pipeline pondéré** : crée un tableau croisé dynamique qui calcule le **pipeline pondéré** (montant × probabilité) par compte :
+   - **Lignes** : Compte
+   - **Valeurs** : Somme du Montant, et un **champ calculé** = Montant × Probabilité
+
+6. **Graphique** : crée un histogramme comparant le montant brut vs le montant pondéré par compte. Ce graphique montre la différence entre la valeur nominale et la valeur réaliste du pipeline — une information clé pour les prévisions de revenus.
+</Steps>
+
+<Aside type="tip" title="Champ calculé dans un TCD">
+Pour ajouter un champ calculé : clique dans le TCD → onglet **Analyse de tableau croisé dynamique** → **Champs, éléments et jeux** → **Champ calculé**. Nomme-le « Montant pondéré » et entre la formule `= Montant * 'Probabilité (%)'`.
+</Aside>
+
+<Aside type="note" title="Salesforce vs Excel — complémentarité">
+Salesforce excelle pour la **gestion opérationnelle** (suivi des leads, pipeline, activités), mais Excel reste imbattable pour l'**analyse ad hoc** — les TCD, les scénarios hypothétiques, les graphiques personnalisés. Un bon gestionnaire maîtrise les deux et sait quand utiliser l'un plutôt que l'autre.
+</Aside> */}

@@ -122,6 +122,7 @@ export default defineConfig({
 								{ label: 'Consolidation de données', slug: 'cours/14-consolidation' },
 								{ label: 'Introduction à Salesforce', slug: 'cours/15-salesforce' },
 								{ label: "Exercices Salesforce", slug: 'exercices/12-exercices-salesforce' },
+								{ label: "Exercices Flux Salesforce", slug: 'exercices/13-exercices-flux-salesforce' }
 							]
 						}
 					],
