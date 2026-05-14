@@ -1,0 +1,157 @@
+---
+title: Labo — Bibliothèque des Quatre-Vents
+description: Nettoyage, validation et analyse de données pour une bibliothèque municipale
+---
+
+import { Aside, Steps, Tabs, TabItem, Badge } from '@astrojs/starlight/components';
+
+Tu travailles pour la **Bibliothèque des Quatre-Vents**, une bibliothèque municipale desservant les villes de Sherbrooke et Magog. 
+On te remet un fichier Excel contenant les données des membres et de leurs emprunts. 
+Les données comportent plusieurs erreurs et incohérences — ton mandat est de les identifier, les corriger, puis produire un tableau de bord synthèse.
+
+---
+
+## Partie 1 : Validation des données
+
+### 1.1 Normalisation des types d'emprunt
+
+La colonne **Type** dans la feuille Emprunts devrait contenir uniquement les valeurs `Livre`, `Matériel` ou `Équipement`. 
+Plusieurs cellules contiennent des variantes incorrectes.
+
+<Steps>
+
+1. Utilise **Rechercher et remplacer** pour corriger les variantes une par une.
+
+   | Rechercher    | Remplacer par |
+   |---------------|---------------|
+   | `livre`       | `Livre`       |
+   | `Livres`      | `Livre`       |
+   | `equipement`  | `Équipement`  |
+
+2. Pour les valeurs **DVD** et **Revue**, ces types n'existent pas dans le système. Remplace-les par le type le plus approprié selon la catégorie associée :
+   - `DVD` (catégorie : Documentaire) → `Matériel`
+   - `Revue` (catégorie : Actualité) → `Livre`
+
+</Steps>
+
+### 1.2 Validation de données — Liste de types
+
+Maintenant que les types sont normalisés, ajoute une validation pour **empêcher** les futures erreurs.
+
+<Steps>
+
+1. Configure une **liste** avec les valeurs suivantes :
+
+   ```
+   Livre;Matériel;Équipement
+   ```
+
+2. Dans l'onglet **Message d'erreur**, écris un message clair :
+   - Titre : `Type invalide`
+   - Message : `Le type doit être Livre, Matériel ou Équipement.`
+
+</Steps>
+
+### 1.3 Validation de données — Date fin > Date début
+
+Ajoute une validation sur la colonne **Date fin prévue** pour empêcher la saisie d'une date antérieure à la date de début.
+
+<Steps>
+
+1. Sélectionne la plage de la colonne **Date fin prévue** (G2:G36).
+
+2. Applique une validation de données de type **Personnalisé**.
+
+3. Configure un message d'erreur approprié.
+
+</Steps>
+
+---
+
+## Partie 2 : Transformation des données
+
+### 2.1 Nom complet
+
+Dans la feuille **Membres**, crée une formule dans la colonne **Nom complet** (J) qui combine le prénom et le nom.
+
+### 2.2 Adresse complète
+
+Toujours dans la feuille **Membres**, crée une formule dans la colonne **Adresse** (K) qui combine le numéro, la rue et la ville.
+
+### 2.3 Nom du membre dans la feuille Emprunts
+
+La colonne **Nom** (C) de la feuille Emprunts est vide. Utilise la fonction `RECHERCHEV` pour aller chercher le nom complet du membre à partir de son ID.
+
+
+### 2.4 Calcul du retard
+
+La colonne **Retard (jours)** (I) doit afficher le nombre de jours de retard. Un emprunt est en retard si la **date de retour** est postérieure à la **date de fin prévue**.
+
+{/* <Aside type="tip" title="Vérifie ton résultat">
+- **EMP-001** : `11` jours de retard
+- **EMP-002** : `0` (retourné à temps)
+- **EMP-008** : `0` (dates incohérentes, protégé par la condition)
+- **EMP-014** : `15` jours de retard
+</Aside> */}
+
+### 2.5 Action à prendre
+
+La colonne **Action** (J) doit afficher `À contacter` si le membre est en retard. Sinon elle reste vide (`""`)
+
+### 2.6 Calcul des frais de retard
+
+Les frais de retard dépendent du type d'emprunt :
+
+| Type | Frais par jour de retard |
+|------|--------------------------|
+| Livre | 0,10 $ |
+| Matériel | 1,00 $ |
+| Équipement | 1,00 $ |
+
+---
+
+## Partie 3 : Tableau de synthèse
+
+Passe à la feuille **Synthèse** pour construire le tableau de bord.
+
+### 3.1 Les grands chiffres
+
+Complète la colonne **Valeur** (B) pour chaque indicateur en utilisant des formules qui font référence aux feuilles Membres et Emprunts.
+
+- Nombre total de membres 
+- Nombre total d'emprunts
+- Nombre d'emprunts en retard
+- Total des frais de retard
+- Durée moyenne d'un emprunt
+
+### 3.2 Graphique — Distribution des catégories de livres
+
+Crée un **graphique en barres** montrant combien d'emprunts ont été faits par catégorie de livre.
+
+<Steps>
+
+1. D'abord, prépare les données source. Dans la feuille Synthèse (par exemple à partir de la cellule **A14**), crée un petit tableau récapitulatif avec les catégories et leur nombre
+
+2. Sélectionne ce tableau, puis insère un **graphique en barres groupées**.
+
+3. Ajoute un titre : **Distribution des catégories de livres**.
+
+4. Trie les barres de la plus grande à la plus petite si possible.
+
+</Steps>
+
+### 3.3 Graphique — Proportion des types d'emprunt
+
+Crée un **graphique en secteurs** (camembert) montrant la répartition entre Livre, Matériel et Équipement.
+
+<Steps>
+
+1. Dans la feuille Synthèse (par exemple à partir de la cellule **A30**), crée un tableau récapitulatif.
+
+2. Sélectionne le tableau et insère un **graphique en secteurs**.
+
+3. Ajoute les **étiquettes de données** avec le pourcentage.
+
+4. Ajoute un titre : **Proportion des types d'emprunt**.
+
+</Steps>
