@@ -124,6 +124,12 @@ export default defineConfig({
 								{ label: "Exercices Salesforce", slug: 'exercices/12-exercices-salesforce' },
 								{ label: "Exercices Flux Salesforce", slug: 'exercices/13-exercices-flux-salesforce' }
 							]
+						},
+						{
+							label: 'Semaine 14',
+							items: [
+								{ label: 'Révision', slug: 'cours/16-revision' }
+							]
 						}
 					],
 				},

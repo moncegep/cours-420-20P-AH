@@ -1,0 +1,770 @@
+---
+title: "Préparation pour l'examen final"
+description: Exercice de révision couvrant les formules, les tableaux croisés dynamiques, les macros et la modélisation de classeur.
+---
+
+import { Tabs, TabItem, Aside, Steps, Badge } from '@astrojs/starlight/components';
+
+Ce formatif couvre l'ensemble de la matière pouvant se retrouver à l'examen final.
+
+---
+
+## 1. Questions à choix multiples
+
+Pour chaque question, choisis la **meilleure** réponse.
+
+---
+
+### Formules et fonctions
+
+**Q1.** Quelle formule compte le nombre de cellules contenant le texte « Montréal » dans la plage A2:A200 ?
+
+- A) `=NB(A2:A200;"Montréal")`
+- B) `=NB.SI(A2:A200;"Montréal")`
+- C) `=SOMME.SI(A2:A200;"Montréal")`
+- D) `=NBVAL(A2:A200;"Montréal")`
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+NB.SI compte les cellules répondant à un critère textuel. NB ne prend pas de critère ; SOMME.SI additionne au lieu de compter ; NBVAL ne prend pas de critère non plus.
+</details>
+
+**Q2.** La formule `=RECHERCHEV(B5;Tarifs!A:D;3;FAUX)` retourne une erreur `#N/A`. Quelle est la cause la plus probable ?
+
+- A) La feuille Tarifs n'existe pas
+- B) La valeur de B5 n'existe pas dans la colonne A de la feuille Tarifs
+- C) Le troisième argument devrait être 4 au lieu de 3
+- D) Il faudrait utiliser VRAI au lieu de FAUX
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+`#N/A` signifie que la valeur cherchée n'a pas été trouvée. `FAUX` exige une correspondance exacte — si la valeur de B5 n'existe pas telle quelle dans la colonne A de Tarifs, on obtient cette erreur.
+</details>
+
+**Q3.** Quelle est la différence entre `=NB(A1:A50)` et `=NBVAL(A1:A50)` ?
+
+- A) Aucune différence
+- B) NB est pour les colonnes ; NBVAL est pour les lignes
+- C) NB compte les cellules vides ; NBVAL compte les cellules non vides
+- D) NB compte les cellules contenant des nombres ; NBVAL compte toutes les cellules non vides
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : D)**
+
+NB (COUNT) compte uniquement les cellules contenant des **nombres**. NBVAL (COUNTA) compte toutes les cellules **non vides**, incluant texte, nombres, dates, formules, etc.
+</details>
+
+**Q4.** La formule `=SI(ET(B2>=60;C2="Payé");"OK";"À vérifier")` affiche « OK ». Que peut-on conclure ?
+
+- A) B2 vaut au moins 60 ou C2 contient « Payé »
+- B) B2 vaut exactement 60 et C2 contient « Payé »
+- C) B2 vaut au moins 60 et C2 contient « Payé »
+- D) On ne peut rien conclure sans voir les données
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : C)**
+
+La fonction ET() exige que **toutes** les conditions soient vraies simultanément. Si le résultat est « OK », cela confirme que B2 ≥ 60 **et** C2 = « Payé ». (B2 pourrait valoir 60, 75, 100… pas nécessairement exactement 60.)
+</details>
+
+**Q5.** Que retourne `=ARRONDI(14,763;1)` ?
+
+- A) 14,7
+- B) 14,8
+- C) 15
+- D) 14,74
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+ARRONDI arrondit 14,763 à 1 décimale. Le chiffre des centièmes est 6, ce qui provoque un arrondi vers le haut du dixième → 14,8.
+</details>
+
+**Q6.** La formule `=SIERREUR(RECHERCHEV(A2;Produits!A:C;3;FAUX);"Inconnu")` retourne « Inconnu ». Que s'est-il passé ?
+ 
+- A) La feuille Produits est vide
+- B) La colonne 3 de la feuille Produits contient du texte
+- C) La valeur de A2 n'a pas été trouvée dans la feuille Produits
+- D) La formule contient une erreur de syntaxe
+<details>
+<summary>Voir la réponse</summary>
+**Réponse : C)**
+ 
+SIERREUR « attrape » toute erreur produite par la formule principale. Ici, RECHERCHEV a retourné `#N/A` (valeur non trouvée), et SIERREUR l'a remplacée par « Inconnu ». C'est exactement le rôle de SIERREUR : éviter que les erreurs de recherche s'affichent dans la feuille.
+</details>
+
+**Q7.** Que retourne cette formule si A1 contient 55 ?
+ 
+```
+=SI(A1>=80;"Excellent";SI(A1>=60;"Bien";SI(A1>=50;"Passable";"Échec")))
+```
+ 
+- A) « Excellent »
+- B) « Bien »
+- C) « Passable »
+- D) « Échec »
+<details>
+<summary>Voir la réponse</summary>
+**Réponse : C)**
+ 
+1. Premier test : 55 ≥ 80 ? **Non** → on passe au deuxième SI
+2. Deuxième test : 55 ≥ 60 ? **Non** → on passe au troisième SI
+2. Troisième test : 55 ≥ 50 ? **Oui** → on retourne « Passable »
+L'ordre des tests est crucial dans un SI imbriqué — on commence par la condition la plus restrictive.
+</details>
+
+**Q8.** Quelle formule calcule la somme des montants (colonne E) uniquement pour les lignes où la colonne B contient « Québec » ?
+ 
+- A) `=SOMME.SI(B2:B100;"Québec";E2:E100)`
+- B) `=SOMME.SI(E2:E100;"Québec";B2:B100)`
+- C) `=SOMME(E2:E100;"Québec")`
+- D) `=NB.SI(B2:B100;"Québec")*SOMME(E2:E100)`
+<details>
+<summary>Voir la réponse</summary>
+**Réponse : A)**
+ 
+La syntaxe de SOMME.SI est : `=SOMME.SI(plage_critère;critère;plage_somme)`. On évalue d'abord **où** chercher le critère (B2:B100), puis **quoi** chercher (« Québec »), puis **quoi** additionner (E2:E100). L'option b) inverse la plage de critère et la plage de somme — c'est une erreur fréquente.
+</details>
+
+**Q9.** Dans la formule `=MOYENNE.SI(C2:C100;">=50";D2:D100)`, que représente le résultat ?
+ 
+- A) La moyenne de toutes les valeurs de C2:C100 qui sont ≥ 50
+- B) La somme des valeurs de D2:D100 divisée par 50
+- C) Le nombre de valeurs de C2:C100 qui sont ≥ 50
+- D) La moyenne des valeurs de D2:D100, mais seulement pour les lignes où C est ≥ 50
+<details>
+<summary>Voir la réponse</summary>
+**Réponse : D)**
+ 
+Comme SOMME.SI, la syntaxe de MOYENNE.SI est : `(plage_critère;critère;plage_moyenne)`. Le critère est évalué sur C2:C100, mais c'est la moyenne de **D2:D100** qui est calculée — seulement pour les lignes qui satisfont la condition. Si on voulait la moyenne de C lui-même, on omettrait le troisième argument : `=MOYENNE.SI(C2:C100;">=50")`.
+</details>
+
+---
+
+### Macros
+
+**Q10.** Qu'est-ce qu'une macro dans Excel ?
+
+- A) Une formule avancée utilisant plusieurs fonctions imbriquées
+- B) Une séquence d'actions enregistrées et rejouables automatiquement
+- C) Un graphique généré automatiquement à partir d'un tableau
+- D) Un filtre avancé appliqué à un tableau croisé dynamique
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+Une macro est une séquence d'actions (clics, saisies, mises en forme, tris, etc.) enregistrée une fois et qu'on peut rejouer à volonté.
+</details>
+
+**Q11.** Pour que les macros soient conservées dans un fichier Excel, il faut l'enregistrer au format :
+
+- A) .xlsx
+- B) .csv
+- C) .xlsm
+- D) .xltx
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : C)**
+
+Le format **.xlsm** (Excel prenant en charge les macros) est obligatoire. Le .xlsx supprime silencieusement toutes les macros à l'enregistrement — c'est une erreur très fréquente.
+</details>
+
+**Q12.** Un collègue a enregistré une macro qui trie les données de A1 à F200 par la colonne C. Il constate que seule la colonne C est triée — les autres colonnes n'ont pas suivi. Quelle erreur a-t-il probablement commise ?
+
+- A) Il a oublié de nommer la macro
+- B) Il a sélectionné seulement la colonne C avant de lancer le tri
+- C) Il a utilisé un tri décroissant au lieu de croissant
+- D) Il a enregistré la macro en mode relatif
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+Il faut sélectionner **l'ensemble du tableau** (A1:F200) avant de trier. Si on sélectionne seulement la colonne C, Excel trie cette colonne indépendamment, ce qui mélange toutes les lignes. C'est le piège classique des macros de tri.
+</details>
+
+---
+
+### Tableaux croisés dynamiques (TCD)
+
+**Q13.** Dans un TCD, la zone « Valeurs » sert à :
+
+- A) Filtrer les données affichées
+- B) Définir les en-têtes de lignes
+- C) Calculer des résultats (sommes, moyennes, nombres, etc.)
+- D) Regrouper les colonnes par catégorie
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : C)**
+
+La zone **Valeurs** contient les champs sur lesquels on effectue des calculs : Somme, Nombre, Moyenne, Min, Max, % du total, etc.
+</details>
+
+**Q14.** Un TCD affiche le revenu total par catégorie de produit en lignes et par mois en colonnes. On souhaite voir les résultats en pourcentage du total général au lieu de montants. Où fait-on ce changement ?
+
+- A) Dans les filtres du TCD
+- B) En modifiant les données source
+- C) Dans les Paramètres de champ de valeur → Afficher les valeurs → % du total général
+- D) En ajoutant une colonne calculée dans les données source
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : C)**
+
+Clic droit sur une valeur du TCD → **Paramètres de champ de valeur** → onglet **Afficher les valeurs** → choisir **% du total général**. Cela transforme les montants en pourcentages sans modifier les données source.
+</details>
+
+---
+
+### Salesforce et importation
+
+**Q15.** Un fichier texte utilise le point-virgule comme séparateur et la virgule comme séparateur décimal. Lors de l'importation dans Salesforce, que faut-il vérifier ?
+
+- A) Que le fichier est en format UTF-8
+- B) Que le séparateur de colonnes est une virgule
+- C) Que le fichier ne dépasse pas 1 000 lignes
+- D) Que les données sont triées avant l'importation
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Réponse : B)**
+
+Les deux vérifications essentielles sont : (1) le **délimiteur** doit être reconnu comme virgule (et non point-virgule) et (2) les colonnes aient des entêtes utilisant le nom des objets standard Salesforce.
+</details>
+
+---
+
+## 2. Formules à interpréter
+
+Pour chaque formule, explique **en français** ce qu'elle fait, comme si tu l'expliquais à un collègue qui ne connaît pas Excel. 
+Précise ce que la formule retourne comme type de résultat (nombre, texte, etc.).
+
+---
+
+### Question 1
+
+Cette formule se trouve dans la cellule G2 de la feuille **Commandes**. La feuille **Produits** contient un tableau avec le code produit en colonne A et le prix unitaire en colonne C.
+
+```
+=RECHERCHEV(C2;Produits!A:C;3;FAUX)*E2
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule cherche la valeur de C2 (un code produit) dans la première colonne de la feuille Produits. Elle récupère le prix unitaire (3ᵉ colonne) et le multiplie par la quantité en E2. **Résultat** : un montant en dollars (nombre).
+</details>
+
+### Question 2
+
+Cette formule se trouve dans la feuille **Analyse**.
+
+```
+=NB.SI(Commandes!D2:D500;"Livré")/NBVAL(Commandes!D2:D500)
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule divise le nombre de commandes ayant le statut « Livré » (NB.SI) par le nombre total de commandes non vides (NBVAL) dans la colonne D. **Résultat** : un pourcentage sous forme décimale (ex. 0,82 pour 82 % de commandes livrées).
+</details>
+
+### Question 3
+
+Cette formule se trouve dans la cellule H2 de la feuille **Factures**.
+
+```
+=SI(F2-AUJOURDHUI()>30;"En retard";"OK")
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule vérifie si la date en F2 moins la date d'aujourd'hui donne plus de 30 jours. Si oui, elle affiche « En retard » ; sinon, « OK ». **Résultat** : un texte.
+
+*Attention* : cette logique semble inversée — si F2 est une date d'échéance **future** à plus de 30 jours, ce n'est pas vraiment « en retard ». En pratique, on s'attendrait plutôt à `=SI(AUJOURDHUI()-F2>30;"En retard";"OK")` si F2 est la date d'échéance. Le contexte exact dépend de ce que F2 représente.
+</details>
+
+### Question 4
+
+Cette formule se trouve dans la cellule I2 de la feuille **Employés**. La cellule B3 de la feuille **Contrôle** contient un nom de département.
+
+```
+=SOMME.SI(D2:D100;Contrôle!B3;G2:G100)
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule additionne les valeurs de la colonne G (par exemple des salaires) uniquement pour les lignes dont la colonne D correspond au département indiqué dans la cellule de contrôle B3. **Résultat** : un nombre (total salarial pour le département sélectionné). C'est un exemple classique de cellule de contrôle — en changeant B3 sur la feuille Contrôle, le résultat se met à jour automatiquement.
+</details>
+
+### Question 5
+
+Cette formule se trouve dans la cellule J2 de la feuille **Ventes**.
+
+```
+=SI(ET(H2>="2026-01-01";H2<"2026-04-01");ARRONDI(G2*0,15;2);0)
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule vérifie si la date en H2 tombe entre le 1ᵉʳ janvier et le 31 mars 2026 (premier trimestre). Si oui, elle calcule 15 % du montant en G2, arrondi à 2 décimales. Sinon, elle retourne 0. **Résultat** : un nombre (montant de prime ou commission trimestrielle).
+</details>
+
+### Question 6
+
+Cette formule se trouve dans la cellule E2 de la feuille **Inventaire**.
+
+```
+=SI(D2<RECHERCHEV(A2;Seuils!A:B;2;FAUX);"⚠ Commander";"En stock")
+```
+
+<details>
+<summary>Voir la réponse</summary>
+
+La formule compare la quantité en stock (D2) avec le seuil minimal trouvé par RECHERCHEV dans la feuille Seuils (en cherchant le produit A2). Si le stock est inférieur au seuil, elle affiche « ⚠ Commander » ; sinon, « En stock ». **Résultat** : un texte. C'est un système d'alerte de réapprovisionnement automatique.
+</details>
+
+---
+
+## 3. TCD : mises en situation
+
+Pour chaque scénario, indique la configuration du TCD en précisant quels champs vont dans chaque zone. Utilise le format suivant :
+
+- **Lignes** : …
+- **Colonnes** : …
+- **Valeurs** : … (précise la fonction : Somme, Nombre, Moyenne, etc.)
+- **Filtres** : … (s'il y a lieu)
+
+---
+
+### Scénario A
+
+Le **Bistro Le Marché** de Sherbrooke veut analyser ses ventes du dernier trimestre. Le tableau source contient les colonnes suivantes :
+
+| Date | Serveur | Catégorie | Produit | Quantité | Montant | Mode paiement |
+|------|---------|-----------|---------|----------|---------|---------------|
+
+**Question A1 :** Le gérant veut connaître le **montant total des ventes par catégorie** (Entrées, Plats, Desserts, Boissons).
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Catégorie
+- **Colonnes** : *(vide)*
+- **Valeurs** : Somme de Montant
+- **Filtres** : *(aucun)*
+</details>
+
+**Question A2 :** Le gérant veut voir le **nombre de transactions par serveur, ventilé par mode de paiement** (Comptant, Débit, Crédit).
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Serveur
+- **Colonnes** : Mode paiement
+- **Valeurs** : Nombre de Montant *(ou Nombre de Date — n'importe quel champ, on veut compter les lignes)*
+- **Filtres** : *(aucun)*
+</details>
+
+**Question A3 :** Le gérant veut analyser l'**évolution mensuelle du montant moyen par transaction**, mais seulement pour la catégorie « Plats ».
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Date *(regroupée par Mois)*
+- **Colonnes** : *(vide)*
+- **Valeurs** : Moyenne de Montant
+- **Filtres** : Catégorie = « Plats »
+
+*Le regroupement par mois se fait en cliquant droit sur une date dans le TCD → Grouper → cocher Mois.*
+</details>
+
+---
+
+### Scénario B
+
+Les **Pharmacies Beaupré** ont un tableau d'inventaire consolidé de leurs trois succursales :
+
+| Code produit | Description | Catégorie | Succursale | Qté en stock | Prix unitaire | Fournisseur | Date réception |
+|--------------|-------------|-----------|------------|--------------|---------------|-------------|----------------|
+
+**Question B1 :** Le directeur régional veut voir la **quantité totale en stock par catégorie et par succursale** (succursales en colonnes).
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Catégorie
+- **Colonnes** : Succursale
+- **Valeurs** : Somme de Qté en stock
+- **Filtres** : *(aucun)*
+</details>
+
+**Question B2 :** On veut identifier les catégories où le **stock moyen par produit est le plus faible**, pour chaque succursale séparément.
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Catégorie
+- **Colonnes** : Succursale
+- **Valeurs** : Moyenne de Qté en stock
+- **Filtres** : *(aucun)*
+
+*L'étudiant consulte ensuite les valeurs les plus basses dans chaque colonne de succursale pour identifier les catégories à risque.*
+</details>
+
+---
+
+### Scénario C
+
+**Constructions Beauce Inc.** utilise un tableau de suivi de ses travaux :
+
+| No travail | Logement | Catégorie travaux | Fournisseur | Date début | Date fin | Coût matériaux | Coût main-d'œuvre | Statut |
+|------------|----------|-------------------|-------------|------------|----------|----------------|-------------------|--------|
+
+**Question C1 :** Le directeur veut comparer le **coût total (matériaux + main-d'œuvre) par catégorie de travaux**, en ne montrant que les travaux dont le statut est « Terminé ».
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Catégorie travaux
+- **Colonnes** : *(vide)*
+- **Valeurs** : Somme de Coût matériaux **et** Somme de Coût main-d'œuvre *(deux champs dans la zone Valeurs)*
+- **Filtres** : Statut = « Terminé »
+
+*Note : on peut aussi ajouter une colonne calculée « Coût total » dans les données source avant de créer le TCD, puis mettre Somme de Coût total en valeurs.*
+</details>
+
+---
+
+### Scénario D
+
+L'**Auberge du Vieux-Port** analyse ses réservations. Le tableau source :
+
+| No réservation | Client | Type chambre | Canal | Date arrivée | Nb nuits | Revenu hébergement | Province | Fidélité |
+|----------------|--------|--------------|-------|--------------|----------|-------------------|----------|----------|
+
+**Question D1 :** La directrice veut voir le **revenu moyen par nuit selon le type de chambre**, ventilé par canal de réservation (Booking, Direct, Agence).
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Type chambre
+- **Colonnes** : Canal
+- **Valeurs** : Moyenne de Revenu hébergement
+- **Filtres** : *(aucun)*
+
+*Attention : si on veut le revenu **par nuit**, il faudrait idéalement un champ calculé « Revenu/nuit » dans les données source (Revenu hébergement ÷ Nb nuits), ou utiliser la Moyenne de Revenu hébergement comme approximation.*
+</details>
+
+**Question D2 :** Elle veut voir le **nombre de réservations par trimestre**, seulement pour les clients de fidélité « Or » et « Platine ».
+
+<details>
+<summary>Voir la réponse</summary>
+
+- **Lignes** : Date arrivée *(regroupée par Trimestre)*
+- **Colonnes** : *(vide)*
+- **Valeurs** : Nombre de No réservation
+- **Filtres** : Fidélité = « Or » et « Platine » *(sélection multiple dans le filtre)*
+</details>
+
+---
+
+## 4. TCD à compléter
+
+Pour chaque exercice, on te donne un TCD partiellement décrit. Complète les éléments manquants.
+ 
+---
+ 
+### Exercice 1
+ 
+**Contexte :** L'**Épicerie Chez Marco** veut voir le nombre de produits par fournisseur. Le tableau source contient les colonnes suivantes :
+ 
+| Code produit | Description | Catégorie | Fournisseur | Prix unitaire | Qté en stock |
+|--------------|-------------|-----------|-------------|---------------|--------------|
+ 
+Le TCD est configuré ainsi :
+- Lignes : Fournisseur
+- Colonnes : *(vide)*
+- Valeurs : **???**
+- Filtres : *(aucun)*
+**a)** Quel champ met-on dans la zone Valeurs, et avec quelle fonction ?
+ 
+**b)** Le gérant aimerait maintenant voir ce même nombre ventilé par catégorie de produit (Fruits, Légumes, Produits laitiers, etc.) dans les colonnes. Quel champ ajoute-t-on et où ?
+ 
+**c)** Finalement, il veut voir des **pourcentages du total par ligne** au lieu du nombre brut. Où fait-on ce changement ?
+ 
+<details>
+<summary>Voir la réponse</summary>
+**a)** Valeurs : **Nombre de Code produit** (ou Nombre de Description — n'importe quel champ non vide). La fonction doit être **Nombre** (pas Somme), car on veut **compter** les produits, pas additionner une valeur.
+ 
+**b)** On ajoute le champ **Catégorie** dans la zone **Colonnes**.
+ 
+**c)** Clic droit sur une valeur du TCD → Paramètres de champ de valeur → onglet **Afficher les valeurs** → choisir **% du total de la ligne**.
+</details>
+---
+ 
+### Exercice 2
+ 
+**Contexte :** L'**Hôtel & Spa des Laurentides** analyse les consommations de services (restaurant, spa, minibar, etc.) de ses clients. Le tableau source contient les colonnes suivantes :
+ 
+| No consommation | No réservation | Client | Catégorie service | Description | Date | Montant | Niveau fidélité |
+|-----------------|----------------|--------|-------------------|-------------|------|---------|-----------------|
+ 
+Voici le résultat souhaité du TCD :
+ 
+|  | Janvier | Février | Mars | Total |
+|--|---------|---------|------|-------|
+| Restaurant | 4 520 $ | 5 180 $ | 6 230 $ | 15 930 $ |
+| Spa | 2 800 $ | 3 100 $ | 3 450 $ | 9 350 $ |
+| Minibar | 890 $ | 760 $ | 920 $ | 2 570 $ |
+| **Total** | **8 210 $** | **9 040 $** | **10 600 $** | **27 850 $** |
+ 
+**a)** Identifie la configuration complète du TCD (Lignes, Colonnes, Valeurs).
+ 
+**b)** Les mois en colonnes proviennent d'un champ « Date ». Quelle manipulation a été nécessaire pour obtenir des mois au lieu de dates individuelles ?
+ 
+**c)** On veut ajouter un filtre pour voir ces résultats **pour un niveau de fidélité spécifique** (Bronze, Argent, Or, Platine). Comment procède-t-on ?
+ 
+<details>
+<summary>Voir la réponse</summary>
+**a)** Configuration :
+- **Lignes** : Catégorie service
+- **Colonnes** : Date *(regroupée par Mois)*
+- **Valeurs** : Somme de Montant
+**b)** On a fait un **regroupement de dates** : clic droit sur une cellule de date dans le TCD → **Grouper** → cocher **Mois** (et décocher les autres niveaux si nécessaire).
+ 
+**c)** On ajoute le champ **Niveau fidélité** dans la zone **Filtres** du TCD. Un menu déroulant apparaît au-dessus du tableau, permettant de sélectionner un niveau spécifique.
+</details>
+---
+ 
+### Exercice 3
+ 
+**Contexte :** **Distributions Boréale Inc.** suit ses opportunités de vente avec le tableau suivant :
+ 
+| ID | Client | Secteur | Produit | Étape | Montant | Date création | Date fermeture |
+|----|--------|---------|---------|-------|---------|---------------|----------------|
+ 
+On te donne trois configurations de TCD. Pour chacune, décris **en une phrase** l'information que le TCD produit.
+ 
+**Config 1 :**
+- Lignes : Secteur
+- Colonnes : Étape
+- Valeurs : Nombre de ID
+**Config 2 :**
+- Lignes : Produit
+- Colonnes : *(vide)*
+- Valeurs : Somme de Montant
+- Filtres : Étape = « Gagnée »
+**Config 3 :**
+- Lignes : Date création *(regroupée par Trimestre)*
+- Colonnes : *(vide)*
+- Valeurs : Moyenne de Montant
+<details>
+<summary>Voir la réponse</summary>
+**Config 1 :** Le TCD montre le **nombre d'opportunités par secteur d'activité, ventilé par étape du pipeline** (prospection, négociation, gagnée, perdue, etc.). C'est un tableau de suivi du pipeline commercial.
+ 
+**Config 2 :** Le TCD montre le **revenu total par produit, seulement pour les opportunités gagnées**. C'est un classement des produits les plus vendus.
+ 
+**Config 3 :** Le TCD montre l'**évolution du montant moyen des opportunités créées par trimestre**. C'est un indicateur de la taille moyenne des affaires dans le temps.
+</details>
+
+---
+
+## 5. Modélisation
+
+<Aside type="note" title="Contexte">
+Cet exercice est semblable à ce qui pourrait apparaître à l'examen final. Lis attentivement la mise en situation, puis réponds aux questions **sur papier ou dans un document texte** — tu n'as pas besoin d'Excel pour cette partie.
+</Aside>
+
+### Mise en situation
+
+Le **Traiteur Belle Province** est une entreprise de Trois-Rivières qui offre des services de traiteur pour des événements corporatifs et privés. 
+La propriétaire, Mélanie Côté, veut informatiser le suivi de ses commandes dans Excel.
+
+- Chaque événement a un numéro unique (ex. EVT-001), un nom de client, une date, un lieu, un type (Corporatif, Mariage, Anniversaire, Cocktail), un nombre de personnes et un statut (Confirmé, En attente, Annulé).
+- L'entreprise offre un menu composé de 25 plats répartis en 5 catégories (Entrées, Plats principaux, Desserts, Bouchées, Boissons). Chaque plat a un code (ex. PLT-001), un nom, une catégorie, un prix par personne et un indicateur d'allergie (Oui/Non pour gluten, noix, lactose).
+- Pour chaque événement, on commande un ou plusieurs plats du menu. Chaque ligne de commande indique le numéro d'événement, le code du plat, la quantité commandée et un commentaire optionnel.
+- L'équipe de 10 employés est affectée aux événements. Chaque employé a un matricule, un nom, un rôle (Chef, Serveur, Assistant) et un taux horaire.
+
+---
+
+### Question 1 : Structure du classeur
+
+Propose la structure du classeur en identifiant :
+
+**a)** Les feuilles nécessaires (nom de chaque feuille et son rôle).
+
+**b)** Les colonnes de chaque feuille (nom et type de donnée : texte, nombre, date, monétaire, oui/non).
+
+**c)** Les champs de liaison entre les feuilles (quels champs permettent de passer d'une feuille à l'autre).
+
+<details>
+<summary>Voir la réponse</summary>
+
+**a) Feuilles :**
+
+1. **Événements** — Liste de tous les événements avec leurs détails
+2. **Menu** — Catalogue des plats offerts avec prix et allergènes
+3. **Commandes** — Détails des plats commandés par événement
+4. **Employés** — Liste du personnel avec rôle et taux horaire
+5. **Analyse** — Feuille de calculs récapitulatifs et KPI
+
+**b) Colonnes :**
+
+*Événements :* No événement (texte), Client (texte), Date (date), Lieu (texte), Type (texte), Nb personnes (nombre entier), Statut (texte)
+
+*Menu :* Code plat (texte), Nom (texte), Catégorie (texte), Prix/personne (monétaire), Gluten (oui/non), Noix (oui/non), Lactose (oui/non)
+
+*Commandes :* No événement (texte), Code plat (texte), Quantité (nombre entier), Montant (monétaire — calculé), Commentaire (texte)
+
+*Employés :* Matricule (texte), Nom (texte), Rôle (texte), Taux horaire (monétaire)
+
+**c) Champs de liaison :**
+- Commandes → Événements par **No événement**
+- Commandes → Menu par **Code plat**
+- *(Une feuille « Affectations » pourrait lier Employés → Événements, mais elle n'est pas explicitement demandée dans l'énoncé.)*
+</details>
+
+---
+
+### Question 2 : Formules
+
+Écris les formules Excel (en français) pour les calculs suivants. Indique dans quelle feuille et quelle cellule chaque formule serait placée.
+
+**a)** Dans la feuille Commandes, calculer le **montant par ligne** en allant chercher le prix par personne dans la feuille Menu et en le multipliant par la quantité.
+
+**b)** Dans une feuille Analyse, calculer le **revenu total des événements de type « Mariage »** à partir de la feuille Commandes.
+
+**c)** Dans une feuille Analyse, calculer le **nombre d'événements confirmés prévus pour le mois en cours**.
+
+<details>
+<summary>Voir la réponse</summary>
+
+**a)** Feuille Commandes, cellule D2 (colonne Montant) :
+```
+=RECHERCHEV(B2;Menu!A:D;4;FAUX)*C2
+```
+B2 = Code plat, colonne 4 du Menu = Prix/personne, C2 = Quantité.
+
+**b)** Feuille Analyse — approche simple en ajoutant d'abord une colonne « Type » dans Commandes via RECHERCHEV :
+```
+=RECHERCHEV(A2;Événements!A:F;6;FAUX)
+```
+puis dans Analyse :
+```
+=SOMME.SI(Commandes!E2:E500;"Mariage";Commandes!D2:D500)
+```
+*(E = colonne Type ajoutée, D = colonne Montant)*
+
+**c)** Feuille Analyse :
+```
+=NB.SI.ENS(Événements!G2:G100;"Confirmé";Événements!C2:C100;">="&DATE(ANNEE(AUJOURDHUI());MOIS(AUJOURDHUI());1);Événements!C2:C100;"<"&DATE(ANNEE(AUJOURDHUI());MOIS(AUJOURDHUI())+1;1))
+```
+Cette formule compte les événements confirmés dont la date est dans le mois courant.
+</details>
+
+---
+
+### Question 3 : Validation de données
+
+Mélanie veut réduire les erreurs de saisie. Propose des **validations de données** pour les champs suivants. Pour chaque validation, précise le type (liste, nombre entier, décimal, date, etc.) et les paramètres.
+
+**a)** Le champ « Type » dans la feuille Événements (valeurs permises : Corporatif, Mariage, Anniversaire, Cocktail).
+
+**b)** Le champ « Nombre de personnes » dans la feuille Événements.
+
+**c)** Le champ « Code plat » dans la feuille Commandes (doit correspondre à un plat existant dans la feuille Menu).
+
+**d)** Le champ « Date » dans la feuille Événements (doit être une date future ou aujourd'hui).
+
+<details>
+<summary>Voir la réponse</summary>
+
+**a) Type d'événement :** Validation par **Liste** → Source : `Corporatif;Mariage;Anniversaire;Cocktail` (ou référence à une plage dans une feuille Contrôle). Message d'erreur : « Choisir un type valide. »
+
+**b) Nombre de personnes :** Validation par **Nombre entier** → Minimum : 1, Maximum : 500 (ou une limite réaliste). Message d'erreur : « Le nombre de personnes doit être entre 1 et 500. »
+
+**c) Code plat :** Validation par **Liste** → Source : `=Menu!A2:A26` (la plage des codes plats dans la feuille Menu). Cela force la saisie d'un code existant et affiche un menu déroulant. Message d'erreur : « Ce code plat n'existe pas dans le menu. »
+
+**d) Date :** Validation par **Date** → Supérieure ou égale à `=AUJOURDHUI()`. Message d'erreur : « La date doit être aujourd'hui ou dans le futur. »
+</details>
+
+---
+
+{/* ### Question 4 : Définition de macros
+
+Mélanie te demande d'automatiser certaines tâches répétitives. Pour chaque macro demandée :
+
+1. Donne un **nom significatif** à la macro
+2. Décris les **étapes précises** que l'enregistreur de macros devrait capturer (dans l'ordre)
+3. Identifie les **pièges potentiels** à éviter lors de l'enregistrement
+
+<Aside type="caution" title="Rappel important">
+Toutes les macros doivent être réalisables avec **l'enregistreur de macros uniquement**. Aucun code VBA écrit à la main n'est attendu.
+</Aside>
+
+**Macro 3 — Tri et impression**
+
+La macro doit trier la feuille Événements par date (croissant), puis par statut (alphabétique), et configurer la zone d'impression pour inclure toutes les données.
+
+<details>
+<summary>Voir la réponse</summary>
+
+**Nom :** `TrierEtImprimer`
+
+**Étapes à enregistrer :**
+1. Aller à la feuille Événements
+2. Sélectionner **tout le tableau** (ex. A1:G50, pas juste une colonne)
+3. Données → Trier : Premier niveau = Date (croissant), Ajouter un niveau = Statut (A à Z)
+4. Mise en page → Zone d'impression → Définir
+5. Arrêter l'enregistrement
+
+**Pièges :**
+- Le piège classique est de sélectionner **seulement la colonne Date** avant de trier — cela déplacerait les dates sans les autres colonnes, mélangeant toutes les lignes
+- Il faut **toujours** sélectionner le tableau complet avant un tri multi-niveaux
+- Vérifier que le tri reconnaît la ligne 1 comme en-tête (cocher « Mes données ont des en-têtes » dans la boîte de dialogue)
+</details> */}
+
+
+
+{/* ## Autoévaluation
+
+Avant l'examen, vérifie que tu es capable de faire chacune de ces actions **sans aide** :
+
+<Steps>
+1. Écrire une formule SI imbriquée avec 2 niveaux
+2. Utiliser RECHERCHEV pour aller chercher une donnée dans une autre feuille
+3. Combiner NB.SI ou SOMME.SI avec un critère provenant d'une cellule de contrôle
+4. Créer un TCD en choisissant les bons champs pour chaque zone
+5. Changer la fonction de calcul d'un TCD (Somme → Moyenne → Nombre)
+6. Afficher les valeurs d'un TCD en pourcentage
+7. Regrouper des dates par mois ou trimestre dans un TCD
+8. Enregistrer une macro avec l'enregistreur
+9. Identifier les pièges courants des macros (sélection partielle, portée du remplacement, format de fichier)
+10. Proposer des validations de données adaptées à un contexte donné
+11. Importer un fichier CSV ou texte dans Excel
+</Steps> */}
